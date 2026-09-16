@@ -1,0 +1,11 @@
+[Unit]
+Description=Restore original sprdwl_ng and reboot if wifi is dead after boot
+After=network.target
+
+[Service]
+Type=simple
+Environment=GW=192.168.1.1
+ExecStart=/root/wifi-module-guard.sh
+
+[Install]
+WantedBy=multi-user.target
