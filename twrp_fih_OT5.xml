@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <project name="Xiaopan2009/twrp_device_fih_OT5" path="device/fih/OT5" remote="github" revision="main" />
+</manifest>

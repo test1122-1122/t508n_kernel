@@ -1,0 +1,26 @@
+# TWRP fstab for TCL OT5 (T508N)
+# Platform: UNISOC ums9620 | A/B (Virtual A/B) | Dynamic partitions (super)
+
+# Dynamic (logical) partitions inside super
+/system             ext4     /dev/block/mapper/system                 flags=display=System
+/vendor             ext4     /dev/block/mapper/vendor                 flags=display=Vendor
+/product            ext4     /dev/block/mapper/product                flags=display=Product
+/system_ext         ext4     /dev/block/mapper/system_ext             flags=display=SystemExt
+/odm                ext4     /dev/block/mapper/odm                    flags=display=ODM
+
+# Physical partitions (by-name)
+/boot               emmc     /dev/block/by-name/boot                  flags=display=Boot
+/vendor_boot        emmc     /dev/block/by-name/vendor_boot           flags=display=VendorBoot
+/dtbo               emmc     /dev/block/by-name/dtbo                  flags=display=Dtbo
+/misc               emmc     /dev/block/by-name/misc                  flags=display=Misc
+/vbmeta             emmc     /dev/block/by-name/vbmeta                flags=display=Vbmeta
+/vbmeta_system      emmc     /dev/block/by-name/vbmeta_system         flags=display=VbmetaSystem
+/prodnv             ext4     /dev/block/by-name/prodnv                flags=display=Prodnv
+
+# Data / Cache / Metadata
+/data               f2fs     /dev/block/by-name/userdata              flags=display=Data
+/data               ext4     /dev/block/by-name/userdata              flags=display=Data
+/cache              f2fs     /dev/block/by-name/cache                 flags=display=Cache
+/cache              ext4     /dev/block/by-name/cache                 flags=display=Cache
+/metadata           f2fs     /dev/block/by-name/metadata              flags=display=Metadata
+/metadata           ext4     /dev/block/by-name/metadata              flags=display=Metadata

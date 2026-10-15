@@ -1,0 +1,57 @@
+name: Build TWRP for TCL OT5 (T508N)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout device tree
+        uses: actions/checkout@v4
+
+      - name: Set up environment
+        run: |
+          sudo apt update
+          sudo apt -y install git-core gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 libncurses-dev lib32z1-dev libssl-dev libxml2-utils xsltproc unzip fontconfig openjdk-11-jdk python3 bc ccache lzop tree python-is-python3
+
+      - name: Set up repo
+        run: |
+          mkdir ~/bin
+          curl -sL https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+          chmod a+x ~/bin/repo
+
+      - name: Init TWRP source (twrp-12.1)
+        run: |
+          export PATH=~/bin:$PATH
+          mkdir workspace
+          cd workspace
+          git config --global user.name "TWRP Builder"
+          git config --global user.email "twrp@localhost"
+          repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
+          mkdir -p .repo/local_manifests
+          cp ${GITHUB_WORKSPACE}/twrp_fih_OT5.xml .repo/local_manifests/
+
+      - name: Sync source
+        run: |
+          export PATH=~/bin:$PATH
+          cd workspace
+          repo sync -j$(nproc --all) -f --force-sync --no-tags --no-clone-bundle
+
+      - name: Build TWRP
+        run: |
+          export PATH=~/bin:$PATH
+          cd workspace
+          export ALLOW_MISSING_DEPENDENCIES=true
+          source build/envsetup.sh
+          lunch omni_OT5-eng
+          make recoveryimage -j$(nproc --all) || true
+          make bootimage -j$(nproc --all)
+          ls -la out/target/product/OT5/ | grep -E '\.img' || true
+
+      - name: Upload recovery.img
+        uses: actions/upload-artifact@v4
+        with:
+          name: twrp_OT5_recovery
+          path: workspace/out/target/product/OT5/*.img
