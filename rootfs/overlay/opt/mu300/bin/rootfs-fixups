@@ -1,0 +1,9 @@
+#!/bin/sh
+# Archives extracted with busybox/toybox tar drop xattrs, so file capabilities disappear.
+for f in /usr/bin/ping /usr/bin/mtr-packet /usr/bin/arping; do
+    [ -x "$f" ] || continue
+    getcap "$f" 2>/dev/null | grep -q cap_net_raw || setcap cap_net_raw+ep "$f" 2>/dev/null || true
+done
+# docker export leaves an empty /etc/resolv.conf instead of the systemd-resolved stub
+[ -L /etc/resolv.conf ] || ln -sfn ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+true

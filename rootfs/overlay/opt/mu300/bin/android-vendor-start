@@ -1,0 +1,38 @@
+#!/bin/sh
+# Start Android's modem_control in a chroot. It (re)loads pm_sys/modem through Trusty; without it the
+# PM co-processor watchdog cuts power ~290 s after boot. See linux-boot/STATUS.md (v9).
+set -e
+A=/opt/mu300/android
+mkdir -p /dev/socket /dev/block/by-name
+[ -S /dev/socket/logdw ] || { /opt/mu300/bin/logdw /dev/socket/logdw >> /var/log/android-logcat.txt 2>&1 & sleep 1; }
+# bind the read-only Android property area instead of copying it: it is ~85 MiB (RAM on tmpfs) and OpenWrt's /dev
+# is a 512 KiB tmpfs, where the copy silently ends up as empty files and modem_control never boots the modem
+if ! [ -s /dev/__properties__/property_info ]; then
+    rm -rf /dev/__properties__ 2>/dev/null || true
+    mkdir -p /dev/__properties__
+    mount --bind $A/dev-properties /dev/__properties__
+fi
+for u in /sys/class/block/mmcblk0p*/uevent; do
+    d=$(basename "$(dirname "$u")")
+    n=$(sed -n 's/^PARTNAME=//p' "$u")
+    ln -sfn /dev/$d /dev/block/$d
+    [ -n "$n" ] && ln -sfn /dev/$d /dev/block/by-name/$n
+done
+sh /opt/mu300/bin/ueventd-perms.sh
+for m in dev proc sys; do mkdir -p $A/$m; done
+mkdir -p $A/data/vendor $A/mnt $A/tmp
+mountpoint -q $A/dev || mount --rbind /dev $A/dev
+[ -s $A/dev/__properties__/property_info ] || mount --bind $A/dev-properties $A/dev/__properties__
+mountpoint -q $A/proc || mount -t proc proc $A/proc
+mountpoint -q $A/sys || mount -t sysfs sysfs $A/sys
+# the vendor daemons read androidboot.* (slot, modem config) from the command line; the mainline kernel forces its
+# own command line, so fall back to the bootargs LK put in the device tree
+src=/proc/cmdline
+grep -q androidboot.slot_suffix /proc/cmdline || [ ! -r /proc/device-tree/chosen/bootargs ] || src=/proc/device-tree/chosen/bootargs
+tr -d '\000' < $src | sed 's/androidboot.slot_suffix=_b/androidboot.slot_suffix=_a/' > /run/mu300-cmdline.android
+mount --bind /run/mu300-cmdline.android $A/proc/cmdline
+# sprd_modem_loader only accepts a task whose comm is exactly "modem_control": exec it directly
+# OpenWrt's procd preloads /lib/libsetlbf.so into services; the bionic linker in the chroot cannot load it
+unset LD_PRELOAD
+export LD_LIBRARY_PATH=/apex/com.android.runtime/lib64/bionic:/system/lib64:/vendor/lib64
+exec chroot $A /vendor/bin/modem_control

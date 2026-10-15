@@ -1,0 +1,50 @@
+#!/bin/sh
+# Thermal safety for kernels without SoC trip points (mainline: the stock DT only has trips on the vendor virtual
+# zone). Reads the hottest on-die sensor every 5 s: above HOT caps every cpufreq policy one step lower, below COOL
+# lifts the cap one step, above CRIT powers off. The 5.4 vendor kernel throttles itself, so this exits there.
+HOT=${MU300_THERMAL_HOT:-85000}
+COOL=${MU300_THERMAL_COOL:-75000}
+CRIT=${MU300_THERMAL_CRIT:-105000}
+
+for z in /sys/class/thermal/thermal_zone*; do
+    [ -e "$z/trip_point_0_temp" ] && { echo "kernel thermal trips present, nothing to do"; exit 0; }
+done
+
+hottest() {
+    local max=0 t
+    for z in /sys/class/thermal/thermal_zone*/temp; do
+        read -r t < "$z" 2>/dev/null || continue
+        [ "$t" -gt "$max" ] 2>/dev/null && max=$t
+    done
+    echo "$max"
+}
+
+# step POLICY DIR (-1 lower, +1 higher): move scaling_max_freq to the neighbouring available frequency
+step() {
+    local p=$1 dir=$2 cur prev= f next=
+    read -r cur < "$p/scaling_max_freq"
+    for f in $(tr ' ' '\n' < "$p/scaling_available_frequencies" | sort -n); do
+        if [ "$dir" -lt 0 ]; then
+            [ "$f" -lt "$cur" ] && next=$f
+        elif [ -z "$next" ] && [ "$f" -gt "$cur" ]; then
+            next=$f
+        fi
+    done
+    [ -n "$next" ] && echo "$next" > "$p/scaling_max_freq"
+}
+
+while :; do
+    t=$(hottest)
+    if [ "$t" -ge "$CRIT" ]; then
+        logger -t thermal-guard "critical temperature ${t} mC, powering off"
+        poweroff
+    elif [ "$t" -ge "$HOT" ]; then
+        for p in /sys/devices/system/cpu/cpufreq/policy*; do step "$p" -1; done
+        logger -t thermal-guard "hot (${t} mC): lowered cpufreq limits"
+    elif [ "$t" -le "$COOL" ]; then
+        for p in /sys/devices/system/cpu/cpufreq/policy*; do
+            [ "$(cat $p/scaling_max_freq)" -lt "$(cat $p/cpuinfo_max_freq)" ] && step "$p" 1
+        done
+    fi
+    sleep 5
+done

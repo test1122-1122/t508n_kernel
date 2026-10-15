@@ -1,0 +1,10 @@
+#!/bin/sh
+# Run an Android vendor daemon inside the chroot prepared by android-vendor-start (mu300-vendor.service).
+# The binary is exec'd directly so its task name (comm) matches what vendor drivers expect.
+set -e
+A=/opt/mu300/android
+for n in $(seq 1 60); do mountpoint -q $A/dev && break; sleep 1; done
+# OpenWrt's procd preloads /lib/libsetlbf.so into services; the bionic linker in the chroot cannot load it
+unset LD_PRELOAD
+export LD_LIBRARY_PATH=/apex/com.android.runtime/lib64/bionic:/system/lib64:/vendor/lib64
+exec chroot $A /vendor/bin/"$1"

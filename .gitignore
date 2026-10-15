@@ -1,0 +1,23 @@
+# device dumps, proprietary blobs and build outputs never belong in this repository
+dumps/
+firmware/
+android-subset/
+out/
+*.img
+*.tar
+*.tar.gz
+*.tgz
+*.bin
+*.ko
+busybox
+tools/logdw/logdw
+logs-*/
+rootfs/base.tar
+__pycache__/
+.DS_Store
+tools/bt-init/mu300-bt-init
+tools/gpu/cltest
+work/
+openwrt/*.tar.gz
+upstream/stub/*.elf
+upstream/stub/*.bin

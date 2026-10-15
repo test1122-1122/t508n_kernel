@@ -1,0 +1,284 @@
+#!/bin/busybox sh
+# MU300 standalone Linux initramfs v10 (switch_root to Ubuntu on the free eMMC region; comm fix; custom kernel + modem_control + node perms + slot a modem) (slot b, tries=2 one-shot trial).
+# Every stage is written to /dev/kmsg at KERN_ERR so it survives in
+# /sys/fs/pstore/console-ramoops-0 after the fallback boot into Android.
+/bin/busybox mkdir -p /bin /sbin /proc /sys /dev /run /tmp /root /etc /config
+/bin/busybox --install -s /bin
+export PATH=/bin:/sbin HOME=/root TERM=vt100
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+echo 7 > /proc/sys/kernel/printk
+# the custom kernel has devtmpfs; fall back to tmpfs + mknod for safety
+if ! mount -t devtmpfs -o mode=0755 devtmpfs /dev; then
+    mount -t tmpfs -o mode=0755 tmpfs /dev
+    mknod /dev/null c 1 3
+    mknod /dev/console c 5 1
+    mknod /dev/kmsg c 1 11
+    mknod /dev/zero c 1 5
+    mknod /dev/urandom c 1 9
+fi
+pmsg_major=$(awk '$2=="pmsg"{print $1}' /proc/devices)
+[ -n "$pmsg_major" ] && [ ! -e /dev/pmsg0 ] && mknod /dev/pmsg0 c "$pmsg_major" 0
+
+log() {
+    echo "<3>MU300-LINUX: $*" > /dev/kmsg
+    [ -c /dev/pmsg0 ] && echo "MU300-LINUX: $*" > /dev/pmsg0
+    [ -d /run ] && echo "$(cut -d' ' -f1 /proc/uptime) $*" >> /run/stages
+}
+
+# Persistent log: 8 MiB at 48 MiB inside boot_b, past the image and its AVB data
+# (image ends near 39 MiB). Survives a cold power cycle, unlike pstore.
+bootb=
+persist() {
+    [ -n "$bootb" ] && [ -b "$bootb" ] || return
+    # the periodic loop and the reboot timer both call this
+    mkdir /run/persist.lock 2>/dev/null || return
+    {
+        echo "MU300-PERSIST-BEGIN uptime=$(cut -d' ' -f1 /proc/uptime)"
+        cat /run/stages
+        echo "--- lsmod"
+        cat /proc/modules
+        echo "--- udc"
+        ls /sys/class/udc 2>&1
+        echo "--- logcat"
+        tail -c 400000 /run/logcat.txt 2>&1
+        echo "--- modem_control"
+        cat /run/modem_control.log 2>&1 | tail -c 200000
+        echo "--- deferred"
+        cat /sys/kernel/debug/devices_deferred 2>&1
+        echo "--- dmesg"
+        dmesg | tail -c 6000000
+        echo "MU300-PERSIST-END"
+    } > /run/persist.txt 2>&1
+    head -c 65536 /dev/zero >> /run/persist.txt
+    dd if=/run/persist.txt of="$bootb" bs=4096 seek=12288 count=2048 conv=notrunc 2>/dev/null
+    sync
+    rmdir /run/persist.lock
+}
+log "stage=init-start pid=$$"
+
+mkdir -p /dev/pts
+mount -t devpts -o mode=0620,ptmxmode=0666 devpts /dev/pts
+ln -sf pts/ptmx /dev/ptmx
+mount -t tmpfs tmpfs /run
+mount -t tmpfs tmpfs /tmp
+mount -t debugfs debugfs /sys/kernel/debug
+echo /bin/mdev > /proc/sys/kernel/hotplug
+mdev -s
+log "stage=devfs-ready"
+
+# Turn hangs into panics; the vendor kernel reboots after a panic.
+echo 1 > /proc/sys/kernel/softlockup_panic
+echo 1 > /proc/sys/kernel/panic_on_oops
+[ -e /proc/sys/kernel/hardlockup_panic ] && echo 1 > /proc/sys/kernel/hardlockup_panic
+echo 1 > /proc/sys/kernel/sysrq
+
+# Safety net: reboot after 5 minutes. By then misc points back at slot a.
+# Create /run/stay (e.g. over telnet) to keep Linux running.
+(sleep 300
+ if [ -e /run/stay ]; then log "stage=timer-skipped"; exit 0; fi
+ log "stage=timer-reboot"
+ while ! persist_done=$(mkdir /run/persist.lock 2>/dev/null && echo 1); do sleep 1; done
+ rmdir /run/persist.lock
+ persist; reboot -f; sleep 10; echo b > /proc/sysrq-trigger) &
+
+loaded=0
+failed=0
+while read module; do
+    # vendor_boot's /lib/modules were built for the stock kernel; only our rebuilt copies match
+    file="/linux-modules/$module"
+    if insmod "$file" 2>/run/insmod.err; then
+        loaded=$((loaded + 1))
+    else
+        failed=$((failed + 1))
+        log "insmod-fail $module $(cat /run/insmod.err)"
+    fi
+done < /etc/module-order
+mdev -s
+log "stage=modules-done loaded=$loaded failed=$failed"
+
+# Locate misc now; whether slot a is restored is decided once the rootfs is known.
+misc=
+for n in $(seq 1 20); do
+    for u in /sys/class/block/mmcblk*p*/uevent; do
+        grep -qx PARTNAME=misc "$u" 2>/dev/null || continue
+        misc=/dev/$(basename "$(dirname "$u")")
+    done
+    [ -n "$misc" ] && [ -b "$misc" ] && break
+    misc=
+    sleep 1
+    mdev -s
+done
+
+write_misc_bc() {  # write_misc_bc FILE STAGE
+    [ -n "$misc" ] || { log "stage=misc-NOT-FOUND"; return 1; }
+    dd if="$1" of="$misc" bs=1 seek=2048 conv=notrunc 2>/dev/null
+    sync
+    dd if="$misc" of=/run/bc.bin bs=1 skip=2048 count=32 2>/dev/null
+    if cmp -s /run/bc.bin "$1"; then log "stage=$2 dev=$misc"; else log "stage=$2-MISMATCH dev=$misc"; fi
+}
+restore_slot_a() { write_misc_bc /etc/misc-bc-slot-a.bin misc-restored; }
+
+for u in /sys/class/block/mmcblk*p*/uevent; do
+    grep -qx PARTNAME=boot_b "$u" 2>/dev/null && bootb=/dev/$(basename "$(dirname "$u")")
+done
+log "stage=persist-target dev=${bootb:-none}"
+persist
+(while :; do sleep 15; persist; done) &
+
+hostname mu300-linux
+ifconfig lo 127.0.0.1 up
+log "stage=usb-configfs"
+mount -t configfs configfs /config
+g=/config/usb_gadget/linux
+mkdir -p "$g/strings/0x409" "$g/configs/c.1/strings/0x409" "$g/functions/ecm.usb0"
+echo 0x0525 > "$g/idVendor"
+echo 0xa4a1 > "$g/idProduct"
+echo 0x0200 > "$g/bcdUSB"
+echo MU300LINUX > "$g/strings/0x409/serialnumber"
+echo Linux > "$g/strings/0x409/manufacturer"
+echo "MU300 Linux USB Ethernet" > "$g/strings/0x409/product"
+echo "Linux ECM + ACM console" > "$g/configs/c.1/strings/0x409/configuration"
+echo 250 > "$g/configs/c.1/MaxPower"
+echo 02:50:00:00:77:01 > "$g/functions/ecm.usb0/dev_addr"
+echo 02:50:00:00:77:02 > "$g/functions/ecm.usb0/host_addr"
+ln -s "$g/functions/ecm.usb0" "$g/configs/c.1/f1"
+# USB serial console alongside ECM: recovery/debug access that does not depend on networking
+mkdir -p "$g/functions/acm.GS0" && ln -s "$g/functions/acm.GS0" "$g/configs/c.1/f2"
+log "stage=usb-wait-udc"
+for n in $(seq 1 40); do
+    [ -e /sys/class/udc/25100000.dwc3 ] && break
+    sleep 1
+done
+udc=
+[ -e /sys/class/udc/25100000.dwc3 ] && udc=25100000.dwc3
+[ -z "$udc" ] && for u in /sys/class/udc/*; do [ -e "$u" ] && { udc=$(basename "$u"); break; }; done
+log "stage=udc udc=${udc:-none} available=$(ls /sys/class/udc 2>/dev/null | tr '\n' ',')"
+persist
+sleep 1
+log "stage=usb-bind-start"
+[ -n "$udc" ] && echo "$udc" > "$g/UDC"
+log "stage=usb-bind-done rc=$?"
+persist
+
+# Bring usb0 up immediately after binding, before the host selects the ECM data interface:
+# f_ecm reports the link state in its first CONNECT notification, and macOS' ECM driver does not
+# pick up a later "connected" notification (v10 left usb0 down until systemd ran -> host "inactive").
+ifconfig usb0 up
+ROOT_OFFSET=27762098176   # linux-boot/rootfs-region.env; outside every GPT partition
+mkdir -p /newroot
+# busybox mount only sets up a loop for regular files; for a block device the loop options would
+# be handed to ext4 (EINVAL), so attach the loop explicitly and verify its offset
+# The ext4 area holds one or more systems: /ubuntu, /openwrt (selected by /.mu300/boot-os), or a single
+# Ubuntu directly in its root (first installs). Pick one and remember how to start it.
+has_init() { [ -x "$1/lib/systemd/systemd" ] || [ -x "$1/sbin/init" ]; }
+pick_root() {
+    want=$(cat /disk/.mu300/boot-os 2>/dev/null)
+    for os in $want ubuntu openwrt; do
+        [ -d "/disk/$os" ] && has_init "/disk/$os" && { echo "/disk/$os"; return; }
+        # legacy layout: Ubuntu in the filesystem root
+        [ "$os" = ubuntu ] && [ -x /disk/lib/systemd/systemd ] && { echo /disk; return; }
+    done
+}
+mkdir -p /disk
+rootloop=$(losetup -f 2>/run/rootmount.err)
+if [ -n "$rootloop" ] && losetup -o $ROOT_OFFSET "$rootloop" /dev/mmcblk0 2>>/run/rootmount.err \
+   && [ "$(cat /sys/block/${rootloop#/dev/}/loop/offset)" = "$ROOT_OFFSET" ] \
+   && [ "$(dd if="$rootloop" bs=1 skip=1080 count=2 2>/dev/null | od -An -tx1 | tr -d ' ')" = 53ef ] \
+   && mount -t ext4 -o noatime "$rootloop" /disk 2>>/run/rootmount.err \
+   && rootdir=$(pick_root) && [ -n "$rootdir" ]; then
+    if [ "$rootdir" = /disk ]; then
+        mount --move /disk /newroot
+    else
+        mount --bind "$rootdir" /newroot
+        # keep the whole disk reachable from inside (switching systems, editing the other one)
+        mkdir -p /newroot/mnt/mu300-disk && mount --move /disk /newroot/mnt/mu300-disk
+    fi
+    # Default-Linux mode: leave LK's decremented tries (b: tries 1, not successful). Userspace re-arms slot b
+    # (tries 2) once the system is up; if it never gets there, LK falls back to Android on the next boot.
+    if [ "$(cat /newroot/etc/mu300/default-boot 2>/dev/null)" = linux ]; then
+        log "stage=default-boot-linux (slot a restore skipped)"
+    else
+        restore_slot_a
+    fi
+    mkdir -p /run/mu300 && cp /etc/misc-bc-slot-a.bin /etc/misc-bc-slot-b-trial.bin /run/mu300/
+    [ -n "$misc" ] && echo "$misc" > /run/mu300/misc-dev
+    echo "$rootloop" > /run/mu300/disk-dev
+    init=/sbin/init
+    [ -x /newroot/lib/systemd/systemd ] && init=/lib/systemd/systemd
+    log "stage=switch-root root=$rootdir init=$init os=$(sed -n 's/^PRETTY_NAME=//p' /newroot/etc/os-release)"
+    persist
+    kill $(jobs -p) 2>/dev/null
+    for p in /proc/[0-9]*; do [ "${p#/proc/}" = 1 ] || kill -9 "${p#/proc/}" 2>/dev/null; done
+    umount /config 2>/dev/null
+    mkdir -p /newroot/dev /newroot/proc /newroot/sys /newroot/run
+    mount --move /dev /newroot/dev
+    mount --move /proc /newroot/proc
+    mount --move /sys /newroot/sys
+    mount --move /run /newroot/run 2>/dev/null
+    exec switch_root /newroot $init
+fi
+log "stage=rootfs-unavailable $(cat /run/rootmount.err)"
+restore_slot_a
+ifconfig usb0 192.168.77.1 netmask 255.255.255.0 up
+log "stage=usb0 $(ifconfig usb0 2>&1 | head -1)"
+cat > /etc/udhcpd.conf <<'EOF'
+start 192.168.77.2
+end 192.168.77.9
+interface usb0
+option subnet 255.255.255.0
+option lease 600
+lease_file /run/udhcpd.leases
+pidfile /run/udhcpd.pid
+EOF
+touch /run/udhcpd.leases
+udhcpd /etc/udhcpd.conf
+telnetd -b 192.168.77.1 -p 23 -l /bin/sh
+mkdir -p /run/www
+echo "MU300 standalone Linux v5: telnet 192.168.77.1; auto reboot to Android after 300s unless /run/stay exists" > /run/www/index.html
+httpd -p 192.168.77.1:80 -h /run/www
+log "stage=ready"
+
+# Android vendor services in a chroot. modem_control reloads pm_sys through Trusty; only then
+# can sprd_pmic_wdt send "watchdog rstoff" and stop the PM co-processor from cutting power.
+A=/android
+cp -a $A/dev/__properties__ /dev/__properties__
+mkdir -p /dev/block/by-name
+for u in /sys/class/block/mmcblk0p*/uevent; do
+    d=$(basename "$(dirname "$u")")
+    n=$(sed -n 's/^PARTNAME=//p' "$u")
+    ln -sf /dev/$d /dev/block/$d
+    [ -n "$n" ] && ln -sf /dev/$d /dev/block/by-name/$n
+done
+mkdir -p $A/dev $A/proc $A/sys $A/data/vendor $A/mnt $A/tmp
+mount --bind /dev $A/dev
+mount -t proc proc $A/proc
+mount -t sysfs sysfs $A/sys
+# modem_control switches to uid system(1000); apply Android's ueventd/init node ownership
+sh /etc/ueventd-perms.sh
+# LK boots us from slot b; the modem images Android uses (and keeps updated) are the _a copies
+# the vendor daemons read androidboot.* (slot, modem config) from the command line; the mainline kernel forces its
+# own command line, so fall back to the bootargs LK put in the device tree
+src=/proc/cmdline
+grep -q androidboot.slot_suffix /proc/cmdline || [ ! -r /proc/device-tree/chosen/bootargs ] || src=/proc/device-tree/chosen/bootargs
+tr -d '\000' < $src | sed 's/androidboot.slot_suffix=_b/androidboot.slot_suffix=_a/' > /run/cmdline.android
+mount --bind /run/cmdline.android $A/proc/cmdline
+# liblog sends to logd's datagram socket; capture it so vendor daemons are debuggable
+mkdir -p /dev/socket
+/bin/logdw /dev/socket/logdw > /run/logcat.txt 2>&1 &
+sleep 1
+log "stage=android-chroot-ready nodes=$(ls /dev/modem /dev/pmsys /dev/sctl_pm /dev/trusty-ipc-dev0 2>&1 | tr '\n' ',')"
+# exec the binary itself (interpreter /system/bin/linker64): sprd_modem_loader only accepts
+# ioctls/writes from a task whose comm is exactly "modem_control"
+LD_LIBRARY_PATH=/apex/com.android.runtime/lib64/bionic:/system/lib64:/vendor/lib64 \
+    chroot $A /vendor/bin/modem_control > /run/modem_control.log 2>&1 &
+log "stage=modem_control-started pid=$!"
+(for n in $(seq 1 120); do
+    if dmesg | grep -q "sbuf ready for pmic wdt init"; then log "stage=pmic-wdt-rstoff-ready t=$n"; exit 0; fi
+    sleep 2
+ done; log "stage=pmic-wdt-NOT-ready") &
+while :; do
+    dmesg > /run/www/dmesg.txt
+    cat /proc/modules > /run/www/modules.txt
+    sleep 5
+done

@@ -1,0 +1,23 @@
+#!/bin/sh
+# First boot: one LAN for USB and Wi-Fi (192.168.77.1/24), cellular WAN through the modem, hostname, USB console.
+uci -q batch <<UCI
+set system.@system[0].hostname='mu300'
+set system.@system[0].zonename='Europe/Istanbul'
+set system.@system[0].timezone='<+03>-3'
+set network.lan.ipaddr='192.168.77.1'
+set network.lan.netmask='255.255.255.0'
+delete network.wan6
+set network.wan=interface
+set network.wan.proto='mu300cell'
+set network.wan.apn=''
+UCI
+# the armsr default bridges eth0; the MU300 LAN bridge carries the USB gadget (Wi-Fi joins via wireless config)
+dev=$(uci -q show network | sed -n "s/^network\.\(@device\[[0-9]*\]\)\.name='br-lan'$/\1/p" | head -1)
+if [ -n "$dev" ]; then
+	uci -q delete network.$dev.ports
+	uci add_list network.$dev.ports='usb0'
+fi
+uci commit system
+uci commit network
+grep -q '^ttyGS0:' /etc/inittab || echo 'ttyGS0::askfirst:/usr/libexec/login.sh' >> /etc/inittab
+exit 0

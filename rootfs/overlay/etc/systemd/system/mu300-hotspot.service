@@ -1,0 +1,17 @@
+[Unit]
+Description=MU300 Wi-Fi hotspot (hostapd on wlan0, bridged into br-lan)
+After=mu300-wifi.service mu300-lan.service
+Requires=mu300-wifi.service
+Wants=mu300-lan.service
+# hostapd owns wlan0 in AP mode
+Conflicts=wpa_supplicant.service
+
+[Service]
+ExecStart=/opt/mu300/bin/hotspot-start
+ExecStartPost=-/opt/mu300/bin/hotspot-verify
+ExecStopPost=/opt/mu300/bin/hotspot-stop
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

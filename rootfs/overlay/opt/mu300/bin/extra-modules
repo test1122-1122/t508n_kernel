@@ -1,0 +1,11 @@
+#!/bin/sh
+# Vendor drivers Android loads that the initramfs does not: thermal throttling, status LEDs, SAR power
+# backoff, SIM tray detection, vibrator, DDR/CP DVFS and the Mali GPU (/dev/mali0). Loaded one by one; a failure is logged, not fatal.
+for m in sprd_soc_thm thermal-generic-adc sprd_cpu_cooling leds-sc27xx-bltc zte_sar zte_card_holder_det sc27xx-vibra sprd_cp_dvfs sprd_ddr_dvfs sprd_gpu_cooling mali_kbase; do
+    if modprobe "$m" 2>/tmp/mu300-modprobe.err; then
+        echo "loaded $m"
+    else
+        echo "FAILED $m: $(cat /tmp/mu300-modprobe.err)"
+    fi
+done
+true

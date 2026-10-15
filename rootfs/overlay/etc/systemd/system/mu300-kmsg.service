@@ -1,0 +1,11 @@
+[Unit]
+Description=MU300 kernel warnings and errors into the journal (info-level vendor chatter stays in dmesg only)
+After=systemd-journald.service
+
+[Service]
+ExecStart=/bin/sh -c 'exec dmesg --follow-new --level=emerg,alert,crit,err,warn --notime | systemd-cat -t kernel -p warning'
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=sysinit.target

@@ -1,0 +1,13 @@
+[Unit]
+Description=MU300 mark Linux boot successful (re-arm slot b when Linux is the default)
+After=multi-user.target mu300-usb-net.service ssh.socket
+Requires=multi-user.target
+
+[Service]
+Type=oneshot
+# give the system a moment to prove it is usable before committing to the next Linux boot
+ExecStartPre=/bin/sleep 30
+ExecStart=/opt/mu300/bin/mu300-next-boot --rearm
+
+[Install]
+WantedBy=multi-user.target

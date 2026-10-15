@@ -1,0 +1,16 @@
+#!/bin/bash
+# One LAN for USB and Wi-Fi clients: br-lan (192.168.77.1/24) with usb0 (ECM gadget, bound in the initramfs)
+# and wlan0 (added by hostapd via bridge=br-lan). A single dnsmasq serves DHCP/DNS on the bridge.
+set -euo pipefail
+LAN_IP=${MU300_LAN_IP:-192.168.77.1}
+ip link show br-lan >/dev/null 2>&1 || ip link add br-lan type bridge
+ip link set br-lan type bridge stp_state 0 forward_delay 0
+for n in $(seq 1 30); do ip link show usb0 >/dev/null 2>&1 && break; sleep 1; done
+# move the address from usb0 (older setups) to the bridge
+ip addr flush dev usb0 2>/dev/null || true
+ip link set usb0 master br-lan
+ip link set usb0 up
+ip addr replace "$LAN_IP/24" dev br-lan
+ip link set br-lan up
+exec dnsmasq --keep-in-foreground --conf-file=/dev/null --interface=br-lan --bind-interfaces \
+    --dhcp-range=192.168.77.2,192.168.77.200,255.255.255.0,12h --dhcp-leasefile=/run/mu300-lan.leases

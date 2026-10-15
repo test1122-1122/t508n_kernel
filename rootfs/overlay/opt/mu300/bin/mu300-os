@@ -1,0 +1,35 @@
+#!/bin/sh
+# Choose which system on the Linux disk area boots next (Ubuntu, OpenWrt).
+#   mu300-os             show installed systems and the current choice
+#   mu300-os openwrt     boot OpenWrt from now on (reboot to apply)
+#   mu300-os ubuntu
+# OpenWrt: od/timeout come from the static busybox in /opt/mu300/busybox-bin
+export PATH="$PATH:/opt/mu300/busybox-bin"
+set -e
+if mountpoint -q /mnt/mu300-disk 2>/dev/null; then
+    DISK=/mnt/mu300-disk
+elif [ -x /lib/systemd/systemd ] && [ ! -d /ubuntu ] && [ -f /etc/os-release ] && grep -q '^ID=ubuntu' /etc/os-release; then
+    DISK=/            # first-install layout: Ubuntu lives in the filesystem root
+else
+    echo "cannot find the MU300 disk area (/mnt/mu300-disk)" >&2; exit 1
+fi
+list() {
+    for os in ubuntu openwrt; do
+        if [ -d "$DISK/$os/etc" ]; then echo "$os: installed ($DISK/$os)"
+        elif [ "$os" = ubuntu ] && [ "$DISK" = / ]; then echo "ubuntu: installed (/)"
+        else echo "$os: not installed"; fi
+    done
+    echo "boot-os: $(cat "$DISK/.mu300/boot-os" 2>/dev/null || echo 'ubuntu (default)')"
+}
+case "${1:-}" in
+    "") list ;;
+    ubuntu|openwrt)
+        if [ ! -d "$DISK/$1/etc" ] && ! { [ "$1" = ubuntu ] && [ -x "$DISK/lib/systemd/systemd" ]; }; then
+            echo "$1 is not installed" >&2; exit 1
+        fi
+        mkdir -p "$DISK/.mu300"
+        echo "$1" > "$DISK/.mu300/boot-os.tmp" && mv "$DISK/.mu300/boot-os.tmp" "$DISK/.mu300/boot-os"
+        sync
+        echo "next Linux boot: $1 (reboot to apply)" ;;
+    *) echo "usage: $0 [ubuntu|openwrt]" >&2; exit 2 ;;
+esac

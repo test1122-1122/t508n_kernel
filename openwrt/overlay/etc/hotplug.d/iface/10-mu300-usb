@@ -1,0 +1,20 @@
+# MU300: the ECM gadget was bound in the initramfs; macOS keeps the link inactive after netifd reconfigures usb0
+# (at boot and on every network restart). Re-enumerate the gadget whenever the LAN comes up, at most every 20 s,
+# so the host starts DHCP on a fresh link.
+[ "$ACTION" = ifup ] && [ "$INTERFACE" = lan ] || exit 0
+stamp=/tmp/mu300-usb-rebound
+now=$(cut -d. -f1 /proc/uptime)
+[ -e $stamp ] && [ $((now - $(cat $stamp))) -lt 20 ] && exit 0
+echo "$now" > $stamp
+C=/sys/kernel/config
+grep -q " $C configfs" /proc/mounts || mount -t configfs configfs $C 2>/dev/null
+g=$C/usb_gadget/linux
+[ -e $g/UDC ] || exit 0
+udc=$(cat $g/UDC)
+[ -n "$udc" ] || udc=$(ls /sys/class/udc | head -1)
+(
+	sleep 2
+	echo "" > $g/UDC 2>/dev/null
+	sleep 1
+	echo "$udc" > $g/UDC && logger -t mu300 "usb gadget re-enumerated on $udc"
+) &
