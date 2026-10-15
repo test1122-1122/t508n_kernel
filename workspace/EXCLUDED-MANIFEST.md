@@ -88,3 +88,35 @@ import/mu300-linux  <- /home/test/t508n/v50/src/mu300-linux-snapshots/mu300-linu
 - any other `*.pem` / `*.key` / SSH private keys
 - vendor firmware and stock boot/U-Boot/trustos images
 - local PATs and git remote credentials
+
+
+## Actual import branches
+
+The following refs exist on the GitHub repository:
+
+```text
+refs/heads/import/research-VN300E-UMS9620-root
+refs/heads/import/research-bsp-device-qogirn6pro
+refs/heads/import/research-bsp-module-wcn-jing
+refs/heads/import/research-sprd-kernel-modules-audio
+refs/heads/import/research-sprd-kernel-modules-common-camera
+refs/heads/import/research-sprd-kernel-modules-display
+refs/heads/import/research-sprd-kernel-modules-touchscreen-novatek-nt36xxx
+refs/heads/import/research-sprd-kernel-modules-touchscreen-synaptics-td4320-spi
+refs/heads/import/research-sprd-kernel-modules-video
+refs/heads/import/research-uwe5622-5ghz-fix
+refs/heads/import/research-vendor-sprd-modules-audio
+refs/heads/import/research-vendor-sprd-modules-sensors
+refs/heads/import/research-zte-f50-ufi-openwrt-guide
+refs/heads/import/t508-mainline-ref-mu300-linux
+refs/heads/import/t508-src-fih-OT5-device-tree
+refs/heads/import/t508-src-lk-upstream-ref
+refs/heads/import/t508-src-twrp-OT5-device-tree
+refs/heads/import/t508-work-refs-vendor-sprd-modules-gps-jing
+refs/heads/import/t508-work-work-bak-local
+refs/heads/import/v50-src-mu300-linux-snapshots-mu300-linux
+refs/heads/main
+```
+
+Shallow original repositories were imported as single-commit snapshots.
+Large repositories and files above GitHub limits were excluded.
