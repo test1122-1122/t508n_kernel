@@ -1,0 +1,13 @@
+[    1.106340] mmc0: Host Software Queue enabled
+[    1.110660] mmc0: new HS400 Enhanced strobe MMC card at address 0001
+[    1.117997] mmcblk0: mmc0:0001 A3A551 28.9 GiB
+[    1.128402]  mmcblk0: p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 p12 p13 p14 p15 p16 p17 p18 p19 p20 p21 p22 p23 p24 p25 p26 p27 p28 p29 p30 p31 p32 p33 p34 p35 p36 p37 p38 p39 p40 p41 p42 p43 p44 p45 p46 p47 p48 p49 p50 p51 p52 p53 p54 p55 p56 p57 p58 p59 p60 p61 p62 p63 p64 p65 p66 p67 p68 p69 p70 p71 p72 p73 p74 p75
+[    1.162251] mmcblk0boot0: mmc0:0001 A3A551 4.00 MiB
+[    1.168174] mmcblk0boot1: mmc0:0001 A3A551 4.00 MiB
+[    1.173734] mmcblk0rpmb: mmc0:0001 A3A551 16.0 MiB, chardev (242:0)
+[    1.257618] EXT4-fs (mmcblk0p75): recovery complete
+[    1.262638] EXT4-fs (mmcblk0p75): mounted filesystem 0f60fea0-26ca-450b-b2d1-80ea0db47e99 r/w with ordered data mode. Quota mode: disabled.
+[    1.285403] MAINLINE_BOOT_PERSIST_OK
+[    1.293605] MAINLINE_BOOT_FASTBOOT_BCB
+[    3.437642] kvm: exiting hardware virtualization
+[    3.442789] reboot: Restarting system

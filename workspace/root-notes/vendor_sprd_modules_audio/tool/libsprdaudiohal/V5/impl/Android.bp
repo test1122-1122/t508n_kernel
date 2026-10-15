@@ -1,0 +1,111 @@
+cc_defaults {
+    name: "libsprdaudiohal_defaultv5",
+    owner: "sprd",
+    vendor: true,
+    srcs: [
+        "DeviceHalLocal.cpp",
+        "DevicesFactoryHalHybrid.cpp",
+        "DevicesFactoryHalLocal.cpp",
+        "StreamHalLocal.cpp",
+        "ConversionHelperHidl.cpp",
+        "DeviceHalHidl.cpp",
+        "DevicesFactoryHalHidl.cpp",
+        "EffectBufferHalHidl.cpp",
+        "EffectHalHidl.cpp",
+        "EffectsFactoryHalHidl.cpp",
+        "StreamHalHidl.cpp",
+    ],
+
+    export_include_dirs: ["include"],
+
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+    ],
+    shared_libs: [
+        "android.hardware.audio.common-util",
+        "android.hidl.allocator@1.0",
+        "android.hidl.memory@1.0",
+        "libsprdaudiohal_deathhandlerv5",
+        "libaudioutils",
+        "libbase",
+        "libbinder",
+        "libcutils",
+        "libfmq",
+        "libhardware",
+        "libhidlbase",
+        "libhidlmemory",
+        "libhidltransport",
+        "libhwbinder",
+        "liblog",
+        "libmedia_helper",
+        "libutils",
+    ],
+    header_libs: [
+        "android.hardware.audio.common.util@all-versions",
+        "libsprdaudiohal_headersv5"
+    ],
+
+    include_dirs: [
+        "frameworks/av/include",
+        "frameworks/native/include",
+        "system/media/audio/include",
+        "frameworks/av/media/utils/include",
+    ],
+
+    export_shared_lib_headers: [
+        "libfmq",
+    ],
+}
+
+cc_library_shared {
+    name: "libsprdaudiohalv5@4.0",
+    owner: "sprd",
+    vendor: true,
+    defaults: ["libsprdaudiohal_defaultv5"],
+    shared_libs: [
+        "android.hardware.audio.common@4.0",
+        "android.hardware.audio.common@4.0-util",
+        "android.hardware.audio.effect@4.0",
+        "android.hardware.audio@4.0",
+    ],
+
+    include_dirs: [
+        "frameworks/av/include",
+        "frameworks/native/include",
+        "system/media/audio/include",
+    ],
+
+    cflags: [
+        "-DMAJOR_VERSION=4",
+        "-DMINOR_VERSION=0",
+        "-include common/all-versions/VersionMacro.h",
+    ]    
+}
+
+cc_library_shared {
+    name: "libsprdaudiohalv5@5.0",
+    owner: "sprd",
+    vendor: true,
+    defaults: ["libsprdaudiohal_defaultv5"],
+
+    include_dirs: [
+        "frameworks/av/include",
+        "frameworks/native/include",
+        "system/media/audio/include",
+        "frameworks/av/media/utils/include",
+    ],
+
+    shared_libs: [
+        "android.hardware.audio.common@5.0",
+        "android.hardware.audio.common@5.0-util",
+        "android.hardware.audio.effect@5.0",
+        "android.hardware.audio@5.0",
+    ],
+    cflags: [
+        "-DMAJOR_VERSION=5",
+        "-DMINOR_VERSION=0",
+        "-include common/all-versions/VersionMacro.h",
+    ]
+}

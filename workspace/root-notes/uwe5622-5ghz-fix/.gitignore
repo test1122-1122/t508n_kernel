@@ -1,0 +1,3 @@
+# prebuilt modules ship as release assets, not in the tree
+*.ko
+*.ko.xz

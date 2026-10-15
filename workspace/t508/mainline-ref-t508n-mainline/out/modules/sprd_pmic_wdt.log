@@ -1,0 +1,9 @@
+make: Entering directory '/home/test/t508n/t508/mainline-ref/src/out-6.18.55'
+make[1]: Entering directory '/home/test/t508n/t508/mainline-ref/t508n-mainline/modbuild/sprd_pmic_wdt'
+  CC [M]  sprd_pmic_wdt.o
+  MODPOST Module.symvers
+  CC [M]  sprd_pmic_wdt.mod.o
+  CC [M]  .module-common.o
+  LD [M]  sprd_pmic_wdt.ko
+make[1]: Leaving directory '/home/test/t508n/t508/mainline-ref/t508n-mainline/modbuild/sprd_pmic_wdt'
+make: Leaving directory '/home/test/t508n/t508/mainline-ref/src/out-6.18.55'

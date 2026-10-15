@@ -1,0 +1,164 @@
+#!/bin/sh
+# SMS on the MU300, straight from the modem - no Android, no RIL.
+#
+#   sms list                       every message, long ones joined back together
+#   sms read INDEX                 one message in full
+#   sms send NUMBER TEXT...        send one (Turkish and emoji included; it picks the encoding)
+#   sms delete INDEX | read | all  remove messages from the SIM
+#   sms watch [COMMAND]            wait for new messages, run COMMAND for each
+#
+# Everything goes through mu300-atd, so it queues behind whatever else is talking to the modem and never opens
+# the channel itself (see that script for why that matters).
+#
+# PDU mode, not text mode. Text mode is easier to read but this modem mangles the sender whenever it is a name
+# rather than a number - "144414+4140224P444" where the real sender is "ADANA BLD" - and it cannot say that two
+# messages are halves of one. The PDU carries both correctly; /opt/mu300/lib/sms-pdu.awk decodes it.
+set -u
+export PATH="$PATH:/opt/mu300/bin:/opt/mu300/busybox-bin:/usr/sbin:/sbin"
+
+AWK=${MU300_SMS_AWK:-/opt/mu300/lib/sms-pdu.awk}
+STATE=${MU300_SMS_STATE:-/etc/mu300/sms}
+CR=$(printf '\r')
+
+[ -f "$AWK" ] || { echo "sms: $AWK is missing" >&2; exit 1; }
+
+at() { mu300-at -t "${2:-8}" "$1" 2>/dev/null; }
+
+# The modem keeps messages on the SIM ("SM") or in its own memory ("ME"). Pick whichever holds anything, and
+# remember that AT+CPMS answers differently depending on whether it is being asked or told.
+store=
+pick_store() {
+    [ -n "$store" ] && return 0
+    for s in SM ME; do
+        out=$(at "AT+CPMS=\"$s\",\"$s\",\"$s\"" 10)
+        case $out in *ERROR*|"") continue ;; esac
+        used=$(echo "$out" | sed -n 's/^+CPMS: *\([0-9]*\),.*/\1/p' | head -1)
+        store=$s
+        [ "${used:-0}" != 0 ] && return 0     # this one has messages; stop here
+    done
+    [ -n "$store" ] || { echo "sms: the modem accepted neither SM nor ME storage" >&2; return 1; }
+    return 0
+}
+
+pdu_mode() { at 'AT+CMGF=0' 5 >/dev/null; }
+
+# Fetch every message as "index<TAB>pdu". AT+CMGL=4 is "all" in PDU mode; the PDU follows its header line.
+fetch_all() {
+    at 'AT+CMGL=4' 30 | awk '
+        /^\+CMGL:/ { idx = $0; sub(/^\+CMGL: */, "", idx); sub(/,.*/, "", idx); next }
+        /^[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]+$/ { if (idx != "") { print idx "\t" $0; idx = "" } }
+    '
+}
+
+decode() { awk -v mode=decode -F'\t' -f "$AWK"; }
+
+# Join the parts of a concatenated message. Parts share a reference number; they arrive in any order and may be
+# stored under indices that are not adjacent, so sort on reference and part before gluing the text together.
+reassemble() {
+    awk -F'\t' '
+        { idx[NR] = $1; snd[NR] = $2; ts[NR] = $3; ref[NR] = $4; tot[NR] = $5; part[NR] = $6; txt[NR] = $7; n = NR }
+        END {
+            for (i = 1; i <= n; i++) {
+                if (ref[i] == "") { key = "single:" idx[i] } else { key = "multi:" snd[i] ":" ref[i] }
+                if (!(key in seen)) { seen[key] = 1; order[++k] = key; first[key] = i; idxs[key] = idx[i] }
+                else idxs[key] = idxs[key] "," idx[i]
+                body[key, part[i] + 0] = txt[i]
+                if (tot[i] + 0 > parts[key]) parts[key] = tot[i] + 0
+            }
+            for (j = 1; j <= k; j++) {
+                key = order[j]; i = first[key]; t = ""
+                for (p = 1; p <= parts[key]; p++) t = t ((key, p) in body ? body[key, p] : "[missing part " p "]")
+                printf "%s\t%s\t%s\t%s\t%s\n", idxs[key], snd[i], ts[i], parts[key], t
+            }
+        }'
+}
+
+show() {   # indices, sender, timestamp, parts, text
+    awk -F'\t' '{
+        printf "\033[1m#%s\033[0m  from \033[36m%s\033[0m  %s%s\n", $1, $2, $3, ($4 > 1 ? "  (" $4 " parts)" : "")
+        print "    " $5
+        print ""
+    }'
+}
+
+cmd=${1:-list}
+[ $# -gt 0 ] && shift
+
+case $cmd in
+list)
+    pick_store || exit 1
+    pdu_mode
+    all=$(fetch_all)
+    [ -n "$all" ] || { echo "no messages in $store storage"; exit 0; }
+    printf '%s\n' "$all" | decode | reassemble | show
+    ;;
+
+read)
+    idx=${1:-}
+    [ -n "$idx" ] || { echo "usage: sms read INDEX" >&2; exit 2; }
+    pick_store || exit 1
+    pdu_mode
+    # read the whole store, so the other parts of a long message come too
+    printf '%s\n' "$(fetch_all)" | decode | reassemble |
+        awk -F'\t' -v want="$idx" '{ split($1, a, ","); for (i in a) if (a[i] == want) print }' | show
+    ;;
+
+send)
+    num=${1:-}
+    [ $# -gt 0 ] && shift
+    text=$*
+    [ -n "$num" ] && [ -n "$text" ] || { echo "usage: sms send NUMBER TEXT..." >&2; exit 2; }
+    pdu_mode
+    out=$(awk -v mode=encode -v number="$num" -v text="$text" -f "$AWK" </dev/null)
+    len=${out%% *}; pdu=${out#* }
+    [ -n "$len" ] && [ -n "$pdu" ] || { echo "sms: could not build the message" >&2; exit 1; }
+    # AT+CMGS in PDU mode is two steps: the length, then the PDU followed by Ctrl-Z. The modem answers ">"
+    # in between, and mu300-atd hands back whatever it collected, so send the body as its own command.
+    at "AT+CMGS=$len" 10 >/dev/null
+    reply=$(at "$pdu$(printf '\032')" 60)
+    case $reply in
+        *+CMGS:*) echo "sent (reference $(echo "$reply" | sed -n 's/^+CMGS: *\([0-9]*\).*/\1/p' | head -1))" ;;
+        *ERROR*)  echo "sms: the modem refused it: $(echo "$reply" | tr '\n' ' ')" >&2; exit 1 ;;
+        *)        echo "sms: no confirmation from the modem: $(echo "$reply" | tr '\n' ' ')" >&2; exit 1 ;;
+    esac
+    ;;
+
+delete)
+    what=${1:-}
+    [ -n "$what" ] || { echo "usage: sms delete INDEX | read | all" >&2; exit 2; }
+    pick_store || exit 1
+    case $what in
+        all)  at 'AT+CMGD=1,4' 30 >/dev/null; echo "deleted every message in $store" ;;
+        read) at 'AT+CMGD=1,1' 30 >/dev/null; echo "deleted the messages already read in $store" ;;
+        *)    at "AT+CMGD=$what" 20 >/dev/null; echo "deleted #$what" ;;
+    esac
+    ;;
+
+watch)
+    hook=${1:-}
+    mkdir -p "$STATE"
+    seen=$STATE/seen
+    [ -f "$seen" ] || : > "$seen"
+    pick_store || exit 1
+    pdu_mode
+    # Asking the modem how many messages it holds is more dependable here than waiting for a +CMTI URC: the
+    # daemon owns the channel and throws away unsolicited lines between commands, and a message that arrives
+    # while the modem is busy would be missed entirely. Polling cannot miss one.
+    echo "watching $store for new messages${hook:+, running: $hook}" >&2
+    while :; do
+        fetch_all | decode | reassemble | while IFS="$(printf '\t')" read -r idxs sender ts parts text; do
+            key=$(printf '%s|%s|%s' "$sender" "$ts" "$idxs")
+            grep -qxF "$key" "$seen" 2>/dev/null && continue
+            printf '%s\n' "$key" >> "$seen"
+            printf '\033[1mnew message\033[0m from \033[36m%s\033[0m  %s\n    %s\n' "$sender" "$ts" "$text"
+            [ -n "$hook" ] && SMS_FROM=$sender SMS_DATE=$ts SMS_TEXT=$text SMS_INDEX=$idxs \
+                sh -c "$hook" </dev/null >/dev/null 2>&1 &
+        done
+        sleep "${MU300_SMS_POLL:-20}"
+    done
+    ;;
+
+*)
+    sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'
+    exit 2 ;;
+esac

@@ -1,0 +1,464 @@
+[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x412fd050]
+[    0.000000] Linux version 6.18.55 (test@DESKTOP-33FK6QR) (aarch64-none-linux-gnu-gcc (Arm GNU Toolchain 13.2.rel1 (Build arm-13.7)) 13.2.1 20231009, GNU ld (Arm GNU Toolchain 13.2.rel1 (Build arm-13.7)) 2.41.0.20231009) #4 SMP Thu Oct  8 12:24:53 CST 2026
+[    0.000000] Machine model: Spreadtrum UMS9620 SoC
+[    0.000000] earlycon: sprd_serial0 at MMIO 0x0000000020210000 (options '115200n8')
+[    0.000000] printk: legacy bootconsole [sprd_serial0] enabled
+[    0.000000] printk: debug: ignoring loglevel setting.
+[    0.000000] OF: reserved mem: Reserved memory: skipping logobuffer@b0000000 (reserved_mem_skip)
+[    0.000000] OF: reserved mem: Reserved memory: skipping sysdump-uboot@b5000000 (reserved_mem_skip)
+[    0.000000] OF: reserved mem: 0x0000000080000000..0x0000000080000fff (4 KiB) map non-reusable ddrbist-mem@80000000
+[    0.000000] OF: reserved mem: 0x0000000080001000..0x0000000080001fff (4 KiB) map non-reusable sysdumpinfo-mem@80001000
+[    0.000000] OF: reserved mem: 0x0000000087800000..0x0000000087ffffff (8192 KiB) map non-reusable sipc-mem@87800000
+[    0.000000] OF: reserved mem: 0x0000000088000000..0x00000000a4ffffff (475136 KiB) map non-reusable cp-modem@88000000
+[    0.000000] OF: reserved mem: 0x00000000ae600000..0x00000000ae8fffff (3072 KiB) map non-reusable ch_ddr@ae600000
+[    0.000000] OF: reserved mem: 0x00000000af700000..0x00000000af9fffff (3072 KiB) map non-reusable audio-mem@af700000
+[    0.000000] OF: reserved mem: 0x00000000afa00000..0x00000000afffffff (6144 KiB) map non-reusable audiodsp-mem@afa00000
+[    0.000000] OF: reserved mem: 0x00000000bbe80000..0x00000000bbefffff (512 KiB) map non-reusable uboot_log-mem@bbe80000
+[    0.000000] OF: reserved mem: 0x00000000bd000000..0x00000000bd03ffff (256 KiB) map non-reusable sml-mem@bd000000
+[    0.000000] OF: reserved mem: 0x00000000bd060000..0x00000000beffffff (32384 KiB) map non-reusable tos-mem@bd020000
+[    0.000000] OF: reserved mem: 0x00000000c3000000..0x00000000c30fffff (1024 KiB) map non-reusable sh-mem@c3000000
+[    0.000000] OF: reserved mem: node cma_share@f00000000 compatible matching fail
+[    0.000000] OF: reserved mem: 0x00000000fff10000..0x00000000fff6ffff (384 KiB) map non-reusable dptx_hdcp@fff10000
+[    0.000000] OF: reserved mem: 0x00000000fff70000..0x00000000fff7ffff (64 KiB) nomap non-reusable rebootescrow@fff70000
+[    0.000000] OF: reserved mem: 0x00000000fff80000..0x00000000fffbffff (256 KiB) map non-reusable ramoops@fff80000
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000080000000-0x00000000ffffffff]
+[    0.000000]   DMA32    empty
+[    0.000000]   Normal   [mem 0x0000000100000000-0x000000013fffefff]
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000080000000-0x00000000fff6ffff]
+[    0.000000]   node   0: [mem 0x00000000fff70000-0x00000000fff7ffff]
+[    0.000000]   node   0: [mem 0x00000000fff80000-0x000000013fffefff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000080000000-0x000000013fffefff]
+[    0.000000] On node 0, zone Normal: 1 pages in unavailable ranges
+[    0.000000] psci: probing for conduit method from DT.
+[    0.000000] psci: PSCIv1.0 detected in firmware.
+[    0.000000] psci: Using standard PSCI v0.2 function IDs
+[    0.000000] psci: MIGRATE_INFO_TYPE not supported.
+[    0.000000] psci: SMC Calling Convention v1.0
+[    0.000000] percpu: Embedded 23 pages/cpu s55000 r8192 d31016 u94208
+[    0.000000] pcpu-alloc: s55000 r8192 d31016 u94208 alloc=23*4096
+[    0.000000] pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 [0] 4 [0] 5 [0] 6 [0] 7 
+[    0.000000] Detected VIPT I-cache on CPU0
+[    0.000000] CPU features: detected: GICv3 CPU interface
+[    0.000000] CPU features: detected: Virtualization Host Extensions
+[    0.000000] alternatives: applying boot alternatives
+[    0.000000] Kernel command line: earlycon=sprd_serial,0x20210000,115200n8 console=ttyS1,115200n8 loglevel=7 ignore_loglevel log_buf_len=4M softlockup_panic=1 hardlockup_panic=1 printk.devkmsg=on rdinit=/init panic=5 clk_ignore_unused pd_ignore_unused regulator_ignore_unused fw_devlink=permissive
+[    0.000000] Unknown kernel command line parameters "hardlockup_panic=1", will be passed to user space.
+[    0.000000] printk: log buffer data + meta data: 4194304 + 14680064 = 18874368 bytes
+[    0.000000] printk: early log buf free: 126992(96%)
+[    0.000000] Dentry cache hash table entries: 524288 (order: 10, 4194304 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 262144 (order: 9, 2097152 bytes, linear)
+[    0.000000] software IO TLB: area num 8.
+[    0.000000] software IO TLB: mapped [mem 0x00000000fbf10000-0x00000000fff10000] (64MB)
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 786431
+[    0.000000] mem auto-init: stack:all(zero), heap alloc:off, heap free:off
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=8, Nodes=1
+[    0.000000] rcu: Hierarchical RCU implementation.
+[    0.000000] rcu: 	RCU event tracing is enabled.
+[    0.000000] 	Tracing variant of Tasks RCU enabled.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
+[    0.000000] RCU Tasks Trace: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=8.
+[    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+[    0.000000] GICv3: GIC: Using split EOI/Deactivate mode
+[    0.000000] GICv3: 256 SPIs implemented
+[    0.000000] GICv3: 0 Extended SPIs implemented
+[    0.000000] Root IRQ handler: gic_handle_irq
+[    0.000000] GICv3: GICv3 features: 16 PPIs
+[    0.000000] GICv3: GICD_CTLR.DS=0, SCR_EL3.FIQ=1
+[    0.000000] GICv3: CPU0: found redistributor 0 region 0:0x0000000012040000
+[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.000000] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
+[    0.000000] clocksource: sprd_suspend_timer: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 58327039986419 ns
+[    0.000000] arch_timer: cp15 timer running at 26.00MHz (phys).
+[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x5ff13d5a9, max_idle_ns: 440795202370 ns
+[    0.000000] sched_clock: 56 bits at 26MHz, resolution 38ns, wraps every 4398046511088ns
+[    0.008326] Console: colour dummy device 80x25
+[    0.012699] serial port 1 not yet initialized
+[    0.017072] Calibrating delay loop (skipped), value calculated using timer frequency.. 52.00 BogoMIPS (lpj=104000)
+[    0.027341] pid_max: default: 32768 minimum: 301
+[    0.032020] LSM: initializing lsm=capability
+[    0.036293] Mount-cache hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.043732] Mountpoint-cache hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.052857] rcu: Hierarchical SRCU implementation.
+[    0.057492] rcu: 	Max phase no-delay instances is 1000.
+[    0.062817] Timer migration: 1 hierarchy levels; 8 children per group; 1 crossnode level
+[    0.071034] smp: Bringing up secondary CPUs ...
+[    0.075881] Detected VIPT I-cache on CPU1
+[    0.075922] GICv3: CPU1: found redistributor 100 region 0:0x0000000012060000
+[    0.075954] CPU1: Booted secondary processor 0x0000000100 [0x412fd050]
+[    0.076392] Detected VIPT I-cache on CPU2
+[    0.076429] GICv3: CPU2: found redistributor 200 region 0:0x0000000012080000
+[    0.076459] CPU2: Booted secondary processor 0x0000000200 [0x412fd050]
+[    0.076956] Detected VIPT I-cache on CPU3
+[    0.076988] GICv3: CPU3: found redistributor 300 region 0:0x00000000120a0000
+[    0.077019] CPU3: Booted secondary processor 0x0000000300 [0x412fd050]
+[    0.077623] CPU features: detected: Spectre-v4
+[    0.077626] CPU features: detected: Spectre-BHB
+[    0.077628] Detected PIPT I-cache on CPU4
+[    0.077649] GICv3: CPU4: found redistributor 400 region 0:0x00000000120c0000
+[    0.077675] CPU4: Booted secondary processor 0x0000000400 [0x414fd0b0]
+[    0.078125] Detected PIPT I-cache on CPU5
+[    0.078149] GICv3: CPU5: found redistributor 500 region 0:0x00000000120e0000
+[    0.078174] CPU5: Booted secondary processor 0x0000000500 [0x414fd0b0]
+[    0.078616] Detected PIPT I-cache on CPU6
+[    0.078640] GICv3: CPU6: found redistributor 600 region 0:0x0000000012100000
+[    0.078665] CPU6: Booted secondary processor 0x0000000600 [0x414fd0b0]
+[    0.079210] Detected PIPT I-cache on CPU7
+[    0.079234] GICv3: CPU7: found redistributor 700 region 0:0x0000000012120000
+[    0.079260] CPU7: Booted secondary processor 0x0000000700 [0x414fd0b0]
+[    0.079301] smp: Brought up 1 node, 8 CPUs
+[    0.215552] SMP: Total of 8 processors activated.
+[    0.220172] CPU: All CPU(s) started at EL2
+[    0.224355] CPU features: detected: 32-bit EL0 Support
+[    0.229497] CPU features: detected: Data cache clean to the PoU not required for I/D coherence
+[    0.238039] CPU features: detected: CRC32 instructions
+[    0.243271] CPU features: detected: RCpc load-acquire (LDAPR)
+[    0.248936] CPU features: detected: Speculative Store Bypassing Safe (SSBS)
+[    0.256033] alternatives: applying system-wide alternatives
+[    0.262463] Memory: 2419364K/3145724K available (10880K kernel code, 1042K rwdata, 3096K rodata, 2112K init, 320K bss, 720264K reserved, 0K cma-reserved)
+[    0.276333] devtmpfs: initialized
+[    0.283972] posixtimers hash table entries: 4096 (order: 4, 65536 bytes, linear)
+[    0.291249] futex hash table entries: 2048 (131072 bytes on 1 NUMA nodes, total 128 KiB, linear).
+[    0.300121] 28336 pages in range for non-PLT usage
+[    0.300122] 519856 pages in range for PLT usage
+[    0.304913] pinctrl core: initialized pinctrl subsystem
+[    0.315008] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.320989] DMA: preallocated 512 KiB GFP_KERNEL pool for atomic allocations
+[    0.327902] DMA: preallocated 512 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    0.335654] DMA: preallocated 512 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    0.343732] thermal_sys: Registered thermal governor 'step_wise'
+[    0.343767] cpuidle: using governor menu
+[    0.353664] ASID allocator initialised with 65536 entries
+[    0.359481] pstore: Using crash dump compression: deflate
+[    0.364807] printk: legacy console [ramoops-1] enabled
+[    0.370078] pstore: Registered ramoops as persistent store backend
+[    0.376100] ramoops: using 0x40000@0xfff80000, ecc: 0
+[    0.384656] /soc/dpuvsp/dpu@31000000: Fixed dependency cycle(s) with /soc/dpuvsp/dsi@31300000
+[    0.393044] /soc/dpuvsp/dsi@31300000: Fixed dependency cycle(s) with /soc/dpuvsp/dpu@31000000
+[    0.401662] /soc/dpuvsp/dsi@31300000: Fixed dependency cycle(s) with /soc/dpuvsp/dphy
+[    0.409515] /soc/dpuvsp/dphy: Fixed dependency cycle(s) with /soc/dpuvsp/dsi@31300000
+[    0.417401] /soc/ipa-apb/dpu1@31880000: Fixed dependency cycle(s) with /soc/ipa-apb/dptx@31890000
+[    0.426159] /soc/ipa-apb/dptx@31890000: Fixed dependency cycle(s) with /soc/ipa-apb/dpu1@31880000
+[    0.435157] /soc/funnel@78002000: Fixed dependency cycle(s) with /soc/funnel@7a004000
+[    0.442975] /soc/funnel@78002000: Fixed dependency cycle(s) with /soc/etb@78003000
+[    0.450480] /soc/etb@78003000: Fixed dependency cycle(s) with /soc/funnel@78002000
+[    0.458142] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etm@7b540000
+[    0.465638] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etm@7b440000
+[    0.473307] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etm@7b140000
+[    0.480890] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etm@7b040000
+[    0.488390] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etf@7a002000
+[    0.496060] /soc/etf@7a002000: Fixed dependency cycle(s) with /soc/funnel@7a001000
+[    0.503555] /soc/etf@7a002000: Fixed dependency cycle(s) with /soc/funnel@7a004000
+[    0.511138] /soc/etf@7a003000: Fixed dependency cycle(s) with /soc/funnel@7a005000
+[    0.518808] /soc/etf@7a003000: Fixed dependency cycle(s) with /soc/funnel@7a004000
+[    0.526390] /soc/funnel@7a004000: Fixed dependency cycle(s) with /soc/etf@7a003000
+[    0.533886] /soc/funnel@7a004000: Fixed dependency cycle(s) with /soc/etf@7a002000
+[    0.541552] /soc/funnel@7a004000: Fixed dependency cycle(s) with /soc/funnel@78002000
+[    0.549311] /soc/funnel@7a005000: Fixed dependency cycle(s) with /soc/etm@7b740000
+[    0.556892] /soc/funnel@7a005000: Fixed dependency cycle(s) with /soc/etm@7b640000
+[    0.564562] /soc/funnel@7a005000: Fixed dependency cycle(s) with /soc/etm@7b340000
+[    0.572144] /soc/funnel@7a005000: Fixed dependency cycle(s) with /soc/etm@7b240000
+[    0.579644] /soc/funnel@7a005000: Fixed dependency cycle(s) with /soc/etf@7a003000
+[    0.587234] /soc/etm@7b040000: Fixed dependency cycle(s) with /soc/funnel@7a001000
+[    0.594899] /soc/etm@7b140000: Fixed dependency cycle(s) with /soc/funnel@7a001000
+[    0.602395] /soc/etm@7b240000: Fixed dependency cycle(s) with /soc/funnel@7a005000
+[    0.610065] /soc/etm@7b340000: Fixed dependency cycle(s) with /soc/funnel@7a005000
+[    0.617561] /soc/etm@7b440000: Fixed dependency cycle(s) with /soc/funnel@7a001000
+[    0.625230] /soc/etm@7b540000: Fixed dependency cycle(s) with /soc/funnel@7a001000
+[    0.632813] /soc/etm@7b640000: Fixed dependency cycle(s) with /soc/funnel@7a005000
+[    0.640396] /soc/etm@7b740000: Fixed dependency cycle(s) with /soc/funnel@7a005000
+[    0.648856] /soc/dpuvsp/dpu@31000000: Fixed dependency cycle(s) with /soc/dpuvsp/dsi@31300000
+[    0.657328] /soc/dpuvsp/dsi@31300000: Fixed dependency cycle(s) with /soc/dpuvsp/dpu@31000000
+[    0.665860] /soc/dpuvsp/dsi@31300000: Fixed dependency cycle(s) with /soc/dpuvsp/dphy
+[    0.673627] /soc/dpuvsp/dphy: Fixed dependency cycle(s) with /soc/dpuvsp/dsi@31300000
+[    0.681571] /soc/dpuvsp/dpu@31000000: Fixed dependency cycle(s) with /soc/dpuvsp/dsi@31300000
+[    0.690111] /soc/dpuvsp/dpu@31000000: Fixed dependency cycle(s) with /soc/dpuvsp/dsi@31300000
+[    0.698644] /soc/dpuvsp/dsi@31300000: Fixed dependency cycle(s) with /soc/dpuvsp/dpu@31000000
+[    0.707181] /soc/dpuvsp/dsi@31300000: Fixed dependency cycle(s) with /soc/dpuvsp/dphy
+[    0.715052] /soc/dpuvsp/dsi@31300000: Fixed dependency cycle(s) with /soc/dpuvsp/dphy
+[    0.723523] /soc/ipa-apb/dpu1@31880000: Fixed dependency cycle(s) with /soc/ipa-apb/dptx@31890000
+[    0.732339] /soc/ipa-apb/dptx@31890000: Fixed dependency cycle(s) with /soc/ipa-apb/dpu1@31880000
+[    0.741283] /soc/ipa-apb/dpu1@31880000: Fixed dependency cycle(s) with /soc/ipa-apb/dptx@31890000
+[    0.750067] /soc/ipa-apb/dpu1@31880000: Fixed dependency cycle(s) with /soc/ipa-apb/dptx@31890000
+[    0.758929] /soc/ipa-apb/dptx@31890000: Fixed dependency cycle(s) with /soc/ipa-apb/dpu1@31880000
+[    0.768625] /soc/aon/pinctrl@2e0000: Fixed dependency cycle(s) with /soc/aon/pinctrl@2e0000/simclk1
+[    0.777525] /soc/aon/pinctrl@2e0000: Fixed dependency cycle(s) with /soc/aon/pinctrl@2e0000/simda1
+[    0.786588] /soc/aon/pinctrl@2e0000: Fixed dependency cycle(s) with /soc/aon/pinctrl@2e0000/simrst1
+[    0.795565] /soc/aon/pinctrl@2e0000: Fixed dependency cycle(s) with /soc/aon/pinctrl@2e0000/keyin0
+[    0.804543] /soc/aon/pinctrl@2e0000: Fixed dependency cycle(s) with /soc/aon/pinctrl@2e0000/keyin1
+[    0.813607] /soc/aon/pinctrl@2e0000: Fixed dependency cycle(s) with /soc/aon/pinctrl@2e0000/sd0_clk
+[    0.822672] /soc/aon/pinctrl@2e0000: Fixed dependency cycle(s) with /soc/aon/pinctrl@2e0000/emmc_cmd
+[    0.831824] /soc/aon/pinctrl@2e0000: Fixed dependency cycle(s) with /soc/aon/pinctrl@2e0000/emmc_d6
+[    0.840803] /soc/aon/pinctrl@2e0000: Fixed dependency cycle(s) with /soc/aon/pinctrl@2e0000/emmc_d7
+[    0.851926] /soc/funnel@78002000: Fixed dependency cycle(s) with /soc/funnel@7a004000
+[    0.859693] /soc/funnel@78002000: Fixed dependency cycle(s) with /soc/etb@78003000
+[    0.867304] /soc/funnel@78002000: Fixed dependency cycle(s) with /soc/etb@78003000
+[    0.874785] /soc/etb@78003000: Fixed dependency cycle(s) with /soc/funnel@78002000
+[    0.882403] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etm@7b540000
+[    0.890023] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etm@7b440000
+[    0.897606] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etm@7b140000
+[    0.905101] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etm@7b040000
+[    0.912688] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etf@7a002000
+[    0.920314] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etf@7a002000
+[    0.927951] /soc/etf@7a002000: Fixed dependency cycle(s) with /soc/funnel@7a001000
+[    0.935529] /soc/etf@7a002000: Fixed dependency cycle(s) with /soc/funnel@7a004000
+[    0.943154] /soc/etf@7a003000: Fixed dependency cycle(s) with /soc/funnel@7a005000
+[    0.950691] /soc/etf@7a003000: Fixed dependency cycle(s) with /soc/funnel@7a004000
+[    0.958333] /soc/etf@7a003000: Fixed dependency cycle(s) with /soc/funnel@7a004000
+[    0.965776] /soc/etf@7a002000: Fixed dependency cycle(s) with /soc/funnel@7a004000
+[    0.973446] /soc/funnel@78002000: Fixed dependency cycle(s) with /soc/funnel@7a004000
+[    0.981200] /soc/funnel@7a004000: Fixed dependency cycle(s) with /soc/etf@7a003000
+[    0.988872] /soc/funnel@7a004000: Fixed dependency cycle(s) with /soc/etf@7a002000
+[    0.996364] /soc/funnel@7a004000: Fixed dependency cycle(s) with /soc/funnel@78002000
+[    1.004264] /soc/etf@7a003000: Fixed dependency cycle(s) with /soc/funnel@7a005000
+[    1.011880] /soc/funnel@7a005000: Fixed dependency cycle(s) with /soc/etm@7b740000
+[    1.019368] /soc/funnel@7a005000: Fixed dependency cycle(s) with /soc/etm@7b640000
+[    1.026949] /soc/funnel@7a005000: Fixed dependency cycle(s) with /soc/etm@7b340000
+[    1.034619] /soc/funnel@7a005000: Fixed dependency cycle(s) with /soc/etm@7b240000
+[    1.042205] /soc/funnel@7a005000: Fixed dependency cycle(s) with /soc/etf@7a003000
+[    1.049844] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etm@7b040000
+[    1.057382] /soc/etm@7b040000: Fixed dependency cycle(s) with /soc/funnel@7a001000
+[    1.064943] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etm@7b140000
+[    1.072460] /soc/etm@7b140000: Fixed dependency cycle(s) with /soc/funnel@7a001000
+[    1.080105] /soc/funnel@7a005000: Fixed dependency cycle(s) with /soc/etm@7b240000
+[    1.087626] /soc/etm@7b240000: Fixed dependency cycle(s) with /soc/funnel@7a005000
+[    1.095276] /soc/funnel@7a005000: Fixed dependency cycle(s) with /soc/etm@7b340000
+[    1.102878] /soc/etm@7b340000: Fixed dependency cycle(s) with /soc/funnel@7a005000
+[    1.110439] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etm@7b440000
+[    1.118041] /soc/etm@7b440000: Fixed dependency cycle(s) with /soc/funnel@7a001000
+[    1.125602] /soc/funnel@7a001000: Fixed dependency cycle(s) with /soc/etm@7b540000
+[    1.133119] /soc/etm@7b540000: Fixed dependency cycle(s) with /soc/funnel@7a001000
+[    1.140853] /soc/funnel@7a005000: Fixed dependency cycle(s) with /soc/etm@7b640000
+[    1.148284] /soc/etm@7b640000: Fixed dependency cycle(s) with /soc/funnel@7a005000
+[    1.156020] /soc/funnel@7a005000: Fixed dependency cycle(s) with /soc/etm@7b740000
+[    1.163450] /soc/etm@7b740000: Fixed dependency cycle(s) with /soc/funnel@7a005000
+[    1.171968] OF: /debuglog: could not find phandle 1936749156
+[    1.179780] SCSI subsystem initialized
+[    1.183484] usbcore: registered new interface driver usbfs
+[    1.188857] usbcore: registered new interface driver hub
+[    1.194172] usbcore: registered new device driver usb
+[    1.199331] pps_core: LinuxPPS API ver. 1 registered
+[    1.204277] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    1.213346] PTP clock support registered
+[    1.217368] sprd_sip: SPRD SIP SVC PERF:v0.1 detected in firmware.
+[    1.223453] sprd_sip: SPRD SIP SVC DBG:v1.0 detected in firmware.
+[    1.229554] sprd_sip: SPRD SIP SVC NPU:v0.1 detected in firmware.
+[    1.235741] sprd_sip: SPRD SIP SVC DVFS:v0.1 detected in firmware.
+[    1.241843] sprd_sip: SPRD SIP SVC STORAGE:v1.0 detected in firmware.
+[    1.248617] Bluetooth: Core ver 2.22
+[    1.252026] NET: Registered PF_BLUETOOTH protocol family
+[    1.257342] Bluetooth: HCI device and connection manager initialized
+[    1.263704] Bluetooth: HCI socket layer initialized
+[    1.268671] Bluetooth: L2CAP socket layer initialized
+[    1.273728] Bluetooth: SCO socket layer initialized
+[    1.278697] clocksource: Switched to clocksource arch_sys_counter
+[    1.287583] NET: Registered PF_INET protocol family
+[    1.292375] IP idents hash table entries: 65536 (order: 7, 524288 bytes, linear)
+[    1.300674] tcp_listen_portaddr_hash hash table entries: 2048 (order: 3, 32768 bytes, linear)
+[    1.309062] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    1.316896] TCP established hash table entries: 32768 (order: 6, 262144 bytes, linear)
+[    1.324831] TCP bind hash table entries: 32768 (order: 8, 1048576 bytes, linear)
+[    1.332591] TCP: Hash tables configured (established 32768 bind 32768)
+[    1.338992] UDP hash table entries: 2048 (order: 5, 131072 bytes, linear)
+[    1.345820] UDP-Lite hash table entries: 2048 (order: 5, 131072 bytes, linear)
+[    1.353082] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    1.359180] Unpacking initramfs...
+[    1.360032] kvm [1]: nv: 568 coarse grained trap handlers
+[    1.367975] kvm [1]: IPA Size Limit: 40 bits
+[    1.372207] kvm [1]: GICv3: no GICV resource entry
+[    1.376974] kvm [1]: disabling GICv2 emulation
+[    1.381445] kvm [1]: GIC system register CPU interface enabled
+[    1.387180] kvm [1]: vgic interrupt IRQ9
+[    1.391135] kvm [1]: VHE mode initialized successfully
+[    1.399453] Initialise system trusted keyrings
+[    1.403878] workingset: timestamp_bits=46 max_order=20 bucket_order=0
+[    1.410382] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    1.433503] Key type asymmetric registered
+[    1.437534] Asymmetric key parser 'x509' registered
+[    1.442369] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 245)
+[    1.457304] Freeing initrd memory: 23716K
+[    1.465707] ums9620-ipa-sys-pd soc:aon:sipa-sys: IPA subsystem power domain registered
+[    1.473972] 20200000.serial: ttyS0 at MMIO 0x20200000 (irq = 17, base_baud = 1625000) is a SPX
+[    1.482533] serial port 1 not yet initialized
+[    1.487144] 20210000.serial: ttyS1 at MMIO 0x20210000 (irq = 18, base_baud = 1625000) is a SPX
+[    1.495709] printk: legacy console [ttyS1] enabled
+[    1.505142] printk: legacy bootconsole [sprd_serial0] disabled
+[    1.517118] 20220000.serial: ttyS2 at MMIO 0x20220000 (irq = 19, base_baud = 1625000) is a SPX
+[    1.525776] 20230000.serial: ttyS3 at MMIO 0x20230000 (irq = 20, base_baud = 1625000) is a SPX
+[    1.536527] loop: module loaded
+[    1.539681] zram: Added device: zram0
+[    1.543362] sprd-adi 64400000.spi: no hardware spinlock supplied
+[    1.549695] sprd-bltc 64400000.spi:pmic@0:led-controller@180: probe with driver sprd-bltc failed with error -22
+[    1.562809] wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
+[    1.570526] wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+[    1.580145] tun: Universal TUN/TAP device driver, 1.6
+[    1.585167] PPP generic driver version 2.4.2
+[    1.589399] usbcore: registered new device driver r8152-cfgselector
+[    1.595581] usbcore: registered new interface driver r8152
+[    1.601025] usbcore: registered new interface driver asix
+[    1.606390] usbcore: registered new interface driver ax88179_178a
+[    1.612449] usbcore: registered new interface driver cdc_ether
+[    1.618244] usbcore: registered new interface driver net1080
+[    1.623872] usbcore: registered new interface driver rndis_host
+[    1.629754] usbcore: registered new interface driver cdc_subset
+[    1.635640] usbcore: registered new interface driver zaurus
+[    1.641175] usbcore: registered new interface driver cdc_ncm
+[    1.646801] usbcore: registered new interface driver qmi_wwan
+[    1.652511] usbcore: registered new interface driver r8153_ecm
+[    1.658600] ums9620-ipa-sys-pd soc:aon:sipa-sys: power on
+[    1.665235] usbcore: registered new interface driver cdc_acm
+[    1.670794] cdc_acm: USB Abstract Control Model driver for USB modems and ISDN adapters
+[    1.678759] usbcore: registered new interface driver cdc_wdm
+[    1.684443] usbcore: registered new interface driver uas
+[    1.689661] usbcore: registered new interface driver usb-storage
+[    1.695649] usbcore: registered new interface driver ch341
+[    1.701081] usbserial: USB Serial support registered for ch341-uart
+[    1.707312] usbcore: registered new interface driver cp210x
+[    1.712847] usbserial: USB Serial support registered for cp210x
+[    1.718734] usbcore: registered new interface driver ftdi_sio
+[    1.724444] usbserial: USB Serial support registered for FTDI USB Serial Device
+[    1.731716] usbcore: registered new interface driver option
+[    1.737252] usbserial: USB Serial support registered for GSM modem (1-port)
+[    1.744178] usbcore: registered new interface driver pl2303
+[    1.749712] usbserial: USB Serial support registered for pl2303
+[    1.755881] sprd-rtc 64400000.spi:pmic@0:rtc@200: RTC values are invalid
+[    1.762569] sprd-rtc 64400000.spi:pmic@0:rtc@200: registered as rtc0
+[    1.768818] sprd-rtc 64400000.spi:pmic@0:rtc@200: RTC values are invalid
+[    1.775478] sprd-rtc 64400000.spi:pmic@0:rtc@200: hctosys: unable to read the hardware clock
+[    1.783906] i2c_dev: i2c /dev entries driver
+[    1.789579] sc27xx-fgu 64400000.spi:pmic@0:fgu@800: failed to get IIO channel
+[    1.797091] ump9620-wdt 64400000.spi:pmic@0:watchdog@40: LK ctrl 0xa, running with 60 s timeout
+[    1.805696] Bluetooth: HCI UART driver ver 2.3
+[    1.810091] Bluetooth: HCI UART protocol H4 registered
+[    1.815235] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_cpufreq_probe: probe sprd cpufreq v2 driver
+[    1.824597] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_cluster_props_init: cluster 0 dcdc supply[sprd,pmic-type]
+[    1.835101] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_cluster_props_init: Warning: no 'dvfs_bin' appointed
+[    1.845238] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_cluster_props_init: cluster 1 dcdc supply[sprd,pmic-type]
+[    1.855785] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_cluster_props_init: Warning: no 'dvfs_bin' appointed
+[    1.865919] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_cluster_props_init: get cluster 2 'sprd,voltage-step' value error
+[    1.877158] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_cluster_props_init: cluster 2 dcdc supply[sprd,pmic-type]
+[    1.887715] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_cluster_props_init: Warning: no 'dvfs_bin' appointed
+[    1.897876] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: update cluster 0 temp -274 dvfs table
+[    1.908514] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 614400000Hz/650000uV to opp
+[    1.918640] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 768000000Hz/650000uV to opp
+[    1.928748] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 936000000Hz/650000uV to opp
+[    1.938876] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 1105000000Hz/650000uV to opp
+[    1.949087] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 1228800000Hz/650000uV to opp
+[    1.959294] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 1404000000Hz/684375uV to opp
+[    1.969508] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 1560000000Hz/718750uV to opp
+[    1.979819] cpu cpu0: EM: created perf domain
+[    1.984177] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: update cluster 1 temp -274 dvfs table
+[    1.994774] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 614400000Hz/650000uV to opp
+[    2.004900] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 768000000Hz/650000uV to opp
+[    2.015017] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 936000000Hz/650000uV to opp
+[    2.025142] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 1105000000Hz/650000uV to opp
+[    2.035355] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 1228800000Hz/662500uV to opp
+[    2.045561] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 1378000000Hz/693750uV to opp
+[    2.055778] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 1536000000Hz/728125uV to opp
+[    2.066097] cpu cpu4: EM: created perf domain
+[    2.070477] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: update cluster 2 temp -274 dvfs table
+[    2.081123] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 614400000Hz/750000uV to opp
+[    2.091198] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 768000000Hz/750000uV to opp
+[    2.101313] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 936000000Hz/750000uV to opp
+[    2.111438] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 1105000000Hz/750000uV to opp
+[    2.121653] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 1228800000Hz/750000uV to opp
+[    2.131859] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 1378000000Hz/750000uV to opp
+[    2.142074] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_policy_table_update: add 1536000000Hz/750000uV to opp
+[    2.152382] cpu cpu7: EM: created perf domain
+[    2.157069] sprd-cpufreq-v2 soc:aon:apcpu-dvfs@950000: sprd_cpufreq_probe: register cpufreq driver success
+[    2.167946] sdhci: Secure Digital Host Controller Interface driver
+[    2.174031] sdhci: Copyright(c) Pierre Ossman
+[    2.178352] sdhci-pltfm: SDHCI platform and OF driver helper
+[    2.184824] usbcore: registered new interface driver usbhid
+[    2.190311] usbhid: USB HID core driver
+[    2.195132] sc27xx-adc 64400000.spi:pmic@0:adc@504: failed to enable ADC module
+[    2.203127] gnss: GNSS driver registered with major 241
+[    2.208723] NET: Registered PF_INET6 protocol family
+[    2.214157] Segment Routing with IPv6
+[    2.217738] In-situ OAM (IOAM) with IPv6
+[    2.218934] mmc0: SDHCI controller on 22200000.sdio [22200000.sdio] using ADMA 64-bit
+[    2.221643] sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
+[    2.235467] NET: Registered PF_PACKET protocol family
+[    2.240428] bridge: filtering via arp/ip/ip6tables is no longer available by default. Update your scripts to load br_netfilter if you need this.
+[    2.253481] Bluetooth: RFCOMM TTY layer initialized
+[    2.258267] Bluetooth: RFCOMM socket layer initialized
+[    2.263386] Bluetooth: RFCOMM ver 1.11
+[    2.267089] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+[    2.272367] Bluetooth: BNEP socket layer initialized
+[    2.277734] 8021q: 802.1Q VLAN Support v1.8
+[    2.283813] Loading compiled-in X.509 certificates
+[    2.298778] sprd-ssphy 25310000.ssphy: No separate ID extcon device
+[    2.304945] switch dp/dm to usb
+[    2.308065] sprd-ssphy 25310000.ssphy: UMS9620 USB 3.1 PHY registered
+[    2.314698] sc27xx-fgu 64400000.spi:pmic@0:fgu@800: failed to get IIO channel
+[    2.326697] sprd-thermal-r5p0 64270000.thermal: sen id = 0, cal =247,offset =63870
+[    2.334407] thermal_sys: No trip points found for thermal id=0
+[    2.342721] sprd-thermal-r5p0 64270000.thermal: sen id = 1, cal =247,offset =64370
+[    2.350310] thermal_sys: No trip points found for thermal id=1
+[    2.361126] sprd-thermal-r5p0 64280000.thermal: sen id = 0, cal =247,offset =65120
+[    2.368729] thermal_sys: No trip points found for thermal id=0
+[    2.376924] sprd-thermal-r5p0 64280000.thermal: sen id = 1, cal =247,offset =65370
+[    2.384503] thermal_sys: No trip points found for thermal id=1
+[    2.392715] sprd-thermal-r5p0 64280000.thermal: sen id = 2, cal =247,offset =65120
+[    2.400294] thermal_sys: No trip points found for thermal id=2
+[    2.408665] sprd-thermal-r5p0 64280000.thermal: sen id = 3, cal =247,offset =65120
+[    2.416302] thermal_sys: No trip points found for thermal id=3
+[    2.427039] sprd-thermal-r5p0 64290000.thermal: sen id = 0, cal =244,offset =58120
+[    2.434611] thermal_sys: No trip points found for thermal id=0
+[    2.442801] sprd-thermal-r5p0 64290000.thermal: sen id = 1, cal =244,offset =57870
+[    2.450355] thermal_sys: No trip points found for thermal id=1
+[    2.458559] sprd-thermal-r5p0 64290000.thermal: sen id = 2, cal =244,offset =58370
+[    2.466115] thermal_sys: No trip points found for thermal id=2
+[    2.474302] sprd-thermal-r5p0 64290000.thermal: sen id = 3, cal =244,offset =58120
+[    2.481854] thermal_sys: No trip points found for thermal id=3
+[    2.490028] sprd-thermal-r5p0 64290000.thermal: sen id = 4, cal =244,offset =58620
+[    2.497577] thermal_sys: No trip points found for thermal id=4
+[    2.505749] sprd-thermal-r5p0 64290000.thermal: sen id = 5, cal =244,offset =57870
+[    2.513298] thermal_sys: No trip points found for thermal id=5
+[    2.521470] sprd-thermal-r5p0 64290000.thermal: sen id = 6, cal =244,offset =58120
+[    2.529020] thermal_sys: No trip points found for thermal id=6
+[    2.530050] mmc0: Host Software Queue enabled
+[    2.539094] mmc0: new HS400 Enhanced strobe MMC card at address 0001
+[    2.540219] sprd-thermal-r5p0 642a0000.thermal: sen id = 0, cal =242,offset =52620
+[    2.546409] mmcblk0: mmc0:0001 A3A551 28.9 GiB
+[    2.553044] thermal_sys: No trip points found for thermal id=0
+[    2.562857]  mmcblk0: p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 p12 p13 p14 p15 p16 p17 p18 p19 p20 p21 p22 p23 p24 p25 p26 p27 p28 p29 p30 p31 p32 p33 p34 p35 p36 p37 p38 p39 p40 p41 p42 p43 p44 p45 p46 p47 p48 p49 p50 p51 p52 p53 p54 p55 p56 p57 p58 p59 p60 p61 p62 p63 p64 p65 p66 p67 p68 p69 p70 p71 p72 p73 p74 p75
+[    2.565586] sprd-thermal-r5p0 642a0000.thermal: sen id = 1, cal =242,offset =52370
+[    2.597397] mmcblk0boot0: mmc0:0001 A3A551 4.00 MiB
+[    2.598181] thermal_sys: No trip points found for thermal id=1
+[    2.604191] mmcblk0boot1: mmc0:0001 A3A551 4.00 MiB
+[    2.611184] sprd-thermal-r5p0 642a0000.thermal: sen id = 2, cal =242,offset =52620
+[    2.614674] mmcblk0rpmb: mmc0:0001 A3A551 16.0 MiB, chardev (242:0)
+[    2.621206] thermal_sys: No trip points found for thermal id=2
+[    2.635602] sprd-thermal-r5p0 642a0000.thermal: sen id = 3, cal =242,offset =52370
+[    2.643157] thermal_sys: No trip points found for thermal id=3
+[    2.651329] sprd-thermal-r5p0 642a0000.thermal: sen id = 4, cal =242,offset =52620
+[    2.658882] thermal_sys: No trip points found for thermal id=4
+[    2.667054] sprd-thermal-r5p0 642a0000.thermal: sen id = 5, cal =242,offset =52370
+[    2.674608] thermal_sys: No trip points found for thermal id=5
+[    2.680923] sdhci_sprd_r11 22210000.sdio: MU300: CD GPIO deferred, polling the card slot
+[    2.681230] sc27xx-fgu 64400000.spi:pmic@0:fgu@800: bat-detect is deprecated, please use battery-detect
+[    2.701622] input: gpio-keys as /devices/platform/gpio-keys/input/input0
+[    2.709141] cfg80211: Loading compiled-in X.509 certificates for regulatory database
+[    2.718041] Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[    2.722935] mmc1: SDHCI controller on 22210000.sdio [22210000.sdio] using ADMA 64-bit
+[    2.723903] Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
+[    2.738608] clk: Not disabling unused clocks
+[    2.742808] PM: genpd: Not disabling unused power domains
+[    2.748227] faux_driver regulatory: Direct firmware load for regulatory.db failed with error -2
+[    2.756829] sprd_serial 20210000.serial: request TX DMA channel failed, ret = -19
+[    2.756832] cfg80211: failed to load regulatory.db
+[    2.764268] sprd_serial 20210000.serial: request RX DMA channel failed, ret = -19
+[    2.776995] Freeing unused kernel memory: 2112K
+[    2.781460] Run /init as init process
+[    2.785058]   with arguments:
+[    2.788001]     /init
+[    2.790247]   with environment:
+[    2.793364]     HOME=/
+[    2.795703]     TERM=linux
+[    2.798381]     hardlockup_panic=1
+[    2.805987] MAINLINE_BOOT_START loglevel=7
+[    2.878327] EXT4-fs (mmcblk0p75): recovery complete
+[    2.883211] EXT4-fs (mmcblk0p75): mounted filesystem 0f60fea0-26ca-450b-b2d1-80ea0db47e99 r/w with ordered data mode. Quota mode: disabled.

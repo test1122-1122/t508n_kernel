@@ -1,0 +1,19 @@
+{
+  "image": "boot_54openwrt_hotspot_luci_rndis_auto15_hotspot_net.img",
+  "size": 67108864,
+  "sha256": "73a61f5cc410dc2050e07e5d5d8efbeb5aab844eedf5395041dc78fea4bd9c40",
+  "md5": "30ac66815779dc3a69fd8f2fe6b9dbb2",
+  "stock_source": "firmware/stock-images/boot_a.img",
+  "stock_size": 67108864,
+  "stock_avb_public_key_sha1_note": "copied from stock image; hash descriptor is stale by design",
+  "kernel_size": 49312256,
+  "kernel_md5": "ab390a4791dddf09f0e48d74e73df41e",
+  "ramdisk_cpio_size": 1210368,
+  "ramdisk_cpio_md5": "06e4ec526758825531359d59dacc74d5",
+  "lz4_legacy_size": 819571,
+  "lz4_legacy_magic": "0x184c2102",
+  "lz4_legacy_blocks": 1,
+  "signature_size": 0,
+  "original_image_size": 50143232,
+  "persist_log_guard": 50331648
+}

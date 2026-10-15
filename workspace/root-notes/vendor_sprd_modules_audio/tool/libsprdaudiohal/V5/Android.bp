@@ -1,0 +1,77 @@
+cc_library_shared {
+    name: "libsprdaudiohalv5",
+    owner: "sprd",
+    vendor: true,
+    srcs: [
+        "DevicesFactoryHalInterface.cpp",
+        "AudioClient.cpp",
+    ],
+
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+    ],
+
+    shared_libs: [
+        "android.hardware.audio.effect@2.0",
+        "android.hardware.audio.effect@4.0",
+        "android.hardware.audio.effect@5.0",
+        "android.hardware.audio@2.0",
+        "android.hardware.audio@4.0",
+        "android.hardware.audio@5.0",
+        "libsprdaudiohalv5@4.0",
+        "libsprdaudiohalv5@5.0",
+        "libutils",
+        "liblog",
+    ],
+
+    include_dirs: [
+        "frameworks/av/include",
+        "frameworks/native/include",
+        "system/media/audio/include"
+    ],
+
+    header_libs: [
+        "libsprdaudiohal_headersv5"
+    ]
+}
+
+cc_library_shared {
+    name: "libsprdaudiohal_deathhandlerv5",
+    owner: "sprd",
+    vendor: true,
+    srcs: [
+        "HalDeathHandlerHidl.cpp",
+    ],
+
+    cflags: [
+        "-Wall",
+        "-Werror",
+    ],
+
+    shared_libs: [
+        "libhidlbase",
+        "libutils",
+        "liblog",
+    ],
+
+    include_dirs: [
+        "frameworks/av/include",
+        "frameworks/native/include",
+        "system/media/audio/include",
+    ],
+
+    header_libs: [
+        "libsprdaudiohal_headersv5"
+    ]
+}
+
+cc_library_headers {
+    name: "libsprdaudiohal_headersv5",
+    owner: "sprd",
+    vendor: true,
+    export_include_dirs: [
+        "include",
+    ]
+}

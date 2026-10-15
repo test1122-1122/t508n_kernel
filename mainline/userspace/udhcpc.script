@@ -1,0 +1,14 @@
+#!/bin/busybox sh
+case "$1" in
+  deconfig)
+    ifconfig $interface 0.0.0.0
+    ;;
+  bound|renew)
+    ifconfig $interface $ip netmask $subnet
+    if [ -n "$router" ]; then
+      route del default 2>/dev/null
+      route add default gw $router
+    fi
+    ;;
+esac
+exit 0

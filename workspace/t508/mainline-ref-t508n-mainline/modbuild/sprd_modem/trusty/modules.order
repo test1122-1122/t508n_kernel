@@ -1,0 +1,7 @@
+trusty/trusty.o
+trusty/trusty-irq.o
+trusty/trusty-pm.o
+trusty/trusty-log.o
+trusty/trusty-virtio.o
+trusty/trusty-ipc.o
+trusty/sprd_shm.o

@@ -1,0 +1,55 @@
+name: Magisk installers
+
+# The Magisk zips of a release (tools/make-magisk-zips.sh): built from the release's own published assets as soon as
+# it is published (a prerelease too, which is how a release is tried first), tested, and attached to it. For an
+# existing release: Actions > Magisk installers > Run workflow, with its tag. The zips are checked out from the tag,
+# so the installer always matches the init and mu300-update of the release it installs.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag, e.g. v2026.10.06'
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: magisk-${{ github.event.release.tag_name || github.event.inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  zips:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.release.tag_name || github.event.inputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Tag
+        run: |
+          tag_ok=1
+          case "$TAG" in v[0-9]*) ;; *) tag_ok= ;; esac
+          case "$TAG" in *[!0-9A-Za-z._-]*|*..*) tag_ok= ;; esac
+          [ -n "$tag_ok" ] || { echo "not a release tag: $TAG"; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - name: Tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq zip unzip cpio dash busybox lz4 >/dev/null
+          python3 -m pip install -q lz4 || python3 -m pip install -q --break-system-packages lz4
+      - name: Release assets
+        run: |
+          mkdir -p "release/$TAG"
+          gh release download "$TAG" -R "$GITHUB_REPOSITORY" -D "release/$TAG" \
+            -p SHA256SUMS -p 'mu300-*.tar.gz' -p mu300-update
+          (cd "release/$TAG" && sha256sum -c SHA256SUMS)
+      - name: Build
+        run: sh tools/make-magisk-zips.sh "release/$TAG" out "$TAG"
+      - name: Test the zips
+        run: cd tests && MU300_MAGISK_ZIPS="$GITHUB_WORKSPACE/out" python3 -m unittest test_magisk_zip -v
+      - name: Attach to the release
+        run: gh release upload "$TAG" -R "$GITHUB_REPOSITORY" --clobber out/*.zip out/SHA256SUMS-magisk

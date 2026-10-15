@@ -1,0 +1,59 @@
+cc_library_shared {
+    name: "libsprdaudiohal",
+    owner: "sprd",
+    vendor: true,
+    srcs: [
+        "DevicesFactoryHalInterface.cpp",
+        "AudioClient.cpp",
+    ],
+
+    cflags: [
+        "-Wall",
+        "-Werror",
+    ],
+
+    shared_libs: [
+        "android.hardware.audio@4.0",
+        "libsprdaudiohal@4.0",
+        "libutils",
+        "liblog",
+        "libcutils",
+    ],
+
+    header_libs: [
+        "libsprdaudiohal_headers",
+	"libaudio_system_headers",
+    ]
+}
+
+cc_library_shared {
+    name: "libsprdaudiohal_deathhandler",
+    owner: "sprd",
+    vendor: true,
+    srcs: [
+        "HalDeathHandlerHidl.cpp",
+    ],
+
+    cflags: [
+        "-Wall",
+        "-Werror",
+    ],
+
+    shared_libs: [
+        "libhidlbase",
+        "libutils",
+        "liblog",
+        "libcutils",
+    ],
+
+    header_libs: [
+        "libsprdaudiohal_headers"
+    ]
+}
+
+cc_library_headers {
+    name: "libsprdaudiohal_headers",
+    owner: "sprd",
+    vendor: true,
+    export_include_dirs: ["include"],
+}

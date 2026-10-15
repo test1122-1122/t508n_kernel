@@ -1,0 +1,17 @@
+#!/bin/sh
+# hostapd reports AP-ENABLED even when the SC2355 firmware refuses CMD_START_AP (for example a 5 GHz
+# channel the firmware does not offer, or a driver without wlan_combo-5ghz-ap-ds-params.patch).
+# Detect that and restart on 2.4 GHz.
+since=$(cut -d. -f1 /proc/uptime)
+for n in $(seq 1 20); do
+    sleep 1
+    resp=$(dmesg | awk -v s="$since" -F'[][]' '$2+0>=s' | grep -o "rsp\[CMD_START_AP\].*" | tail -1)
+    [ -n "$resp" ] && break
+done
+case "$resp" in
+    *NOT_SUPPORT*|*ERROR*)
+        echo "firmware rejected the access point ($resp); falling back to 2.4 GHz" >&2
+        touch /run/mu300-hotspot-force-2g
+        systemctl --no-block restart mu300-hotspot.service ;;
+esac
+true

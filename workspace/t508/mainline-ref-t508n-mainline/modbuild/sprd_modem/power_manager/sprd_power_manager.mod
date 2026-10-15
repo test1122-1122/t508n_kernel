@@ -1,0 +1,1 @@
+power_manager/sprd_power_manager.o

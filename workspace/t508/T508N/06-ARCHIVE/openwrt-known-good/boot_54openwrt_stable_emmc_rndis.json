@@ -1,0 +1,19 @@
+{
+  "image": "boot_54openwrt_stable_emmc_rndis.img",
+  "size": 67108864,
+  "sha256": "bd92e8620d29eaab46bd0c0e732be6c97dacfc3f0a0e6a22ea746f2cf7084a81",
+  "md5": "5de0021d723a9acd783a42f8e6e40d90",
+  "stock_source": "firmware/stock-images/boot_a.img",
+  "stock_size": 67108864,
+  "stock_avb_public_key_sha1_note": "copied from stock image; hash descriptor is stale by design",
+  "kernel_size": 44657152,
+  "kernel_md5": "4e47de421f3b9fcd87d727bf0067c32c",
+  "ramdisk_cpio_size": 1210368,
+  "ramdisk_cpio_md5": "06e4ec526758825531359d59dacc74d5",
+  "lz4_legacy_size": 819571,
+  "lz4_legacy_magic": "0x184c2102",
+  "lz4_legacy_blocks": 1,
+  "signature_size": 0,
+  "original_image_size": 45486080,
+  "persist_log_guard": 50331648
+}

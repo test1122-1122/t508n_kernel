@@ -1,0 +1,48 @@
+#!/bin/busybox sh
+BB=/bin/busybox
+$BB mount -t proc proc /proc 2>/dev/null
+$BB mount -t sysfs sysfs /sys 2>/dev/null
+$BB mount -t devtmpfs devtmpfs /dev 2>/dev/null
+$BB mkdir -p /dev /proc /sys /tmp /persist
+$BB echo "MAINLINE_TEST5_START" > /dev/kmsg 2>/dev/null
+$BB echo "MAINLINE_TEST5_START"
+$BB dmesg -n 8 2>/dev/null
+
+i=0
+while [ $i -lt 20 ]; do
+    [ -b /dev/mmcblk0p75 ] && break
+    $BB sleep 1
+    i=$((i+1))
+done
+
+if $BB mount -t ext4 -o rw /dev/mmcblk0p75 /persist 2>/dev/null; then
+    $BB echo "MAINLINE_TEST5_PERSIST_MOUNTED" > /dev/kmsg 2>/dev/null
+    $BB echo "MAINLINE_TEST5_PERSIST_MOUNTED"
+    $BB echo "test5-start $( $BB uname -a )" > /persist/mainline-test5-start.txt
+    $BB sync
+
+    # leave time for deferred USB PHY/DWC3/MUSB probes
+    $BB sleep 40
+
+    $BB dmesg > /persist/mainline-test5-dmesg.txt 2>/dev/null
+    {
+        echo "=== uname ==="; uname -a
+        echo "=== udc ==="; ls -l /sys/class/udc 2>/dev/null
+        echo "=== platform drivers dwc3/musb ==="; ls -l /sys/bus/platform/drivers/dwc3* /sys/bus/platform/drivers/musb* 2>/dev/null
+        echo "=== platform devices usb ==="; ls -l /sys/bus/platform/devices/*usb* /sys/bus/platform/devices/*dwc3* /sys/bus/platform/devices/*musb* 2>/dev/null
+        echo "=== net ==="; ls /sys/class/net 2>/dev/null
+        echo "=== dmesg usb/gadget ==="; dmesg | grep -iE "dwc3|musb|udc|gadget|configfs|usb|ssphy" | tail -200
+    } > /persist/mainline-test5-usb.txt 2>/dev/null
+    $BB sync
+    $BB sync
+    $BB echo "MAINLINE_TEST5_FILES_WRITTEN" > /dev/kmsg 2>/dev/null
+    $BB umount /persist 2>/dev/null
+    $BB sync
+else
+    $BB echo "MAINLINE_TEST5_NO_PERSIST" > /dev/kmsg 2>/dev/null
+fi
+
+$BB echo "MAINLINE_TEST5_HOLD" > /dev/kmsg 2>/dev/null
+$BB sleep 10
+$BB reboot -f 2>/dev/null || $BB echo b > /proc/sysrq-trigger 2>/dev/null
+while true; do $BB sleep 3600; done

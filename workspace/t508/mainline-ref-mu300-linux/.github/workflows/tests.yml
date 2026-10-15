@@ -1,0 +1,51 @@
+name: Tests
+
+# tests/: the device scripts under every shell they run with (dash and bash on Ubuntu, busybox ash on OpenWrt), the
+# boot image builder, the installers' translations and rules, and install.ps1's functions under Windows PowerShell
+# 5.1 and PowerShell 7. Run them locally with: python3 -m unittest discover -s tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  unix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4     # the control panel's JavaScript tests
+        with:
+          node-version: 22
+      - name: shells and lz4
+        run: |
+          if [ "$RUNNER_OS" = Linux ]; then sudo apt-get install -y -qq dash busybox lz4 zip unzip cpio >/dev/null; fi
+          python3 -m pip install -q lz4 || python3 -m pip install -q --break-system-packages lz4
+      - name: tests
+        run: |
+          cd tests
+          python3 -c 'import helpers; print("shells:", helpers.shells())'
+          python3 -m unittest discover -s . -v
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: install.ps1 functions (Windows PowerShell 5.1)
+        shell: powershell
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File tests\installer.Tests.ps1
+      - name: install.ps1 functions (PowerShell 7)
+        shell: pwsh
+        run: pwsh -NoProfile -File tests\installer.Tests.ps1
+      - name: boot image builder (the Windows install runs it too)
+        shell: pwsh
+        run: |
+          python -m pip install -q lz4
+          cd tests
+          python -m unittest test_boot_image -v

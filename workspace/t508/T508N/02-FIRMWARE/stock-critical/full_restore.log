@@ -1,0 +1,7 @@
+[2026-10-08T21:34:22+08:00] full stock restore started
+read failed 9: Bad file descriptor
+branch:main, sha1:7e8e6add9c943741914f417cc0441b7fece5ecd7
+Waiting for dl_diag connection (1800s)
+Successfully connected to port: 5
+usb_send failed (0 / 1)
+请按任意键继续. . . 

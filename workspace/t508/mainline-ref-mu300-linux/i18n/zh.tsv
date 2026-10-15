@@ -1,0 +1,316 @@
+# 简体中文 - MU300 Linux installer. One line per message: English<TAB>translation; {1}.. are the arguments.
+# Check with: tools/check-i18n.py
+parallel download failed, retrying as a single stream	并行下载失败，改为单线程重试
+could not read {1} from the device	无法从设备读取 {1}
+Checking host tools and device	正在检查电脑上的工具和设备
+{1} not found	未找到 {1}
+kernel outputs missing in {1} (run kernel/build-all.sh)	{1} 中缺少内核编译输出（请运行 kernel/build-all.sh）
+su does not work on the device	设备上的 su 无法使用
+device: {1}	设备：{1}
+This does not look like a ZTE F50/MU300 or U30 Air. Continue anyway? (yes/no)	这看起来不是 ZTE F50/MU300 或 U30 Air。仍要继续吗？(是/否)
+Android must be running from slot a	Android 必须从 a 槽 (slot a) 启动
+Not enough free space - this looks like the 32 GB variant	空闲空间不足——这似乎是 32 GB 版本
+could not read the partition table	无法读取分区表
+could not read the userdata entry from the partition table	无法从分区表中读取 userdata 条目
+there is not enough room to split: {1} in total,	空间不足，无法划分：总共 {1}，
+and Android needs at least {1} of it. Nothing is changed.	而 Android 至少需要其中的 {1}。未做任何更改。
+userdata now:         {1} (sectors {2}..{3})	当前 userdata：      {1}（扇区 {2}..{3}）
+free behind it:       {1}	其后的空闲空间：    {1}
+to share:             {1}	可分配空间：        {1}
+Linux needs at least  {1} (OpenWrt) / 1.6 GiB (Ubuntu) / 2.4 GiB (both)	Linux 至少需要        {1}（OpenWrt）/ 1.6 GiB（Ubuntu）/ 2.4 GiB（两者）
+Android keeps at least {1}	Android 至少保留 {1}
+THIS IS EXPERIMENTAL. It rewrites the partition table and ERASES everything in Android -	此功能为实验性功能。它会重写分区表并清除 Android 中的所有数据——
+apps, photos, accounts, settings. Take a full backup first:  sh tools/backup-device.sh	应用、照片、账户、设置。请先完整备份：  sh tools/backup-device.sh
+Only userdata changes size; it is the last partition, so nothing else moves.	只有 userdata 的大小会改变；它是最后一个分区，其他分区不会移动。
+--check writes nothing. Run the installer without it to make room.	--check 不会写入任何内容。去掉该参数运行安装程序即可腾出空间。
+Make room by shrinking userdata? (yes/no)	通过缩小 userdata 来腾出空间吗？(是/否)
+nothing was changed.	未做任何更改。
+How many GiB for Linux? (the rest stays with Android)	为 Linux 分配多少 GiB？（其余留给 Android）
+give a number, like 4 or 2.5	请输入数字，例如 4 或 2.5
+too small: Linux needs at least {1}	太小：Linux 至少需要 {1}
+too large: Android would be left with less than {1}	太大：Android 将只剩不到 {1}
+userdata (Android):   {1}	userdata（Android）： {1}
+Linux region:         {1}	Linux 区域：         {1}
+Rewriting the partition table	正在重写分区表
+the resize was refused; nothing is changed	调整大小被拒绝；未做任何更改
+Verifying	正在验证
+the table on the device does not read back as valid GPT.	设备上的分区表读回后不是有效的 GPT。
+the table did not take (userdata still ends at {1}). Nothing else was changed.	分区表未生效（userdata 仍结束于 {1}）。未做其他更改。
+userdata now ends at sector {1}	userdata 现在结束于扇区 {1}
+Done - the device has to reboot before the new layout is visible	完成——设备需要重启后新布局才会生效
+Android will set up its data partition again on this boot, which takes a few minutes.	Android 将在本次启动时重新建立数据分区，需要几分钟。
+When it is back, run this installer again and it will find the free space.	启动完成后，请再次运行此安装程序，它会找到空闲空间。
+Reboot now? (yes/no)	现在重启吗？(是/否)
+Locating free eMMC space after the last partition	正在查找最后一个分区之后的空闲 eMMC 空间
+could not read the partition table from the device (is su granted? try again)	无法从设备读取分区表（是否已授予 su 权限？请重试）
+eMMC: {1} ({2} sectors), partitions end at {3} (sector {4}), free after them: {5}	eMMC：{1}（{2} 个扇区），分区结束于 {3}（扇区 {4}），其后空闲：{5}
+Linux region: offset {1}, {2}, existing mu300root filesystem: {3}	Linux 区域：偏移 {1}，{2}，已有 mu300root 文件系统：{3}
+data check: {1} of 16 samples contain data	数据检查：16 个样本中有 {1} 个含有数据
+OK: a MU300 Linux installation is already present (it can be kept or replaced)	正常：已存在 MU300 Linux 安装（可以保留或替换）
+WARNING: the unpartitioned space is not empty; it may be used by this firmware. Installing overwrites it	警告：未分区空间并非空白，可能正被此固件使用。安装将覆盖它
+OK: free and empty, same layout as the tested device (~32 GiB after userdata on the 64 GB eMMC)	正常：空闲且为空，与测试设备布局相同（64 GB eMMC 上 userdata 之后约 32 GiB）
+OK: free and empty, smaller than on the tested device but enough for both systems	正常：空闲且为空，比测试设备小，但足够安装两个系统
+OK: free and empty, but room for one system only (Ubuntu or OpenWrt, not both)	正常：空闲且为空，但只够安装一个系统（Ubuntu 或 OpenWrt，不能同时安装）
+OK: free and empty, but small: OpenWrt fits, Ubuntu does not	正常：空闲且为空，但空间较小：可装 OpenWrt，装不下 Ubuntu
+result: {1}	结果：{1}
+Nothing was written. Android version: {1}	未写入任何内容。Android 版本：{1}
+Type overwrite to use this region anyway	输入 overwrite 以仍然使用此区域
+cancelled	已取消
+What should be installed?	要安装什么？
+1) Ubuntu LTS: 24.04 or 26.04, asked next (full distribution, apt, ~500 MiB RAM in use)	1) Ubuntu LTS：24.04 或 26.04，稍后选择（完整发行版，apt，约占用 500 MiB 内存）
+2) OpenWrt {1} (router, LuCI web UI, ~140 MiB RAM in use)	2) OpenWrt {1}（路由器系统，LuCI 网页界面，约占用 140 MiB 内存）
+3) both (switch later with: mu300-os ubuntu|openwrt)	3) 两者都装（之后用 mu300-os ubuntu|openwrt 切换）
+(this device has {1}: {2})	（此设备有 {1}：{2}）
+one system fits, not both	只能装一个系统，不能同时装两个
+only OpenWrt fits	只能装 OpenWrt
+Choice	选择
+invalid choice	无效的选择
+Which OpenWrt?	要哪个 OpenWrt？
+1) OpenWrt {1}: the standard LuCI web interface	1) OpenWrt {1}：标准的 LuCI 网页界面
+2) OpenWrt {1} with the MU300 control panel: dashboard, cellular locks, SMS, AT terminal, USB modes (by kanoqwq)	2) OpenWrt {1} 搭配 MU300 控制面板：仪表盘、蜂窝锁定、短信、AT 终端、USB 模式（kanoqwq 制作）
+MU300_OPENWRT must be plain or luci	MU300_OPENWRT 必须是 plain 或 luci
+that choice needs about {1} MiB and this device has {2} MiB of free space	该选择需要约 {1} MiB，而此设备只有 {2} MiB 空闲空间
+Which one should boot ({1})	启动哪个系统（{1}）
+invalid system	无效的系统
+Boot Linux by default instead of Android (falls back to Android if Linux fails)? (yes/no)	默认启动 Linux 而不是 Android 吗（Linux 启动失败时会回到 Android）？(是/否)
+How many failed Linux boots in a row before the device goes back to Android by itself?	Linux 连续启动失败多少次后，设备自动回到 Android？
+A boot counts as failed when it never finishes starting up - the power goes, the battery runs out, or	如果启动一直没有完成，就算作失败——例如断电、电池耗尽，或
+Linux hangs - before about a minute after power-on. One boot that does finish resets the count.	Linux 在开机后约一分钟内卡住。只要有一次成功启动，计数就会清零。
+* Higher is more forgiving: a flaky cable or a couple of power cuts while it is starting will not throw you	* 数值越大越宽容：启动时接触不良的数据线或几次断电不会
+  back into Android.	  把你送回 Android。
+* Lower gets you to Android sooner if Linux is really broken.	* 数值越小，Linux 真正损坏时越快回到 Android。
+* It is also your way back to Android with no computer at hand: cut the power while it is starting this	* 这也是手边没有电脑时回到 Android 的方法：在启动过程中连续断电
+  many times in a row.	  这么多次。
+1 is how this project used to behave (a single interrupted boot returns to Android). 1-6; the device's	1 是本项目以前的行为（一次中断的启动就会回到 Android）。可选 1-6；设备的
+boot counter has no room for more. It can be changed later with: mu300-next-boot attempts N	启动计数器容纳不了更多。之后可以用以下命令更改：mu300-next-boot attempts N
+Failed boots before Android (1-6)	回到 Android 前允许的失败启动次数（1-6）
+enter a number from 1 to 6	请输入 1 到 6 之间的数字
+Copy Android's hotspot name and password to Linux? (yes/no)	将 Android 的热点名称和密码复制到 Linux 吗？(是/否)
+Include the Mali GPU (OpenCL) userspace (~90 MiB)? (yes/no)	包含 Mali GPU（OpenCL）用户空间组件吗（约 90 MiB）？(是/否)
+Which kernel?	选择哪个内核？
+1) 5.4   Unisoc's vendor kernel (Android 12 base): the longest tested, everything this project supports	1) 5.4   紫光展锐的厂商内核（基于 Android 12）：测试时间最长，支持本项目的全部功能
+2) 6.18  mainline Linux, current long-term (LTS) release: newer drivers and security fixes, the same	2) 6.18  主线 Linux，当前的长期支持（LTS）版本：更新的驱动和安全修复，
+         functions (hotspot, mobile data, SMS, Bluetooth, VPN, GPU); no USB-C video output yet	         功能相同（热点、移动数据、短信、蓝牙、VPN、GPU）；暂不支持 USB-C 视频输出
+3) 7.2   the newest stable mainline Linux (7.2 for now): the newest drivers, the same functions	3) 7.2   最新的稳定版主线 Linux（目前为 7.2）：最新的驱动，功能与 6.18 相同；
+         as 6.18; tested less than 6.18	         测试比 6.18 少
+This can be changed later on the device: sudo mu300-update kernel 5.4|6.18|7.2	之后可以在设备上更改：sudo mu300-update kernel 5.4|6.18|7.2
+Which Ubuntu?	选择哪个 Ubuntu？
+1) 24.04 LTS  the longest tested, supported until 2029	1) 24.04 LTS  测试时间最长，支持到 2029 年
+2) 26.04 LTS  BETA: the newest (systemd 259, newer packages), supported until 2031; tested less	2) 26.04 LTS  测试版（BETA）：最新版本（systemd 259，更新的软件包），支持到 2031 年；测试较少
+Ubuntu	Ubuntu
+Ubuntu 26.04 needs a mainline kernel (6.18 or 7.2): its programs use system calls that 5.4 does not have (tar, for one, cannot unpack folders there).	Ubuntu 26.04 需要主线内核（6.18 或 7.2）：它的程序使用了 5.4 没有的系统调用（例如 tar 在 5.4 上无法解压包含文件夹的归档）。
+this copy has changes of its own, so {1} files were left as they are	此副本有自己的修改，因此 {1} 个文件保持原样
+no answer left for the question: {1}	这个问题已经没有可用的答案了：{1}
+Device	设备
+Kernel	内核
+enter 1, 2 or 3	请输入 1、2 或 3
+A MU300 Linux installation is already on this device.	此设备上已经安装了 MU300 Linux。
+update  reinstall the systems and keep settings and data (/etc/mu300, users and home directories,	update  重新安装系统，保留设置和数据（/etc/mu300、用户和主目录、
+        SSH host keys, OpenWrt UCI config; the hotspot settings are kept too)	        SSH 主机密钥、OpenWrt UCI 配置；热点设置也会保留）
+wipe    erase the Linux filesystem and install from scratch	wipe    清除 Linux 文件系统并全新安装
+update or wipe	update（更新）或 wipe（清除）
+Password for the "ubuntu" user (Ubuntu) and "root" (OpenWrt)	"ubuntu" 用户（Ubuntu）和 "root"（OpenWrt）的密码
+Repeat	再次输入
+passwords differ or are shorter than 6 characters	两次密码不一致或少于 6 个字符
+Pulling device data into {1} (stays on this computer)	正在将设备数据拉取到 {1}（仅保存在这台电脑上）
+could not read the misc header from the device	无法从设备读取 misc 头部
+these firmware files could not be read from the device:{1}	无法从设备读取以下固件文件：{1}
+Wi-Fi and Bluetooth need them; without them the system installs and boots but has no hotspot.	Wi-Fi 和蓝牙需要这些文件；缺少它们系统仍可安装和启动，但没有热点。
+cannot find the newest release of {1} (set MU300_RELEASE=<tag> to pick one)	找不到 {1} 的最新版本（可设置 MU300_RELEASE=<标签> 指定）
+Downloading release {1}	正在下载版本 {1}
+cannot download {1}	无法下载 {1}
+{1} is not part of release {2}	{1} 不在版本 {2} 中
+(choose kernel 5.4, or a newer release)	（请选择 5.4 内核，或更新的版本）
+download of {1} failed	{1} 下载失败
+checksum mismatch for {1}	{1} 的校验和不匹配
+{1} is incomplete	{1} 不完整
+Adding the vendor files from your device to the images	正在将设备中的厂商文件加入镜像
+Building helper binaries	正在编译辅助程序
+Building the Ubuntu root filesystem	正在构建 Ubuntu 根文件系统
+Building the OpenWrt root filesystem	正在构建 OpenWrt 根文件系统
+Building the boot image	正在构建启动镜像
+Ready to install	准备安装
+source:         {1}	来源：          {1}
+prebuilt release {1} + vendor files from this device	预构建版本 {1} + 本设备的厂商文件
+local build	本地构建
+systems:        {1} (boots: {2})	系统：          {1}（启动：{2}）
+kernel:         {1}	内核：          {1}
+default boot:   {1}	默认启动：      {1}
+Linux (Android after {1} failed boots in a row)	Linux（连续 {1} 次启动失败后回到 Android）
+Android, Linux on demand	Android，需要时启动 Linux
+filesystem:     {1}	文件系统：      {1}
+CREATE new ext4 (erases the Linux region)	创建新的 ext4（将清除 Linux 区域）
+keep existing	保留现有的
+update:         settings and user data of the chosen systems are kept, everything else is replaced	更新：          保留所选系统的设置和用户数据，其余全部替换
+note:           the chosen systems are installed fresh; their previous files and settings are replaced	注意：          所选系统将全新安装；原有文件和设置会被替换
+writes:         Linux region at offset {1}, boot_b, 32 bytes of misc (boot_a, GPT and userdata are not touched)	写入：          偏移 {1} 处的 Linux 区域、boot_b、misc 的 32 字节（不会触碰 boot_a、GPT 和 userdata）
+Type INSTALL to continue	输入 INSTALL 继续
+Copying to the device	正在复制到设备
+installation on the device failed; boot_b and misc were not changed	设备上的安装失败；boot_b 和 misc 未被更改
+Writing boot_b and arming slot b	正在写入 boot_b 并启用 b 槽
+pushed boot image hash mismatch	推送的启动镜像哈希不匹配
+boot_b verify failed (slot a still active, Android keeps booting)	boot_b 校验失败（a 槽仍然有效，Android 会照常启动）
+Installing the on-device switch (Magisk module)	正在安装设备端切换工具（Magisk 模块）
+(skipped; the installer keeps working either way)	（已跳过；不影响安装程序的使用）
+Done. Rebooting into {1}	完成。正在重启进入 {1}
+USB network: {1}   SSH: {2}	USB 网络：{1}   SSH：{2}
+switch systems: mu300-os {1}   back to Android: mu300-next-boot android	切换系统：mu300-os {1}   回到 Android：mu300-next-boot android
+back to Linux from Android (with Magisk): su -c mu300-linux	从 Android 回到 Linux（需 Magisk）：su -c mu300-linux
+Type ERASE to rewrite the partition table and wipe Android's data	输入 ERASE 以重写分区表并清除 Android 数据
+The backup copy at the end of the disk was written first, so Android's own repair may still fix this. Do not power off.	磁盘末尾的备份副本已先写入，Android 自身的修复仍可能解决此问题。请勿断电。
+Clearing Android's data filesystem so it is recreated on the next boot	正在清除 Android 的数据文件系统，以便下次启动时重新创建
+ERROR:	错误:
+Python 3 not found (install it from python.org or the Microsoft Store)	未找到 Python 3（请从 python.org 或 Microsoft Store 安装）
+Python 3.8 or newer is required	需要 Python 3.8 或更高版本
+the lz4 Python module is required to build the boot image: pip install lz4	构建启动镜像需要 lz4 Python 模块：pip install lz4
+no adb device (boot Android, enable USB debugging)	没有 adb 设备（请启动 Android 并开启 USB 调试）
+The device is running MU300 Linux, not Android	设备当前运行的是 MU300 Linux，而不是 Android
+Installing and uninstalling happen from Android (slot a), so the device has to reboot first.	安装和卸载需在 Android（a 槽）中进行，因此设备需要先重启。
+I can ask it over SSH; you will be prompted for its password.	我可以通过 SSH 让它重启；届时会要求输入设备密码。
+Reboot the device into Android now? (yes/no)	现在重启设备进入 Android 吗？(是/否)
+boot Android yourself (on the device: sudo mu300-next-boot android && sudo reboot)	请自行启动 Android（在设备上执行：sudo mu300-next-boot android && sudo reboot）
+{1} - enter the device password when asked (Ctrl-C to skip)	{1}——提示时请输入设备密码（按 Ctrl-C 跳过）
+rebooting	正在重启
+waiting for Android	正在等待 Android
+the device did not come back as Android; boot it yourself (mu300-next-boot android)	设备没有以 Android 启动；请自行启动（mu300-next-boot android）
+Android is up	Android 已启动
+only {1} MiB of free space after the last partition: this device has a different layout, nothing is changed.	最后一个分区之后只有 {1} MiB 空闲空间：此设备布局不同，未做任何更改。
+Please report the numbers above (eMMC size and where the partitions end); they identify the variant.	请报告上面的数字（eMMC 大小和分区结束位置），它们可以识别设备型号。
+pulling boot_a failed	拉取 boot_a 失败
+cannot find the newest release of {1} (use -Release <tag> to pick one)	找不到 {1} 的最新版本（可用 -Release <标签> 指定）
+no Magisk (or no root) on this device - skipped	此设备没有 Magisk（或没有 root）——已跳过
+installed: 'su -c mu300-linux' on the device starts Linux after the next Android boot	已安装：下次 Android 启动后，在设备上执行 'su -c mu300-linux' 即可启动 Linux
+could not reboot it over SSH; on the device run: sudo mu300-next-boot android && sudo reboot	无法通过 SSH 重启；请在设备上执行：sudo mu300-next-boot android && sudo reboot
+could not check GitHub for a newer installer; continuing with this copy	无法在 GitHub 上检查是否有更新的安装程序；继续使用当前副本
+a newer installer is on GitHub, but this copy has local changes; not updating it	GitHub 上有更新的安装程序，但此副本有本地修改，因此不更新
+Updating the installer to the newest version from GitHub	正在将安装程序更新到 GitHub 上的最新版本
+could not update this copy (it has commits of its own?); continuing with it	无法更新此副本（是否有自己的提交？）；继续使用它
+Checking the installer against the newest version on GitHub	正在将安装程序与 GitHub 上的最新版本进行比较
+could not download it; continuing with this copy	下载失败；继续使用当前副本
+{1} files updated	已更新 {1} 个文件
+restarting the updated installer	正在重新启动更新后的安装程序
+yes	是
+no	否
+update	update（更新）
+release {1} does not support this device yet; use a newer one	版本 {1} 尚不支持此设备；请使用更新的版本
+installing the lz4 Python module (pip install --user lz4)	正在安装 lz4 Python 模块（pip install --user lz4）
+start of the region: {1}	区域开头：{1}
+Python 3 is not installed; installing it for this user	未安装 Python 3；正在为当前用户安装
+{1} failed	{1} 失败
+waiting for Android to finish starting	正在等待 Android 启动完成
+which adb device is the F50 or U30 Air?	哪个 adb 设备是 F50 或 U30 Air？
+SD card present but smaller than 700 MiB; not used	已插入 SD 卡，但容量小于 700 MiB；不使用
+SD card: {1}, {2}, existing mu300sd filesystem: {3}	SD 卡：{1}，{2}，已有 mu300sd 文件系统：{3}
+Linux filesystem: SD card {1}, {2}, existing mu300sd filesystem: {3}	Linux 文件系统：SD 卡 {1}，{2}，已有 mu300sd 文件系统：{3}
+OK: the SD card will be formatted; everything on it is erased	正常：SD 卡将被格式化；卡上的所有内容都会被清除
+Everything on the SD card ({1}, {2}) will be erased. Type ERASE to continue	SD 卡（{1}，{2}）上的所有内容都将被清除。输入 ERASE 继续
+CREATE new ext4 (erases the SD card)	创建新的 ext4（将清除 SD 卡）
+writes:         SD card {1}, boot_b, 32 bytes of misc (the eMMC region, boot_a, GPT and userdata are not touched)	写入：          SD 卡 {1}、boot_b、misc 的 32 字节（不会触碰 eMMC 上的 Linux 区域、boot_a、GPT 和 userdata）
+MU300_STORAGE=sd, but there is no usable SD card in the device	MU300_STORAGE=sd，但设备中没有可用的 SD 卡
+MU300_STORAGE must be internal or sd	MU300_STORAGE 必须是 internal 或 sd
+Where should the Linux filesystem go: internal storage or the SD card ({1}, {2})? (internal/sd)	Linux 文件系统要放在哪里：内部存储还是 SD 卡（{1}，{2}）？(internal/sd)
+the SD card ({1}) holds another Linux (ext4) filesystem, and the installer never formats one that is not its own (mu300sd).	SD 卡（{1}）上有另一个 Linux（ext4）文件系统，安装程序绝不会格式化不属于自己（不是 mu300sd）的文件系统。
+Copy off what you need and format the card elsewhere, use another card, or install to internal storage (MU300_STORAGE=internal).	请先复制出需要的数据并在别处格式化该卡，或换一张卡，或安装到内部存储（MU300_STORAGE=internal）。
+the SD card holds another Linux (ext4) filesystem; the installer will not format it	SD 卡上有另一个 Linux（ext4）文件系统；安装程序不会格式化它
+too little free eMMC space for Linux; the installer will offer the SD card instead (no repartitioning needed)	eMMC 上的空闲空间不足以安装 Linux；安装程序将改为提供 SD 卡选项（无需重新分区）
+the {1} kernel of release {2} cannot read the SD card: choose kernel 5.4, a newer release, or internal storage (MU300_STORAGE=internal)	版本 {2} 的 {1} 内核无法读取 SD 卡：请选择 5.4 内核、更新的版本，或内部存储（MU300_STORAGE=internal）
+The SD card ({1}) holds a Linux installation (mu300sd), and the device always starts that one first: an installation to internal storage does not start while this card is in the slot.	SD 卡（{1}）上已有 Linux 安装（mu300sd），设备总是先启动它：只要这张卡还在卡槽中，安装到内部存储的系统就不会启动。
+Take the card out before the device restarts, or erase its installation first with the uninstaller.	请在设备重启前取出这张卡，或先用卸载程序（uninstall）清除卡上的安装。
+Type internal to install to internal storage anyway	输入 internal 以仍然安装到内部存储
+The VPN (mu300-vpn) needs the vpn extra: Xray and sing-box. It can also be added later on the device:	VPN（mu300-vpn）需要 vpn 扩展组件：Xray 和 sing-box。也可以稍后在设备上添加：
+Install the VPN extra (about 40 MB more to download, 120 MB on the device)? (yes/no)	安装 VPN 扩展组件吗（约多下载 40 MB，在设备上占用 120 MB）？(是/否)
+release {1} has no vpn extra: its systems still carry the VPN engines	版本 {1} 没有 vpn 扩展组件：其系统仍自带 VPN 引擎
+extras:         {1}	扩展组件：      {1}
+none	无
+Android runs from slot {1}; Linux goes to slot {2} (boot_{2})	Android 从槽位 {1} 运行；Linux 将安装到槽位 {2}（boot_{2}）
+CREATE new ext4 (erases what is there)	新建 ext4（会清除上面的内容）
+Dry run: nothing was written.	试运行：未写入任何内容。
+MU300_BOOT_OS={1}, but {1} is not installed	MU300_BOOT_OS={1}，但 {1} 未安装
+Magisk's magiskboot was not found; install this zip with Magisk 26 or newer	未找到 Magisk 的 magiskboot；请使用 Magisk 26 或更新版本安装此 zip
+Plan	计划
+Take the card out and install the zip again, or install to the card (MU300_STORAGE=sd in /sdcard/mu300-install.conf).	请取出这张卡后重新安装此 zip，或安装到卡上（在 /sdcard/mu300-install.conf 中写入 MU300_STORAGE=sd）。
+Ubuntu 26.04 is installed, and it needs a mainline kernel (6.18 or 7.2): use a zip with one of those kernels, or MU300_MODE=wipe.	已安装 Ubuntu 26.04，它需要主线内核（6.18 或 7.2）：请使用带有其中一个内核的 zip，或设置 MU300_MODE=wipe。
+Unpacking {1} and {2}	正在解压 {1} 和 {2}
+already there:  {1}	已有：          {1}
+boot_a and boot_b are the same partition	boot_a 和 boot_b 是同一个分区
+boots:          {1} ({2})	启动：          {1}（{2}）
+cannot tell which slot Android runs from	无法确定 Android 从哪个槽位运行
+could not mount the existing Linux filesystem	无法挂载现有的 Linux 文件系统
+could not unpack the kernel bundle	无法解压内核包
+could not unpack the zip	无法解压 zip
+default	默认
+keep: settings and data of {1} are kept	保留：{1} 的设置和数据会保留
+misc holds no valid boot control block; nothing was changed	misc 中没有有效的启动控制块；未做任何更改
+mu300-install.conf: MU300_PASSWORD must have at least 6 characters	mu300-install.conf：MU300_PASSWORD 至少需要 6 个字符
+mu300-install.conf: {1} is not a setting of this installer; ignored	mu300-install.conf：{1} 不是此安装程序的设置；已忽略
+mu300-install.conf: {1}={2} is not valid	mu300-install.conf：{1}={2} 无效
+not enough free space in {1}: {2} needed, {3} free	{1} 中空闲空间不足：需要 {2}，仅剩 {3}
+settings from {1}:{2}	来自 {1} 的设置：{2}
+storage:        SD card {1}, {2} ({3})	存储：          SD 卡 {1}，{2}（{3}）
+storage:        internal, offset {1}, {2} ({3})	存储：          内部，偏移 {1}，{2}（{3}）
+system:         {1} (zip {2}, kernel {3})	系统：          {1}（zip {2}，内核 {3}）
+the Linux region	Linux 区域
+the zip is damaged (checksum mismatch); download it again	zip 已损坏（校验和不匹配）；请重新下载
+this installer needs root	此安装程序需要 root 权限
+this is not an A/B device with misc, boot_a and boot_b	这不是带有 misc、boot_a 和 boot_b 的 A/B 设备
+this kernel cannot read the SD card; use a newer zip	此内核无法读取 SD 卡；请使用更新的 zip
+this kernel does not support the {1}	此内核不支持 {1}
+writes:         {1}, boot_{2}, 32 bytes of misc (boot_{3}, the partition table and userdata are not touched)	写入：          {1}、boot_{2}、misc 的 32 字节（不会触碰 boot_{3}、分区表和 userdata）
+mu300-install.conf: {1} is taken only from {2}, which only root can change; ignored in {3}	mu300-install.conf：{1} 只从 {2} 读取（只有 root 能修改该文件）；在 {3} 中已忽略
+To use{1}, make the file one only root can change: {2}	如要使用{1}，请把该文件变为只有 root 能修改：{2}
+{1} is not owned by root, or others can change it: it is read like a file on /sdcard	{1} 不属于 root，或其他用户可以修改它：按 /sdcard 上的文件对待
+This does not look like a ZTE F50/MU300 or U30 Air. If it is one, put MU300_DEVICE=f50 or u30air into {1}.	这看起来不是 ZTE F50/MU300 或 U30 Air。如果是，请在 {1} 中写入 MU300_DEVICE=f50 或 u30air。
+could not create a work directory in {1}	无法在 {1} 中创建工作目录
+A Linux filesystem is still mounted in {1}; it was left as it is. Restart the device before installing again.	{1} 中仍挂载着 Linux 文件系统；已保持原样。再次安装前请重启设备。
+There is too little free space inside for Linux, and the SD card ({1}) holds another Linux (ext4) filesystem, which the installer never formats. Copy off what you need and format the card elsewhere, or use another card.	内部存储空闲空间不足以安装 Linux，而 SD 卡（{1}）上有另一个 Linux（ext4）文件系统，安装程序绝不会格式化它。请先复制所需内容并在别处格式化该卡，或换一张卡。
+There is too little free space inside for Linux. The SD card ({1}, {2}) can hold it: put MU300_STORAGE=sd and MU300_SD_ERASE=yes into {3}, a file only root can change (everything on the card is erased).	内部存储空闲空间不足以安装 Linux。SD 卡（{1}，{2}）可以容纳：请在只有 root 能修改的 {3} 中写入 MU300_STORAGE=sd 和 MU300_SD_ERASE=yes（卡上的全部内容将被清除）。
+There is too little free space inside for Linux, and the SD card is smaller than 700 MiB. Use a bigger card (MU300_STORAGE=sd and MU300_SD_ERASE=yes in {1}), or make room with the installer for computers.	内部存储空闲空间不足以安装 Linux，且 SD 卡小于 700 MiB。请使用更大的卡（在 {1} 中写入 MU300_STORAGE=sd 和 MU300_SD_ERASE=yes），或用电脑版安装程序腾出空间。
+There is too little free space inside for Linux and no SD card. Insert a card (MU300_STORAGE=sd and MU300_SD_ERASE=yes in {1}), or make room with the installer for computers.	内部存储空闲空间不足以安装 Linux，且没有 SD 卡。请插入一张卡（在 {1} 中写入 MU300_STORAGE=sd 和 MU300_SD_ERASE=yes），或用电脑版安装程序腾出空间。
+MU300_MODE=wipe formats the SD card ({1}, {2}): the installation on it and everything else is erased. To allow that, put MU300_SD_ERASE=yes into {3} as well.	MU300_MODE=wipe 会格式化 SD 卡（{1}，{2}）：卡上的安装和其他所有内容都会被清除。如允许，请同时在 {3} 中写入 MU300_SD_ERASE=yes。
+could not unmount the Linux filesystem from {1}	无法从 {1} 卸载 Linux 文件系统
+password:       from {1}, written to {2}	密码：          来自 {1}，将写入 {2}
+password:       generated, written to {1}	密码：          自动生成，将写入 {1}
+the zip is incomplete or damaged (its manifest is not valid)	zip 不完整或已损坏（其 manifest 无效）
+The free space behind the partitions is not empty ({1} of 16 samples hold data); it may be used by this firmware. To use it anyway, put MU300_STORAGE=internal and MU300_REGION_OVERWRITE=yes into {2}, a file only root can change.	分区之后的空闲空间并不为空（16 个采样中有 {1} 个含有数据）；它可能正被此固件使用。如仍要使用，请在只有 root 能修改的 {2} 中写入 MU300_STORAGE=internal 和 MU300_REGION_OVERWRITE=yes。
+Installing to the SD card ({1}, {2}) erases everything on it. To allow that, put MU300_STORAGE=sd and MU300_SD_ERASE=yes into {3}, a file only root can change.	安装到 SD 卡（{1}，{2}）会清除卡上的全部内容。如允许，请在只有 root 能修改的 {3} 中写入 MU300_STORAGE=sd 和 MU300_SD_ERASE=yes。
+could not read the Android files the modem needs from this device	无法从本设备读取调制解调器所需的 Android 文件
+the Mali GPU files are incomplete on this device; installing without them	本设备上的 Mali GPU 文件不完整；将不带这些文件安装
+could not pack the vendor files	无法打包厂商文件
+could not build the boot control blocks	无法构建启动控制块
+could not copy the Android files into the boot ramdisk	无法将 Android 文件复制到启动 ramdisk 中
+Android runs from slot b, and the kernel of this zip cannot boot Linux from slot a yet; use a newer zip	Android 从 b 槽运行，而此 zip 的内核还不能从 a 槽启动 Linux；请使用更新的 zip
+could not build the boot ramdisk (magiskboot)	无法构建启动 ramdisk（magiskboot）
+could not build the boot image	无法构建启动镜像
+boot image for slot {1}: kernel {2}, {3} bytes	槽位 {1} 的启动镜像：内核 {2}，{3} 字节
+could not generate a password	无法生成密码
+could not hash the password	无法计算密码哈希
+could not copy the installer files	无法复制安装文件
+Installing {1} (this takes a few minutes)	正在安装 {1}（需要几分钟）
+installation on the device failed; boot_{1} and misc were not changed	设备上的安装失败；boot_{1} 和 misc 未被更改
+could not mount the Linux filesystem for the kernel modules	无法为内核模块挂载 Linux 文件系统
+could not install the kernel modules	无法安装内核模块
+Writing and verifying boot_{1}	正在写入并校验 boot_{1}
+boot_{1} did not verify after writing; misc was not changed, so Android keeps booting	写入后 boot_{1} 校验失败；misc 未被更改，Android 会照常启动
+misc changed during the installation; Linux was not armed. Install the zip again.	安装期间 misc 发生了变化；Linux 未被启用。请重新安装此 zip。
+could not write {1}	无法写入 {1}
+Done. Reboot to start {1}.	完成。重启即可启动 {1}。
+If Linux does not start, the device returns to Android by itself.	如果 Linux 无法启动，设备会自动回到 Android。
+could not keep a copy of the misc block; nothing was changed	无法保存 misc 块的副本；未做任何更改
+filesystem:     {1} ({2})	文件系统：      {1}（{2}）
+default boot:   {1} ({2})	默认启动：      {1}（{2}）
+Linux, Android after failed boots	Linux，启动失败后回到 Android
+boot attempts:  {1} failed boots in a row, then Android ({2})	启动尝试：      连续 {1} 次启动失败后回到 Android（{2}）
+hotspot:        {1} ({2})	热点：          {1}（{2}）
+name and password copied from Android	从 Android 复制名称和密码
+not copied	不复制
+GPU files:      {1} ({2})	GPU 文件：      {1}（{2}）
+included	包含
+not included	不包含
+misc did not verify after writing; the block it held before was written back and verified, so Android boots as before. Linux was not armed.	写入后 misc 校验失败；原来的块已写回并校验通过，Android 照常启动。Linux 未被启用。
+misc did not verify after writing, and the block it held before could not be written back: misc holds unknown bytes, and the device may not start Android. Do not reboot. Write the saved block back as root: {1}	写入后 misc 校验失败，且原来的块无法写回：misc 中是未知的数据，设备可能无法启动 Android。请不要重启。请以 root 身份写回保存的块：{1}
+password for {1}: "{2}"   (also in {3}; delete that file after the first login)	{1} 的密码："{2}"   （也保存在 {3} 中；首次登录后请删除该文件）
+could not write {1}; nothing was installed	无法写入 {1}；未安装任何内容
+used by this installation and removed from {1}:{2}	已在本次安装中使用并从 {1} 中删除：{2}
+could not remove{1} from {2}; remove it by hand	无法从 {2} 中删除：{1}；请手动删除
+password:       kept: the accounts and passwords of the installed system are not changed ({1} in {2} sets a new one)	密码：          保留：已安装系统的账户和密码不变（在 {2} 中写入 {1} 可设置新密码）
+password for {1}: unchanged (the one this system had)	{1} 的密码：未改变（仍为该系统原来的密码）

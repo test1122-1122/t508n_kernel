@@ -1,0 +1,7 @@
+sipc/sipc-core.o
+sipc/spipe.o
+sipc/spool.o
+sipc/slog_bridge.o
+sipc/sbuf_bridge.o
+sipc/sblock_bridge.o
+sipc/sipx.o

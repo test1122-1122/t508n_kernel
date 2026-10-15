@@ -1,0 +1,12 @@
+[2026-10-09 08:37:26:524] ===============================E:\Download\ums9620_tcl_t508n_v3 (1)\spd_dump.exe
+[2026-10-09 08:37:29:541] Write: Call GetOverlappedResult() fail, [ErrorCode: 0x00000079].
+[2026-10-09 08:37:32:156] ===============================E:\Download\ums9620_tcl_t508n_v3 (1)\spd_dump.exe
+[2026-10-09 08:37:38:188] Write: Call GetOverlappedResult() fail, [ErrorCode: 0x00000079].
+[2026-10-09 08:37:53:302] ===============================E:\Download\ums9620_tcl_t508n_v3 (1)\spd_dump.exe
+[2026-10-09 08:38:33:081] ===============================E:\Download\ums9620_tcl_t508n_v3 (1)\spd_dump.exe
+[2026-10-09 08:38:56:217] ===============================E:\Download\ums9620_tcl_t508n_v3 (1)\spd_dump.exe
+[2026-10-09 08:38:58:249] Read: Call ClearCommError() fail, [ErrorCode: 0x000003E3].
+[2026-10-09 08:38:58:249] Write: Call ClearCommError() fail, [ErrorCode: 0x00000016].
+[2026-10-09 08:38:58:249] Write: Call WriteFile() fail, [ErrorCode: 0x00000016].
+[2026-10-09 08:39:00:832] ===============================E:\Download\ums9620_tcl_t508n_v3 (1)\spd_dump.exe
+[2026-10-09 08:39:12:982] ===============================E:\Download\ums9620_tcl_t508n_v3 (1)\spd_dump.exe

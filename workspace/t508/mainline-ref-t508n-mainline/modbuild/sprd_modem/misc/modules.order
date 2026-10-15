@@ -1,0 +1,3 @@
+misc/sprd_systimer.o
+misc/sprd_time_sync.o
+misc/sprd_time_sync_cp.o

@@ -1,0 +1,1 @@
+trusty/trusty-virtio.o

@@ -1,0 +1,14 @@
+sipa_v3/sipa_core.o
+sipa_v3/sipa_hal.o
+sipa_v3/sipa_nic.o
+sipa_v3/sipa_skb_recv.o
+sipa_v3/sipa_skb_send.o
+sipa_v3/sipa_rm_res.o
+sipa_v3/sipa_rm_dep_graph.o
+sipa_v3/sipa_rm.o
+sipa_v3/sipa_rm_peers_list.o
+sipa_v3/sipa_usb_cons.o
+sipa_v3/sipa_debugfs.o
+sipa_v3/sipa_phy_r3p0/sipa_cmn_fifo_phy.o
+sipa_v3/sipa_phy_r3p0/sipa_glb_phy.o
+sipa_v3/sipa_dummy.o

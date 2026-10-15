@@ -1,0 +1,3 @@
+sipa_delegate/sipa_delegate.o
+sipa_delegate/sipa_dele_cmn.o
+sipa_delegate/sipa_dele_cp_in_ap.o

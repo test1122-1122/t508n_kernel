@@ -1,0 +1,72 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * TCL T508N (OT5) —— 基于 mainline arch/arm64/boot/dts/sprd/ums9620.dtsi
+ * 的 Linux 启动 bring-up 板级文件（串口起步版）
+ *
+ * 关键参数取自逆向成果:
+ *  - 内存 3GB @0x80000000 连续 (LK: dram cs0 0x60000000 + cs1 0x5ffff000)
+ *  - 控制台 uart1 (LK cmdline: console=ttyS1,115200n8)
+ *  - 保留区域与 stock DTB 一致, 防止内核踩到 Trusty(TOS)/SML/modem/AGDSP
+ */
+/dts-v1/;
+
+#include "ums9620.dtsi"
+
+/ {
+	model = "TCL T508N (OT5)";
+	compatible = "sprd,ot5", "sprd,ums9620";
+
+	/* 让 LK 按 stock 规则匹配 dtbo: sc-id 与 stock 内核 DTB 一致,
+	 * board_id 与 dtbo 条目(0x2700)一致 */
+	sprd,sc-id = "ums9620 1000 1000";
+	sprd,board_id = <0x2700>;
+
+	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+	};
+
+	memory@80000000 {
+		device_type = "memory";
+		reg = <0x0 0x80000000 0x0 0xc0000000>;	/* 3GB */
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		/* 紫光安全世界与固件区域（与 stock DTB 对齐） */
+		ddrbist-mem@80000000   { reg = <0x0 0x80000000 0x0 0x1000>;    no-map; };
+		sysdump-mem@80001000  { reg = <0x0 0x80001000 0x0 0x1000>;    no-map; };
+		sipc-mem@87800000     { reg = <0x0 0x87800000 0x0 0x800000>;  no-map; };
+		cp-modem@88000000     { reg = <0x0 0x88000000 0x0 0x1d000000>;no-map; };
+		iq-mem@aa000000       { reg = <0x0 0xaa000000 0x0 0x4000000>; no-map; };
+		ch-ddr@ae600000       { reg = <0x0 0xae600000 0x0 0x300000>;  no-map; };
+		audio-mem@af700000    { reg = <0x0 0xaf700000 0x0 0x900000>;  no-map; };
+		audiodsp-mem@afa00000 { reg = <0x0 0xafa00000 0x0 0x600000>;  no-map; };
+		sysdump-uboot@b5000000{ reg = <0x0 0xb5000000 0x0 0x1000000>; no-map; };
+		uboot-log@bbe80000    { reg = <0x0 0xbbe80000 0x0 0x80000>;   no-map; };
+		sml-mem@bd000000      { reg = <0x0 0xbd000000 0x0 0x40000>;   no-map; };
+		tos-mem@bd040000      { reg = <0x0 0xbd040000 0x0 0x3fc0000>; no-map; };
+		sh-mem@c3000000       { reg = <0x0 0xc3000000 0x0 0x100000>;  no-map; };
+		dptx-hdcp@fff10000    { reg = <0x0 0xfff10000 0x0 0x10000>;   no-map; };
+		/* 无串口验证通道: 与 stock 相同位置, 官方内核会把它读进 /sys/fs/pstore */
+		ramoops@fff80000 {
+			compatible = "ramoops";
+			reg = <0x0 0xfff80000 0x0 0x40000>;
+			record-size = <0x8000>;
+			console-size = <0x8000>;
+			pmsg-size = <0x8000>;
+		};
+	};
+
+	chosen {
+		/* LK 会注入自己的 cmdline (console=ttyS1,115200n8 init=/init root=/dev/ram0 …) */
+		stdout-path = "serial1:115200n8";
+	};
+};
+
+&uart1 {
+	status = "okay";
+};

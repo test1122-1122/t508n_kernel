@@ -1,0 +1,835 @@
+make: Entering directory '/home/test/t508n/t508/mainline-ref/src/out-6.18.55'
+make[1]: Entering directory '/home/test/t508n/t508/mainline-ref/t508n-mainline/modbuild/wcn_bsp'
+  CC [M]  wcn_bus.o
+  CC [M]  sprd_wcn.o
+  CC [M]  mu300_stubs.o
+  CC [M]  platform/wcn_parn_parser.o
+  CC [M]  platform/wcn_txrx.o
+  CC [M]  platform/wcn_procfs.o
+  CC [M]  platform/wcn_log.o
+  CC [M]  platform/wcn_misc.o
+In file included from ././boot/wcn_integrate.h:44,
+                 from platform/../include/wcn_glb.h:21,
+                 from platform/wcn_log.c:11:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from platform/../include/wcn_glb.h:4:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from platform/wcn_procfs.c:33:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from platform/wcn_procfs.c:26:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+platform/wcn_procfs.c:107:6: warning: no previous prototype for ‘wcn_reset_process’ [-Wmissing-prototypes]
+  107 | void wcn_reset_process(void)
+      |      ^~~~~~~~~~~~~~~~~
+platform/wcn_procfs.c:120:6: warning: no previous prototype for ‘wcn_dump_process’ [-Wmissing-prototypes]
+  120 | void wcn_dump_process(enum wcn_source_type type)
+      |      ^~~~~~~~~~~~~~~~
+platform/wcn_procfs.c:165:6: warning: no previous prototype for ‘__wcn_assert_interface’ [-Wmissing-prototypes]
+  165 | void __wcn_assert_interface(enum wcn_source_type type, char *str)
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+platform/wcn_procfs.c:264:5: warning: no previous prototype for ‘mdbg_assert_read’ [-Wmissing-prototypes]
+  264 | int mdbg_assert_read(int channel, struct mbuf_t *head,
+      |     ^~~~~~~~~~~~~~~~
+platform/wcn_procfs.c:296:5: warning: no previous prototype for ‘mdbg_loopcheck_read’ [-Wmissing-prototypes]
+  296 | int mdbg_loopcheck_read(int channel, struct mbuf_t *head,
+      |     ^~~~~~~~~~~~~~~~~~~
+platform/wcn_procfs.c:339:5: warning: no previous prototype for ‘mdbg_at_cmd_read’ [-Wmissing-prototypes]
+  339 | int mdbg_at_cmd_read(int channel, struct mbuf_t *head,
+      |     ^~~~~~~~~~~~~~~~
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from platform/wcn_txrx.c:16:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from ././include/wcn_glb.h:4:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+  CC [M]  platform/bufring.o
+  CC [M]  platform/wcn_op.o
+  CC [M]  platform/sysfs.o
+  CC [M]  platform/reset.o
+  CC [M]  platform/reset_test.o
+  CC [M]  platform/loopcheck.o
+  CC [M]  platform/rf/rf.o
+  CC [M]  platform/wcn_dump_integrate.o
+platform/wcn_op.c:146:5: warning: no previous prototype for ‘wcn_op_init’ [-Wmissing-prototypes]
+  146 | int wcn_op_init(void)
+      |     ^~~~~~~~~~~
+platform/wcn_op.c:160:6: warning: no previous prototype for ‘wcn_op_exit’ [-Wmissing-prototypes]
+  160 | void wcn_op_exit(void)
+      |      ^~~~~~~~~~~
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from platform/reset.c:18:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from ././include/wcn_glb.h:4:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from platform/sysfs.c:17:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from platform/reset_test.c:3:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from platform/../sdio/../sleep/slp_mgr.h:20,
+                 from platform/../sdio/sdiohal.h:19,
+                 from platform/sysfs.c:15:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+In file included from ././include/wcn_glb.h:4:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+platform/sysfs.c:187:5: warning: no previous prototype for ‘wcn_set_armlog’ [-Wmissing-prototypes]
+  187 | int wcn_set_armlog(bool enable)
+      |     ^~~~~~~~~~~~~~
+  CC [M]  platform/wcn_boot.o
+  CC [M]  platform/gnss/gnss.o
+  CC [M]  platform/wcn_dump.o
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from platform/loopcheck.c:12:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from ././include/wcn_glb.h:4:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+  CC [M]  platform/gnss_dump.o
+In file included from ././boot/wcn_integrate.h:44,
+                 from platform/rf/rf.c:22:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from platform/rf/rf.c:10:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+In file included from ././include/wcn_glb.h:4,
+                 from platform/wcn_dump_integrate.c:14:
+././kinclude/misc/marlin_platform.h:60:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(enum wcn_sub_sys)’ [-Wenum-int-mismatch]
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+In file included from platform/wcn_dump_integrate.c:12:
+././kinclude/misc/wcn_integrate_platform.h:139:5: note: previous declaration of ‘start_marlin’ with type ‘int(u32)’ {aka ‘int(unsigned int)’}
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(enum wcn_sub_sys)’ [-Wenum-int-mismatch]
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: note: previous declaration of ‘stop_marlin’ with type ‘int(u32)’ {aka ‘int(unsigned int)’}
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+  CC [M]  platform/wcn_gnss_dump.o
+  CC [M]  platform/wcn_swd_dap.o
+  CC [M]  platform/mem_pd_mgr.o
+  CC [M]  platform/wcn_debugfs.o
+platform/gnss/gnss.c:16: warning: "pr_fmt" redefined
+   16 | #define pr_fmt(fmt) "sprd-gnss:" fmt
+      | 
+In file included from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/asm-generic/bug.h:22,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/arch/arm64/include/asm/bug.h:26,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/bug.h:5,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/alloc_tag.h:8,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/vmalloc.h:5,
+                 from ./././kinclude/mu300_compat.h:7,
+                 from <command-line>:
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:402: note: this is the location of the previous definition
+  402 | #define pr_fmt(fmt) fmt
+      | 
+platform/wcn_dump.c:201:5: warning: no previous prototype for ‘gnss_dump_data’ [-Wmissing-prototypes]
+  201 | int gnss_dump_data(void *start_addr, int len)
+      |     ^~~~~~~~~~~~~~
+platform/wcn_dump.c:505:6: warning: no previous prototype for ‘gnss_dump_str’ [-Wmissing-prototypes]
+  505 | void gnss_dump_str(char *str, int str_len)
+      |      ^~~~~~~~~~~~~
+platform/wcn_dump.c:708:6: warning: no previous prototype for ‘dap_sel_default_lite’ [-Wmissing-prototypes]
+  708 | void dap_sel_default_lite(void)
+      |      ^~~~~~~~~~~~~~~~~~~~
+platform/wcn_dump.c:1009:6: warning: no previous prototype for ‘sprdwcn_bus_armreg_write’ [-Wmissing-prototypes]
+ 1009 | void sprdwcn_bus_armreg_write(unsigned int reg_index, unsigned int value)
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~
+platform/wcn_dump.c:1062:5: warning: no previous prototype for ‘dump_arm_reg’ [-Wmissing-prototypes]
+ 1062 | int dump_arm_reg(void)
+      |     ^~~~~~~~~~~~
+platform/wcn_dump.c:1293:5: warning: no previous prototype for ‘mdbg_dump_mem’ [-Wmissing-prototypes]
+ 1293 | int mdbg_dump_mem(enum wcn_source_type type)
+      |     ^~~~~~~~~~~~~
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from platform/wcn_boot.c:44:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from platform/wcn_boot.c:28:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+In file included from platform/gnss_dump.c:30:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from platform/gnss_dump.c:28:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+platform/wcn_boot.c:395:5: warning: no previous prototype for ‘marlin_tsx_cali_data_read’ [-Wmissing-prototypes]
+  395 | int marlin_tsx_cali_data_read(struct tsx_data *p_tsx_data)
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/asm-generic/bug.h:22,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/arch/arm64/include/asm/bug.h:26,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/bug.h:5,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/alloc_tag.h:8,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/vmalloc.h:5,
+                 from ./././kinclude/mu300_compat.h:7,
+                 from <command-line>:
+platform/wcn_boot.c: In function ‘reg_set_bit’:
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:5:25: warning: format ‘%x’ expects argument of type ‘unsigned int’, but argument 3 has type ‘long unsigned int’ [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:484:25: note: in definition of macro ‘printk_index_wrap’
+  484 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+      |                         ^~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:555:9: note: in expansion of macro ‘printk’
+  555 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+      |         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:11:25: note: in expansion of macro ‘KERN_SOH’
+   11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions */
+      |                         ^~~~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:555:16: note: in expansion of macro ‘KERN_ERR’
+  555 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+      |                ^~~~~~~~
+././include/wcn_dbg.h:20:9: note: in expansion of macro ‘pr_err’
+   20 |         pr_err(" error: " fmt, ## args)
+      |         ^~~~~~
+platform/wcn_boot.c:986:17: note: in expansion of macro ‘WCN_ERR’
+  986 |                 WCN_ERR("%s: read reg 0x%x failed with %d\n", __func__, reg, ret);
+      |                 ^~~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:5:25: warning: format ‘%x’ expects argument of type ‘unsigned int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:484:25: note: in definition of macro ‘printk_index_wrap’
+  484 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+      |                         ^~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:585:9: note: in expansion of macro ‘printk’
+  585 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:14:25: note: in expansion of macro ‘KERN_SOH’
+   14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+      |                         ^~~~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:585:16: note: in expansion of macro ‘KERN_INFO’
+  585 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |                ^~~~~~~~~
+././include/wcn_dbg.h:17:9: note: in expansion of macro ‘pr_info’
+   17 |         pr_info(": " fmt, ## args)
+      |         ^~~~~~~
+platform/wcn_boot.c:990:9: note: in expansion of macro ‘WCN_INFO’
+  990 |         WCN_INFO("ADDR 0x%x = 0x%x, %s\n", reg, reg_data, __func__);
+      |         ^~~~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:5:25: warning: format ‘%x’ expects argument of type ‘unsigned int’, but argument 3 has type ‘long unsigned int’ [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:484:25: note: in definition of macro ‘printk_index_wrap’
+  484 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+      |                         ^~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:555:9: note: in expansion of macro ‘printk’
+  555 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+      |         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:11:25: note: in expansion of macro ‘KERN_SOH’
+   11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions */
+      |                         ^~~~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:555:16: note: in expansion of macro ‘KERN_ERR’
+  555 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+      |                ^~~~~~~~
+././include/wcn_dbg.h:20:9: note: in expansion of macro ‘pr_err’
+   20 |         pr_err(" error: " fmt, ## args)
+      |         ^~~~~~
+platform/wcn_boot.c:996:25: note: in expansion of macro ‘WCN_ERR’
+  996 |                         WCN_ERR("%s: write reg:0x%x bit:0x%x failed with %d\n", __func__, reg, bit, ret);
+      |                         ^~~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:5:25: warning: format ‘%x’ expects argument of type ‘unsigned int’, but argument 4 has type ‘long unsigned int’ [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:484:25: note: in definition of macro ‘printk_index_wrap’
+  484 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+      |                         ^~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:555:9: note: in expansion of macro ‘printk’
+  555 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+      |         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:11:25: note: in expansion of macro ‘KERN_SOH’
+   11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions */
+      |                         ^~~~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:555:16: note: in expansion of macro ‘KERN_ERR’
+  555 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+      |                ^~~~~~~~
+././include/wcn_dbg.h:20:9: note: in expansion of macro ‘pr_err’
+   20 |         pr_err(" error: " fmt, ## args)
+      |         ^~~~~~
+platform/wcn_boot.c:996:25: note: in expansion of macro ‘WCN_ERR’
+  996 |                         WCN_ERR("%s: write reg:0x%x bit:0x%x failed with %d\n", __func__, reg, bit, ret);
+      |                         ^~~~~~~
+platform/wcn_boot.c: In function ‘btwifi_download_firmware’:
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:5:25: warning: format ‘%x’ expects argument of type ‘unsigned int’, but argument 3 has type ‘char *’ [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:484:25: note: in definition of macro ‘printk_index_wrap’
+  484 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+      |                         ^~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:585:9: note: in expansion of macro ‘printk’
+  585 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:14:25: note: in expansion of macro ‘KERN_SOH’
+   14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+      |                         ^~~~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:585:16: note: in expansion of macro ‘KERN_INFO’
+  585 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |                ^~~~~~~~~
+platform/wcn_boot.c:1124:9: note: in expansion of macro ‘pr_info’
+ 1124 |         pr_info(" %s tx_img_ptr = %x\n", __func__, tx_img_ptr);
+      |         ^~~~~~~
+platform/wcn_boot.c: At top level:
+platform/wcn_boot.c:1685:6: warning: no previous prototype for ‘marlin_read_cali_data’ [-Wmissing-prototypes]
+ 1685 | void marlin_read_cali_data(void)
+      |      ^~~~~~~~~~~~~~~~~~~~~
+platform/wcn_boot.c:2086:5: warning: no previous prototype for ‘set_cp_pin_ds’ [-Wmissing-prototypes]
+ 2086 | int set_cp_pin_ds(unsigned int addr, unsigned int val)
+      |     ^~~~~~~~~~~~~
+platform/wcn_boot.c:2127:5: warning: no previous prototype for ‘enable_spur_remove’ [-Wmissing-prototypes]
+ 2127 | int enable_spur_remove(void)
+      |     ^~~~~~~~~~~~~~~~~~
+platform/wcn_boot.c:2142:5: warning: no previous prototype for ‘disable_spur_remove’ [-Wmissing-prototypes]
+ 2142 | int disable_spur_remove(void)
+      |     ^~~~~~~~~~~~~~~~~~~
+platform/wcn_boot.c:2209:6: warning: no previous prototype for ‘marlin_scan_finish’ [-Wmissing-prototypes]
+ 2209 | void marlin_scan_finish(void)
+      |      ^~~~~~~~~~~~~~~~~~
+  CC [M]  platform/wcn_ca_trusty.o
+  CC [M]  platform/wcn_pm_qos.o
+platform/wcn_swd_dap.c:253:14: warning: no previous prototype for ‘swd_transfer’ [-Wmissing-prototypes]
+  253 | unsigned int swd_transfer(unsigned char cmd, unsigned int *data)
+      |              ^~~~~~~~~~~~
+platform/wcn_swd_dap.c:592:14: warning: no previous prototype for ‘swd_sel_target’ [-Wmissing-prototypes]
+  592 | unsigned int swd_sel_target(unsigned char cmd, unsigned int *data)
+      |              ^~~~~~~~~~~~~~
+platform/wcn_swd_dap.c:689:6: warning: no previous prototype for ‘swd_set_debug_mode’ [-Wmissing-prototypes]
+  689 | void swd_set_debug_mode(void)
+      |      ^~~~~~~~~~~~~~~~~~
+platform/wcn_swd_dap.c:714:6: warning: no previous prototype for ‘swd_hold_btwf_core’ [-Wmissing-prototypes]
+  714 | void swd_hold_btwf_core(void)
+      |      ^~~~~~~~~~~~~~~~~~
+platform/wcn_gnss_dump.c:13: warning: "pr_fmt" redefined
+   13 | #define pr_fmt(fmt) "sprd-gnss-dump: " fmt
+      | 
+In file included from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/asm-generic/bug.h:22,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/arch/arm64/include/asm/bug.h:26,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/bug.h:5,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/alloc_tag.h:8,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/vmalloc.h:5,
+                 from ./././kinclude/mu300_compat.h:7,
+                 from <command-line>:
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:402: note: this is the location of the previous definition
+  402 | #define pr_fmt(fmt) fmt
+      | 
+platform/wcn_gnss_dump.c:71:15: warning: no previous prototype for ‘gnss_ring_free_space’ [-Wmissing-prototypes]
+   71 | unsigned long gnss_ring_free_space(void)
+      |               ^~~~~~~~~~~~~~~~~~~~
+platform/wcn_gnss_dump.c:91:6: warning: no previous prototype for ‘gnss_ring_reset’ [-Wmissing-prototypes]
+   91 | void gnss_ring_reset(void)
+      |      ^~~~~~~~~~~~~~~
+platform/wcn_gnss_dump.c:267:5: warning: no previous prototype for ‘gnss_dump_write’ [-Wmissing-prototypes]
+  267 | int gnss_dump_write(char *buf, int len)
+      |     ^~~~~~~~~~~~~~~
+platform/wcn_gnss_dump.c:348:5: warning: no previous prototype for ‘wcn_gnss_dump_init’ [-Wmissing-prototypes]
+  348 | int wcn_gnss_dump_init(void)
+      |     ^~~~~~~~~~~~~~~~~~
+platform/wcn_gnss_dump.c:381:6: warning: no previous prototype for ‘wcn_gnss_dump_exit’ [-Wmissing-prototypes]
+  381 | void wcn_gnss_dump_exit(void)
+      |      ^~~~~~~~~~~~~~~~~~
+platform/mem_pd_mgr.c:78:14: warning: no previous prototype for ‘mem_pd_spinlock_lock’ [-Wmissing-prototypes]
+   78 | unsigned int mem_pd_spinlock_lock(int id)
+      |              ^~~~~~~~~~~~~~~~~~~~
+platform/mem_pd_mgr.c:102:14: warning: no previous prototype for ‘mem_pd_spinlock_unlock’ [-Wmissing-prototypes]
+  102 | unsigned int mem_pd_spinlock_unlock(int id)
+      |              ^~~~~~~~~~~~~~~~~~~~~~
+platform/mem_pd_mgr.c:540:5: warning: no previous prototype for ‘test_mem_clrear’ [-Wmissing-prototypes]
+  540 | int test_mem_clrear(enum wcn_sub_sys subsys)
+      |     ^~~~~~~~~~~~~~~
+  CC [M]  sleep/sdio_int.o
+platform/wcn_debugfs.c:156:5: warning: no previous prototype for ‘wcn_init_debugfs’ [-Wmissing-prototypes]
+  156 | int wcn_init_debugfs(void)
+      |     ^~~~~~~~~~~~~~~~
+  CC [M]  sleep/slp_mgr.o
+  CC [M]  sleep/slp_sdio.o
+  CC [M]  sleep/slp_test.o
+  CC [M]  boot/wcn_integrate.o
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from platform/wcn_pm_qos.c:15:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from ././include/wcn_glb.h:4:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+platform/wcn_pm_qos.c:22:20: warning: no previous prototype for ‘wcn_pm_qos_get’ [-Wmissing-prototypes]
+   22 | struct wcn_pm_qos *wcn_pm_qos_get(void)
+      |                    ^~~~~~~~~~~~~~
+platform/wcn_pm_qos.c:232:5: warning: no previous prototype for ‘wcn_pm_qos_condition_config’ [-Wmissing-prototypes]
+  232 | int wcn_pm_qos_condition_config(struct wcn_pm_qos_condition *cond)
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/asm-generic/bug.h:22,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/arch/arm64/include/asm/bug.h:26,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/bug.h:5,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/alloc_tag.h:8,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/vmalloc.h:5,
+                 from ./././kinclude/mu300_compat.h:7,
+                 from <command-line>:
+platform/wcn_pm_qos.c: In function ‘wcn_freq_pm_qos_init’:
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:5:25: warning: format ‘%lu’ expects argument of type ‘long unsigned int’, but argument 5 has type ‘unsigned int’ [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:484:25: note: in definition of macro ‘printk_index_wrap’
+  484 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+      |                         ^~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:585:9: note: in expansion of macro ‘printk’
+  585 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:14:25: note: in expansion of macro ‘KERN_SOH’
+   14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+      |                         ^~~~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:585:16: note: in expansion of macro ‘KERN_INFO’
+  585 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |                ^~~~~~~~~
+././include/wcn_dbg.h:17:9: note: in expansion of macro ‘pr_info’
+   17 |         pr_info(": " fmt, ## args)
+      |         ^~~~~~~
+platform/wcn_pm_qos.c:349:17: note: in expansion of macro ‘WCN_INFO’
+  349 |                 WCN_INFO("%s: CPU%d->%d min_freq=%lu,max_freq=%lu,requset freq=%lu\n", __func__,
+      |                 ^~~~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:5:25: warning: format ‘%lu’ expects argument of type ‘long unsigned int’, but argument 6 has type ‘unsigned int’ [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:484:25: note: in definition of macro ‘printk_index_wrap’
+  484 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+      |                         ^~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:585:9: note: in expansion of macro ‘printk’
+  585 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:14:25: note: in expansion of macro ‘KERN_SOH’
+   14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+      |                         ^~~~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:585:16: note: in expansion of macro ‘KERN_INFO’
+  585 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |                ^~~~~~~~~
+././include/wcn_dbg.h:17:9: note: in expansion of macro ‘pr_info’
+   17 |         pr_info(": " fmt, ## args)
+      |         ^~~~~~~
+platform/wcn_pm_qos.c:349:17: note: in expansion of macro ‘WCN_INFO’
+  349 |                 WCN_INFO("%s: CPU%d->%d min_freq=%lu,max_freq=%lu,requset freq=%lu\n", __func__,
+      |                 ^~~~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:5:25: warning: format ‘%lu’ expects argument of type ‘long unsigned int’, but argument 7 has type ‘unsigned int’ [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:484:25: note: in definition of macro ‘printk_index_wrap’
+  484 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+      |                         ^~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:585:9: note: in expansion of macro ‘printk’
+  585 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:14:25: note: in expansion of macro ‘KERN_SOH’
+   14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+      |                         ^~~~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:585:16: note: in expansion of macro ‘KERN_INFO’
+  585 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |                ^~~~~~~~~
+././include/wcn_dbg.h:17:9: note: in expansion of macro ‘pr_info’
+   17 |         pr_info(": " fmt, ## args)
+      |         ^~~~~~~
+platform/wcn_pm_qos.c:349:17: note: in expansion of macro ‘WCN_INFO’
+  349 |                 WCN_INFO("%s: CPU%d->%d min_freq=%lu,max_freq=%lu,requset freq=%lu\n", __func__,
+      |                 ^~~~~~~~
+  CC [M]  boot/wcn_integrate_dev.o
+  CC [M]  boot/wcn_integrate_boot.o
+  CC [M]  boot/wcn_debug_bus.o
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from sleep/slp_sdio.h:5,
+                 from sleep/sdio_int.c:16:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from sleep/sdio_int.c:8:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from sleep/slp_sdio.h:5,
+                 from sleep/slp_mgr.c:35:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from sleep/../sdio/../sleep/slp_mgr.h:20,
+                 from sleep/../sdio/sdiohal.h:19,
+                 from sleep/slp_mgr.c:32:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from sleep/slp_sdio.h:5,
+                 from sleep/slp_sdio.c:15:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from sleep/slp_mgr.h:20,
+                 from sleep/slp_sdio.c:14:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+In file included from ././include/wcn_glb.h:4,
+                 from boot/wcn_integrate.c:14:
+././kinclude/misc/marlin_platform.h:60:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(enum wcn_sub_sys)’ [-Wenum-int-mismatch]
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+In file included from boot/wcn_integrate.c:13:
+././kinclude/misc/wcn_integrate_platform.h:139:5: note: previous declaration of ‘start_marlin’ with type ‘int(u32)’ {aka ‘int(unsigned int)’}
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(enum wcn_sub_sys)’ [-Wenum-int-mismatch]
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: note: previous declaration of ‘stop_marlin’ with type ‘int(u32)’ {aka ‘int(unsigned int)’}
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+boot/wcn_integrate.c:416:5: warning: no previous prototype for ‘integ_marlin_get_power’ [-Wmissing-prototypes]
+  416 | int integ_marlin_get_power(void)
+      |     ^~~~~~~~~~~~~~~~~~~~~~
+boot/wcn_integrate.c:501:21: warning: no previous prototype for ‘integ_wcn_get_xtal_26m_clk_type’ [-Wmissing-prototypes]
+  501 | enum wcn_clock_type integ_wcn_get_xtal_26m_clk_type(void)
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+boot/wcn_integrate.c:1451:13: warning: no previous prototype for ‘integ_wcn_get_chip_name’ [-Wmissing-prototypes]
+ 1451 | const char *integ_wcn_get_chip_name(void)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~
+  CC [M]  sipc/wcn_sipc.o
+  CC [M]  sdio/sdiohal_main.o
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from sleep/slp_sdio.h:5,
+                 from sleep/slp_test.c:6:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from sleep/slp_mgr.h:20,
+                 from sleep/slp_test.c:5:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+sleep/slp_test.c:36:5: warning: no previous prototype for ‘slp_test_init’ [-Wmissing-prototypes]
+   36 | int slp_test_init(void)
+      |     ^~~~~~~~~~~~~
+  CC [M]  sdio/sdiohal_common.o
+  CC [M]  sdio/sdiohal_tx.o
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from boot/wcn_integrate_dev.c:42:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from ././include/wcn_glb.h:4:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+  CC [M]  sdio/sdiohal_rx.o
+boot/wcn_integrate_dev.c:417:6: warning: no previous prototype for ‘wcn_marlin_write_efuse’ [-Wmissing-prototypes]
+  417 | void wcn_marlin_write_efuse(void)
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+boot/wcn_integrate_dev.c:424:6: warning: no previous prototype for ‘gnss_write_efuse_data’ [-Wmissing-prototypes]
+  424 | void gnss_write_efuse_data(void)
+      |      ^~~~~~~~~~~~~~~~~~~~~
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from boot/wcn_integrate_boot.c:14:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from ././include/wcn_glb.h:4:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+boot/wcn_integrate_boot.c:893:5: warning: no previous prototype for ‘wcn_get_reset_reg_setting’ [-Wmissing-prototypes]
+  893 | int wcn_get_reset_reg_setting(void)
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~
+boot/wcn_integrate_boot.c:917:7: warning: no previous prototype for ‘integ_gnss_firmware_path_get’ [-Wmissing-prototypes]
+  917 | char *integ_gnss_firmware_path_get(void)
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+boot/wcn_integrate_boot.c:1788:6: warning: no previous prototype for ‘btwf_sys_polling_powerdown’ [-Wmissing-prototypes]
+ 1788 | bool btwf_sys_polling_powerdown(struct wcn_device *wcn_dev)
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+boot/wcn_integrate_boot.c:2053:5: warning: no previous prototype for ‘btwf_sys_wcnpll_power_down’ [-Wmissing-prototypes]
+ 2053 | int btwf_sys_wcnpll_power_down(struct wcn_device *wcn_dev)
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+boot/wcn_integrate_boot.c:2082:5: warning: no previous prototype for ‘btwf_sys_wcnpll_power_on’ [-Wmissing-prototypes]
+ 2082 | int btwf_sys_wcnpll_power_on(struct wcn_device *wcn_dev)
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~
+boot/wcn_integrate_boot.c:2395:6: warning: no previous prototype for ‘gnss_shutdown_hold’ [-Wmissing-prototypes]
+ 2395 | void gnss_shutdown_hold(struct wcn_device *wcn_dev)
+      |      ^~~~~~~~~~~~~~~~~~
+boot/wcn_integrate_boot.c:2413:6: warning: no previous prototype for ‘gnss_shutdown_release’ [-Wmissing-prototypes]
+ 2413 | void gnss_shutdown_release(struct wcn_device *wcn_dev)
+      |      ^~~~~~~~~~~~~~~~~~~~~
+boot/wcn_integrate_boot.c:2585:5: warning: no previous prototype for ‘btwf_sys_wait_cp2_wfi’ [-Wmissing-prototypes]
+ 2585 | int btwf_sys_wait_cp2_wfi(struct wcn_device *wcn_dev)
+      |     ^~~~~~~~~~~~~~~~~~~~~
+boot/wcn_integrate_boot.c:3946:5: warning: no previous prototype for ‘stop_integrate_wcn_module’ [-Wmissing-prototypes]
+ 3946 | int stop_integrate_wcn_module(u32 subsys)
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from ././boot/wcn_integrate.h:44,
+                 from ././include/wcn_glb.h:21,
+                 from boot/wcn_debug_bus.c:14:
+././kinclude/misc/wcn_integrate_platform.h:139:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+In file included from ././include/wcn_glb.h:4:
+././kinclude/misc/marlin_platform.h:60:5: note: previous declaration of ‘start_marlin’ with type ‘int(enum wcn_sub_sys)’
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(u32)’ {aka ‘int(unsigned int)’} [-Wenum-int-mismatch]
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: note: previous declaration of ‘stop_marlin’ with type ‘int(enum wcn_sub_sys)’
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+  CC [M]  sdio/sdiohal_if.o
+sdio/sdiohal_common.c:49:6: warning: no previous prototype for ‘__sdiohal_debug_point_store’ [-Wmissing-prototypes]
+   49 | void __sdiohal_debug_point_store(int channel, int num, struct mbuf_t *head,
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from ././include/wcn_glb.h:4,
+                 from ././boot/wcn_integrate_dev.h:6,
+                 from ././boot/wcn_integrate.h:47,
+                 from sipc/wcn_sipc.c:19:
+././kinclude/misc/marlin_platform.h:60:5: warning: conflicting types for ‘start_marlin’ due to enum/integer mismatch; have ‘int(enum wcn_sub_sys)’ [-Wenum-int-mismatch]
+   60 | int start_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~~
+In file included from ././boot/wcn_integrate.h:44:
+././kinclude/misc/wcn_integrate_platform.h:139:5: note: previous declaration of ‘start_marlin’ with type ‘int(u32)’ {aka ‘int(unsigned int)’}
+  139 | int start_marlin(u32 subsys);
+      |     ^~~~~~~~~~~~
+././kinclude/misc/marlin_platform.h:61:5: warning: conflicting types for ‘stop_marlin’ due to enum/integer mismatch; have ‘int(enum wcn_sub_sys)’ [-Wenum-int-mismatch]
+   61 | int stop_marlin(enum wcn_sub_sys subsys);
+      |     ^~~~~~~~~~~
+././kinclude/misc/wcn_integrate_platform.h:140:5: note: previous declaration of ‘stop_marlin’ with type ‘int(u32)’ {aka ‘int(unsigned int)’}
+  140 | int stop_marlin(u32 subsys);
+      |     ^~~~~~~~~~~
+sdio/sdiohal_common.c:386:6: warning: no previous prototype for ‘sdiohal_callback_lock_deinit’ [-Wmissing-prototypes]
+  386 | void sdiohal_callback_lock_deinit(void)
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+sdio/sdiohal_common.c:396:6: warning: no previous prototype for ‘sdiohal_spinlock_init’ [-Wmissing-prototypes]
+  396 | void sdiohal_spinlock_init(void)
+      |      ^~~~~~~~~~~~~~~~~~~~~
+sipc/wcn_sipc.c:140:6: warning: no previous prototype for ‘wcn_sipc_chn_set_status’ [-Wmissing-prototypes]
+  140 | void wcn_sipc_chn_set_status(void *data, bool flag)
+      |      ^~~~~~~~~~~~~~~~~~~~~~~
+sipc/wcn_sipc.c:334:6: warning: no previous prototype for ‘wcn_sipc_pop_list_enqueue’ [-Wmissing-prototypes]
+  334 | void wcn_sipc_pop_list_enqueue(struct sipc_chn_info *sipc_chn,
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+sipc/wcn_sipc.c:353:6: warning: no previous prototype for ‘wcn_sipc_pop_list_flush’ [-Wmissing-prototypes]
+  353 | void wcn_sipc_pop_list_flush(struct sipc_chn_info *sipc_chn)
+      |      ^~~~~~~~~~~~~~~~~~~~~~~
+sipc/wcn_sipc.c:382:6: warning: no previous prototype for ‘wcn_sipc_push_list_enqueue’ [-Wmissing-prototypes]
+  382 | void wcn_sipc_push_list_enqueue(struct sipc_chn_info *sipc_chn,
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+sipc/wcn_sipc.c:477:5: warning: no previous prototype for ‘wcn_check_sbuf_status’ [-Wmissing-prototypes]
+  477 | int wcn_check_sbuf_status(u8 dst, u8 channel)
+      |     ^~~~~~~~~~~~~~~~~~~~~
+sipc/wcn_sipc.c:683:5: warning: no previous prototype for ‘wcn_sipc_sblk_chn_rx_status_check’ [-Wmissing-prototypes]
+  683 | int wcn_sipc_sblk_chn_rx_status_check(u8 index)
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+sipc/wcn_sipc.c:866:5: warning: no previous prototype for ‘wcn_sipc_work_func’ [-Wmissing-prototypes]
+  866 | int wcn_sipc_work_func(void *work)
+      |     ^~~~~~~~~~~~~~~~~~
+sipc/wcn_sipc.c:888:5: warning: no previous prototype for ‘wcn_sipc_chn_work_init’ [-Wmissing-prototypes]
+  888 | int wcn_sipc_chn_work_init(struct sipc_chn_info *sipc_chn)
+      |     ^~~~~~~~~~~~~~~~~~~~~~
+sdio/sdiohal_main.c:1261:5: warning: no previous prototype for ‘wcn_thread_setattr’ [-Wmissing-prototypes]
+ 1261 | int wcn_thread_setattr(unsigned dir, struct sched_attr *attr)
+      |     ^~~~~~~~~~~~~~~~~~
+sipc/wcn_sipc.c:1114:5: warning: no previous prototype for ‘wcn_sipc_mdbg_debug_show’ [-Wmissing-prototypes]
+ 1114 | int wcn_sipc_mdbg_debug_show(void)
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~
+sipc/wcn_sipc.c:1218:5: warning: no previous prototype for ‘wcn_sipc_init_debugfs’ [-Wmissing-prototypes]
+ 1218 | int wcn_sipc_init_debugfs(void)
+      |     ^~~~~~~~~~~~~~~~~~~~~
+sipc/wcn_sipc.c:1231:5: warning: no previous prototype for ‘wcn_sipc_preinit’ [-Wmissing-prototypes]
+ 1231 | int wcn_sipc_preinit(void)
+      |     ^~~~~~~~~~~~~~~~
+sipc/wcn_sipc.c: In function ‘sipc_debug_point_show’:
+sipc/wcn_sipc.c:1266:68: warning: format ‘%lu’ expects argument of type ‘long unsigned int’, but argument 4 has type ‘u64’ {aka ‘long long unsigned int’} [-Wformat=]
+ 1266 |                 pos += scnprintf(buftest + pos, bufsz - pos, "%012lu  ", *dbg_pt++);
+      |                                                               ~~~~~^     ~~~~~~~~~
+      |                                                                    |     |
+      |                                                                    |     u64 {aka long long unsigned int}
+      |                                                                    long unsigned int
+      |                                                               %012llu
+In file included from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/asm-generic/bug.h:22,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/arch/arm64/include/asm/bug.h:26,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/bug.h:5,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/alloc_tag.h:8,
+                 from /home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/vmalloc.h:5,
+                 from ./././kinclude/mu300_compat.h:7,
+                 from <command-line>:
+sipc/wcn_sipc.c: In function ‘sipc_recvseq_debug_show’:
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:5:25: warning: format ‘%lu’ expects argument of type ‘long unsigned int’, but argument 4 has type ‘u64’ {aka ‘long long unsigned int’} [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:484:25: note: in definition of macro ‘printk_index_wrap’
+  484 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+      |                         ^~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:585:9: note: in expansion of macro ‘printk’
+  585 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |         ^~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/kern_levels.h:14:25: note: in expansion of macro ‘KERN_SOH’
+   14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+      |                         ^~~~~~~~
+/home/test/t508n/t508/mainline-ref/src/linux-6.18.55/include/linux/printk.h:585:16: note: in expansion of macro ‘KERN_INFO’
+  585 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |                ^~~~~~~~~
+././include/wcn_dbg.h:17:9: note: in expansion of macro ‘pr_info’
+   17 |         pr_info(": " fmt, ## args)
+      |         ^~~~~~~
+sipc/wcn_sipc.c:1296:17: note: in expansion of macro ‘WCN_INFO’
+ 1296 |                 WCN_INFO("RECV SEQ %d: %ps : %012lu \n", i, g_sipc_info.chn8_recvseq_info[i].seq_func, \
+      |                 ^~~~~~~~
+  LD [M]  wcn_bsp.o
+  MODPOST Module.symvers
+  CC [M]  wcn_bsp.mod.o
+  CC [M]  .module-common.o
+  LD [M]  wcn_bsp.ko
+make[1]: Leaving directory '/home/test/t508n/t508/mainline-ref/t508n-mainline/modbuild/wcn_bsp'
+make: Leaving directory '/home/test/t508n/t508/mainline-ref/src/out-6.18.55'
