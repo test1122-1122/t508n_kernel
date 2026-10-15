@@ -1,0 +1,111 @@
+LOCAL_DIR := $(GET_LOCAL_DIR)
+
+MODULE := $(LOCAL_DIR)
+
+MODULE_SRCS += $(LOCAL_DIR)/arch.c
+MODULE_SRCS += $(LOCAL_DIR)/asm.S
+MODULE_SRCS += $(LOCAL_DIR)/exceptions.c
+MODULE_SRCS += $(LOCAL_DIR)/exceptions_asm.S
+MODULE_SRCS += $(LOCAL_DIR)/mmu.c
+MODULE_SRCS += $(LOCAL_DIR)/start.S
+MODULE_SRCS += $(LOCAL_DIR)/thread.c
+
+GLOBAL_DEFINES += SMP_MAX_CPUS=1
+
+# set the default toolchain to m68k-elf
+ifndef TOOLCHAIN_PREFIX
+ifndef ARCH_m68k_TOOLCHAIN_PREFIX
+TOOLCHAIN_PREFIX := m68k-elf-
+else
+TOOLCHAIN_PREFIX := $(ARCH_m68k_TOOLCHAIN_PREFIX)
+endif
+endif
+
+# select the cpu based on flags the platform/target passes in
+M68K_CPU ?= 68040 # default to 040
+
+ifeq ($(M68K_CPU),68000)
+ARCH_COMPILEFLAGS := -mcpu=68000
+GLOBAL_DEFINES += WITH_NO_FP=1
+else ifeq ($(M68K_CPU),68010)
+ARCH_COMPILEFLAGS := -mcpu=68010
+GLOBAL_DEFINES += WITH_NO_FP=1
+else ifeq ($(M68K_CPU),68020)
+ARCH_COMPILEFLAGS := -mcpu=68020
+GLOBAL_DEFINES += WITH_NO_FP=1
+else ifeq ($(M68K_CPU),68030)
+ARCH_COMPILEFLAGS := -mcpu=68030
+M68K_MMU := 68030
+else ifeq ($(M68K_CPU),68040)
+ARCH_COMPILEFLAGS := -mcpu=68040
+M68K_MMU := 68040
+else ifeq ($(M68K_CPU),68060)
+ARCH_COMPILEFLAGS := -mcpu=68060
+M68K_MMU := 68060
+else
+$(error add support for selected cpu $(M68K_CPU))
+endif
+
+M68K_68060SP := $(filter 68020 68030 68040 68060,$(M68K_CPU))
+
+ifneq ($(M68K_68060SP),)
+MODULE_DEPS += arch/m68k/68060SP
+endif
+
+CLANG_ARCH_TRIPLE ?= m68k-elf
+
+cc-option = $(shell if test -z "`$(1) $(2) -S -o /dev/null -xc /dev/null 2>&1`"; \
+	then echo "$(2)"; else echo "$(3)"; fi ;)
+
+# default to no mmu
+WITH_MMU ?= 0
+
+ifeq (true, $(call TOBOOL, $(WITH_MMU)))
+ifeq ($(M68K_MMU),)
+$(error WITH_MMU is set but no M68K_MMU is set)
+endif
+# we have a mmu and want the vmm/pmm
+WITH_KERNEL_VM := 1
+
+GLOBAL_DEFINES += ARCH_HAS_MMU=1
+GLOBAL_DEFINES += M68K_MMU=$(M68K_MMU)
+
+# Have the kernel occupy the top 2GB of the address space.
+# This puts the kernel at 0x8000.0000
+GLOBAL_DEFINES += \
+    KERNEL_ASPACE_BASE=0x80000000 \
+    KERNEL_ASPACE_SIZE=0x80000000
+
+KERNEL_BASE ?= 0x80000000
+KERNEL_LOAD_OFFSET ?= 0
+else
+KERNEL_BASE ?= $(MEMBASE)
+KERNEL_LOAD_OFFSET ?= 0
+endif
+
+ARCH_OPTFLAGS ?= -O2
+
+GLOBAL_DEFINES += MEMBASE=$(MEMBASE)
+GLOBAL_DEFINES += MEMSIZE=$(MEMSIZE)
+GLOBAL_DEFINES += KERNEL_BASE=$(KERNEL_BASE)
+GLOBAL_DEFINES += KERNEL_LOAD_OFFSET=$(KERNEL_LOAD_OFFSET)
+GLOBAL_DEFINES += M68K_CPU=$(M68K_CPU)
+GLOBAL_DEFINES += M68K_CPU_$(M68K_CPU)=1
+
+# potentially generated files that should be cleaned out with clean make rule
+GENERATED += \
+	$(BUILDDIR)/linker.ld
+
+# rules for generating the linker
+$(BUILDDIR)/linker.ld: $(LOCAL_DIR)/linker.ld $(wildcard arch/*.ld) linkerscript.phony
+	@echo generating $@
+	@$(MKDIR)
+	$(NOECHO)sed "s/%MEMBASE%/$(MEMBASE)/;s/%MEMSIZE%/$(MEMSIZE)/;s/%KERNEL_BASE%/$(KERNEL_BASE)/;s/%KERNEL_LOAD_OFFSET%/$(KERNEL_LOAD_OFFSET)/" < $< > $@.tmp
+	@$(call TESTANDREPLACEFILE,$@.tmp,$@)
+
+linkerscript.phony:
+.PHONY: linkerscript.phony
+
+LINKER_SCRIPT += $(BUILDDIR)/linker.ld
+
+include make/module.mk

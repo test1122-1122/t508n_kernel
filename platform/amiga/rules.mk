@@ -1,0 +1,92 @@
+LOCAL_DIR := $(GET_LOCAL_DIR)
+
+MODULE := $(LOCAL_DIR)
+
+ARCH := m68k
+# NOTE: All chip models are supported, but 060 needs explicit targeting
+M68K_CPU := 68000
+
+LK_HEAP_IMPLEMENTATION ?= dlmalloc
+
+# Optional: Include useful libs
+MODULE_DEPS += \
+		lib/cbuf \
+		lib/console \
+		lib/gfxconsole \
+		app/tests \
+
+# Your platform-specific source files
+MODULE_SRCS += $(LOCAL_DIR)/display.c
+MODULE_SRCS += $(LOCAL_DIR)/platform.c
+MODULE_SRCS += $(LOCAL_DIR)/serial.c
+MODULE_SRCS += $(LOCAL_DIR)/keyboard.c
+MODULE_SRCS += $(LOCAL_DIR)/timer.c
+MODULE_SRCS += $(LOCAL_DIR)/power.c
+MODULE_SRCS += $(LOCAL_DIR)/stage1.S
+MODULE_SRCS += $(LOCAL_DIR)/stage2.S
+
+# RAM layout
+MEMBASE ?= 0x400
+MEMSIZE ?= 0x7c800 # Target 512KB chip ram for now
+
+LK_EMBEDDED := 1
+
+# Optional useful defines
+GLOBAL_DEFINES += PLATFORM_SUPPORTS_PANIC_SHELL=1
+GLOBAL_DEFINES += PLATFORM_HAS_DYNAMIC_TIMER=1  # unless you add a real timer
+GLOBAL_DEFINES += NOVM_DEFAULT_ARENA=0
+GLOBAL_DEFINES += ARCH_DO_RELOCATION=1
+GLOBAL_DEFINES += CONSOLE_HAS_INPUT_BUFFER=1
+
+ADF_GEN := $(call TOBUILDDIR,$(MODULE)/adfgen)
+ADF_GEN_SRC := $(LOCAL_DIR)/adfgen.c
+
+STAGE1_ELF := $(call TOBUILDDIR,$(MODULE)/stage1.S.o)
+STAGE1_RAW := $(call TOBUILDDIR,$(MODULE)/stage1.raw)
+
+STAGE2_ELF := $(call TOBUILDDIR,$(MODULE)/stage2.S.o)
+STAGE2_RAW := $(call TOBUILDDIR,$(MODULE)/stage2.raw)
+
+BOOTLOADER := $(call TOBUILDDIR,$(MODULE)/bootloader.raw)
+
+KERNEL_IMAGE := $(OUTBIN)
+ADF_IMAGE := $(basename $(KERNEL_IMAGE)).adf
+
+HOST_CC ?= cc
+
+$(ADF_GEN): $(ADF_GEN_SRC)
+	@$(MKDIR)
+	$(HOST_CC) -o "$@" "$<"
+
+$(STAGE1_RAW): $(STAGE1_ELF)
+	@$(MKDIR)
+	m68k-elf-objcopy -O binary "$<" "$@"
+	truncate -s 512 "$@"
+
+# Build and pad stage2 payload
+$(STAGE2_RAW): $(STAGE2_ELF)
+	@$(MKDIR)
+	m68k-elf-objcopy -O binary "$<" "$@"
+	truncate -s 512 "$@"
+
+$(BOOTLOADER): $(STAGE1_RAW) $(STAGE2_RAW)
+	@$(MKDIR)
+	dd if=/dev/zero bs=1024 count=1 of="$@"; \
+
+	dd if="$(STAGE1_RAW)" of="$@" bs=1 seek=0 conv=notrunc; \
+	dd if="$(STAGE2_RAW)" of="$@" bs=1 seek=512 conv=notrunc; \
+	truncate -s 1012 "$@"
+
+$(ADF_IMAGE): $(KERNEL_IMAGE) $(BOOTLOADER) $(ADF_GEN)
+	@$(MKDIR)
+	rm -f -- "$@"
+	"$(ADF_GEN)" "$(BOOTLOADER)" "$@"
+	@KSIZE=$$(stat -c %s "$(KERNEL_IMAGE)"); \
+	echo -n "$$KSIZE"; \
+	printf '%08x' "$$KSIZE" | xxd -r -p | dd of="$@" bs=1024 seek=1 conv=notrunc; \
+	dd if="$(KERNEL_IMAGE)" of="$@" bs=1024 seek=2 conv=notrunc
+
+EXTRA_BUILDDEPS += $(ADF_IMAGE)
+GENERATED += $(ADF_GEN) $(ADF_IMAGE) $(BOOTLOADER) $(STAGE1_RAW) $(STAGE2_RAW) $(STAGE1_ELF) $(STAGE2_ELF)
+
+include make/module.mk

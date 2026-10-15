@@ -1,0 +1,219 @@
+#!/usr/bin/env bash
+
+FAILED=""
+
+print_failed() {
+    FAILED="$(echo $FAILED)"
+    if [ -n "$FAILED" ]; then
+        echo
+        echo "The following projects failed to build:"
+        for f in $FAILED; do
+            echo "  - $f"
+        done
+        exit 1
+    else
+        exit 0
+    fi
+}
+
+handle_interrupt() {
+  echo "Caught ctrl-c, exiting"
+  print_failed
+  exit 1
+}
+
+trap 'handle_interrupt' SIGINT
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+function HELP {
+    echo "help:"
+    echo "-a <arch> : build for <arch> (default: all)"
+    echo "-c        : also build with Clang"
+    echo "-d        : check module header dependencies (scripts/check-module-deps.py) after building"
+    echo "-l        : also build with Clang + LLD"
+    echo "-e        : build with WERROR=1"
+    echo "-j <jobs> : parallel jobs for make"
+    echo "-r        : also build DEBUG=0"
+    echo "-D <level>: build at this DEBUG level only (repeatable); overrides -r"
+    echo "-u        : also build with UBSAN=1"
+    echo "-q        : hide output of build"
+    echo "-h        : for help"
+    echo
+    echo "All build output written to buildall.log"
+    exit 1
+}
+
+RELEASE=0
+DEBUG_LEVELS=()
+WERROR=0
+DEPCHECK=0
+QUIET=0
+UBSAN=0
+CLANG=0
+CLANG_LLD=0
+ARCH="all"
+JOBS=""
+
+while getopts a:cD:dej:lrqu FLAG; do
+    case $FLAG in
+        a) ARCH="$OPTARG";;
+        c) CLANG=1;;
+        D) DEBUG_LEVELS+=("$OPTARG");;
+        d) DEPCHECK=1;;
+        e) WERROR=1;;
+        h) HELP;;
+        j) JOBS="-j$OPTARG";;
+        l) CLANG_LLD=1;;
+        r) RELEASE=1;;
+        q) QUIET=1;;
+        u) UBSAN=1;;
+        \?)
+            echo unrecognized option
+            HELP
+    esac
+done
+
+shift $((OPTIND-1))
+
+# Which DEBUG levels to build. Default is just the normal debug build; -r adds a
+# DEBUG=0 pass on top of it. -D selects levels explicitly, which is what lets a
+# CI job build exactly one configuration instead of the whole sequence.
+if (( ${#DEBUG_LEVELS[@]} == 0 )); then
+    DEBUG_LEVELS=(2)
+    if (( RELEASE )); then
+        DEBUG_LEVELS+=(0)
+    fi
+fi
+
+# The build directory suffix for a given debug level, keeping the historical
+# names: DEBUG=2 is unsuffixed and DEBUG=0 is "-release".
+function debug_suffix {
+    case "$1" in
+        2) echo "" ;;
+        0) echo "-release" ;;
+        *) echo "-debug$1" ;;
+    esac
+}
+
+# Automatically add any fetched toolchains under toolchain/*/bin to PATH
+if [ -d "$DIR/../toolchain" ]; then
+    for tcdir in "$DIR/../toolchain"/*/bin; do
+        if [ -d "$tcdir" ]; then
+            export PATH="$tcdir:$PATH"
+        fi
+    done
+fi
+
+if (( CLANG || CLANG_LLD )); then
+    if [ -z "$CLANG_BINDIR" ]; then
+        for d in /usr/lib/llvm-*/bin; do
+            if [ -x "$d/clang" ]; then
+                export CLANG_BINDIR="$d"
+                export PATH="$d:$PATH"
+                break
+            fi
+        done
+    elif [ -d "$CLANG_BINDIR" ]; then
+        export PATH="$CLANG_BINDIR:$PATH"
+    fi
+fi
+
+echo > buildall.log
+function log()
+{
+    if (( QUIET )); then
+        "$@" >> buildall.log 2>&1
+    else
+        "$@" 2>&1 | tee -a buildall.log
+        return ${PIPESTATUS[0]}
+    fi
+}
+
+# find all the projects in the project directory
+_PROJECTS=$(echo project/*.mk | xargs -n1 basename | sed 's/\.mk//')
+
+# If ARCH is set to all, we build for all architectures, otherwise we
+# filter projects based on the ARCH variable.
+if [ "$ARCH" != "all" ]; then
+    for p in $_PROJECTS; do
+        # Look for ARCH = <arch> and SUBARCH = <subarch> in the output of make list-arch.
+        # Accept either the bare arch or arch+subarch, so -a riscv32 / -a riscv64 pick out
+        # the riscv projects of that width and -a riscv takes both.
+        LIST_ARCH="$(PROJECT=$p make list-arch)"
+        PROJECT_ARCH="$(echo "$LIST_ARCH" | grep '^ARCH = ' | tail -1 | cut -d ' ' -f 3)"
+        PROJECT_SUBARCH="$(echo "$LIST_ARCH" | grep '^SUBARCH = ' | tail -1 | cut -d ' ' -f 3)"
+        if [ "$PROJECT_ARCH" == "$ARCH" ] || [ "$PROJECT_ARCH$PROJECT_SUBARCH" == "$ARCH" ]; then
+            PROJECTS+="$p "
+        else
+            if (( !QUIET )); then
+                echo "Skipping $p, not compatible with architecture $ARCH"
+            fi
+        fi
+    done
+else
+    PROJECTS+="$_PROJECTS"
+fi
+
+echo projects to build: "$PROJECTS"
+BUILDDIRS=()
+echo build log written to buildall.log
+
+if (( WERROR )); then
+    WERROR_MSG="with WERROR"
+fi
+
+TOOLCHAINS=("gcc")
+if (( CLANG )); then
+    TOOLCHAINS+=("clang")
+fi
+if (( CLANG_LLD )); then
+    TOOLCHAINS+=("clang-lld")
+fi
+
+# build every requested debug level with every requested toolchain
+for dbg in "${DEBUG_LEVELS[@]}"; do
+for tc in "${TOOLCHAINS[@]}"; do
+    TC_ARGS=()
+    TC_SUFFIX=""
+    if [ "$tc" == "clang" ]; then
+        TC_ARGS=("TOOLCHAIN=clang")
+        TC_SUFFIX="-clang"
+    elif [ "$tc" == "clang-lld" ]; then
+        TC_ARGS=("TOOLCHAIN=clang" "LD=ld.lld")
+        TC_SUFFIX="-clang-lld"
+    else
+        TC_ARGS=("TOOLCHAIN=gcc")
+        TC_SUFFIX=""
+    fi
+
+    export BUILDDIR_SUFFIX="${TC_SUFFIX}"
+    if (( UBSAN )); then
+        BUILDDIR_SUFFIX="${BUILDDIR_SUFFIX}-ubsan"
+    fi
+    BUILDDIR_SUFFIX="${BUILDDIR_SUFFIX}$(debug_suffix "$dbg")"
+
+    for p in $PROJECTS; do
+        echo "building $p$BUILDDIR_SUFFIX $WERROR_MSG"
+        log env JOBS="$JOBS" "${TC_ARGS[@]}" WERROR=$WERROR UBSAN=$UBSAN DEBUG=$dbg PROJECT=$p nice "$DIR"/make-parallel || FAILED="$FAILED $p$BUILDDIR_SUFFIX"
+        BUILDDIRS+=("build-$p$BUILDDIR_SUFFIX")
+    done
+done
+done
+
+# Check that every module declares the modules whose headers it includes.
+# This reads the build directories just produced, so it runs after the builds
+# and is not meaningful for projects that failed to build.
+if (( DEPCHECK )) && (( ${#BUILDDIRS[@]} == 0 )); then
+    echo "no projects built, skipping module header dependency check"
+elif (( DEPCHECK )); then
+    echo "checking module header dependencies"
+    # the report is short and is the point, so show it even with -q
+    "$DIR"/check-module-deps.py --strict "${BUILDDIRS[@]}" 2>&1 | tee -a buildall.log
+    if (( PIPESTATUS[0] != 0 )); then
+        FAILED="$FAILED module-deps-check"
+    fi
+fi
+
+# Print out at the end which projects failed to build
+print_failed

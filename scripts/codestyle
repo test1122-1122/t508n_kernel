@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# formatting script using clang-format.
+# the format is described in .clang-format file at the root of the project.
+clang-format --verbose -i $@

@@ -1,0 +1,570 @@
+# LK Kernel Development Guide
+
+LK is a small, SMP-aware embedded OS kernel designed for supervisor mode on diverse 32/64-bit architectures. It's used extensively in embedded systems, including Android bootloaders. Written primarily in C and assembly, with a limited C++ subset: `lib/libcpp` provides a curated portion of the C++17 standard library (see `lib/libcpp/include/` for the authoritative list), built with no exceptions, no RTTI, and no dynamic containers.
+
+## Architecture Overview
+
+### Hierarchical Build System
+
+LK uses a 4-layer modular build system:
+
+1. **Project** (`project/*.mk`) - Top-level configuration defining which modules to include
+   - Example: `project/qemu-virt-arm64-test.mk` lists `app/shell` and `lib/uefi`, then pulls in
+     the shared `project/virtual/{test,fs,minip}.mk` fragments and the board's `project/target/*.mk`
+   - Projects include other project fragments: `include project/virtual/test.mk`
+
+2. **Target** (`target/*.mk`) - Board-specific configuration combining platform + hardware details
+   - Defines memory layout: `MEMBASE`, `MEMSIZE`, `KERNEL_BASE`
+   - GPIO configs, peripheral addresses for specific boards
+
+3. **Platform** (`platform/*/`) - SOC/system-level support (qemu-virt, mps2, stm32f4xx, etc.)
+   - Hardware initialization, device tree handling, platform-specific drivers
+
+4. **Architecture** (`arch/*/`) - CPU-specific low-level code (arm64, riscv, x86, etc.)
+   - MMU setup, exception handling, context switching, atomic ops
+
+### Module System Pattern
+
+Every component is a module with a `rules.mk` file:
+
+```make
+LOCAL_DIR := $(GET_LOCAL_DIR)
+MODULE := $(LOCAL_DIR)
+
+MODULE_SRCS += \
+    $(LOCAL_DIR)/foo.c \
+    $(LOCAL_DIR)/bar.c
+
+MODULE_DEPS += \
+    lib/libc \
+    kernel
+
+MODULE_OPTIONS := extra_warnings  # Enables stricter compiler flags
+
+include make/module.mk
+```
+
+**Key points:**
+
+- `MODULE := $(LOCAL_DIR)` is required - sets module name to directory path
+- `MODULE_DEPS` creates dependency tree, automatically included in build
+- `MODULE_WEAK_DEPS` lists modules whose headers this one uses only under `#if WITH_<MODULE>`
+  (e.g. `lib/bio` uses `lib/partition` only when it is in the build). It records the
+  dependency without pulling the module in; a module may not appear in both lists.
+- `MODULE_OPTIONS`: `extra_warnings` adds strict checks; `float` compiles the module with FPU
+  codegen and defines `LK_FLOAT_TU=1` (headers key off it); `test` adds `<module>/test` as a
+  submodule when `WITH_TESTS` is true
+- Module include paths auto-added: `$(MODULE)/include/` becomes available globally
+- Always use `$(LOCAL_DIR)` prefix for source paths
+- Must `include make/module.mk` at end of `rules.mk` to finalize the module definition
+- All MODULE_* variables are cleared after inclusion, preventing leakage between modules
+- Modules are built as separate ELF .o files and linked into the final kernel image
+- Modules that include any `std::` header must declare `MODULE_DEPS += lib/libcpp` (see `dev/bus/pci/rules.mk`)
+- Modules commonly export their include name space that matches the name of the module.
+  - i.e. `lib/foo` exports the include path `lib/foo.h` with any additional headers under `lib/foo/`.
+
+## Critical Build Patterns
+
+### Building Projects
+
+```bash
+# Build specific project (creates build-<project>/ directory)
+make qemu-virt-arm64-test
+
+# Or just use project name as target
+make PROJECT=qemu-virt-arm64-test
+
+# Override heap implementation
+make qemu-virt-arm64-test LK_HEAP_IMPLEMENTATION=cmpctmalloc
+
+# Debug builds (default DEBUG=2, set to 0 for release)
+make qemu-virt-arm64-test DEBUG=0
+
+# Build with Clang compiler
+make qemu-virt-arm64-test TOOLCHAIN=clang
+
+# Build with Clang compiler and LLVM LLD linker
+make qemu-virt-arm64-test TOOLCHAIN=clang LD=ld.lld
+
+# Build with Clang + LTO (thin or full; requires ld.lld, which is picked by default)
+make qemu-virt-arm64-test TOOLCHAIN=clang LTO_MODE=thin
+make qemu-virt-arm64-test TOOLCHAIN=clang LTO_MODE=full
+
+# Clean specific project.
+# Add a 'clean' target to the end of the command line.
+# Either select the project name or use the PROJECT variable.
+make qemu-virt-arm64-test clean
+
+# Clean everything
+make spotless
+
+# Build all projects (for CI/verification)
+scripts/buildall -q -e -r  # quiet, warnings-as-errors, release builds
+scripts/buildall -c -q     # build all with Clang
+scripts/buildall -l -q     # build all with Clang + LLD
+scripts/buildall -e -d     # also fail on undeclared module header deps (what CI runs)
+scripts/buildall -D 0 -u   # build one specific config: DEBUG=0 with UBSAN=1
+
+Output will be written to buildall.log. To run the build with full output during the build, omit the -q flag.
+
+Note `buildall` assigns `DEBUG` and `UBSAN` itself, so setting them in the environment
+has no effect. Select the configuration with flags instead: `-D <level>` builds exactly
+that debug level (repeatable), `-r` adds a `DEBUG=0` pass on top of the default one, and
+`-u` turns on UBSAN. Build directories are suffixed accordingly (`-release`, `-ubsan`),
+so several configurations can coexist in one tree.
+```
+
+The file local.mk is silently included if it exists in the root directory. Additional variables can be defined in this file to customize the build instead of needing to pass them on the command line.
+
+Because the inclusion is silent, it applies to test runs too, and nothing on the command
+line hints that it is in play. A `local.mk` setting `TOOLCHAIN`, `WERROR`, `DEBUG` or
+`LK_HEAP_IMPLEMENTATION` changes what `scripts/buildall` and
+`scripts/run-qemu-boot-tests.py` actually exercise, which is a common reason a local result
+disagrees with CI. The customary `?=` form only wins where nothing else sets the variable,
+so a single file can affect one pass and not another: `buildall` passes `TOOLCHAIN=gcc` on
+the command line for its gcc pass, which overrides a `TOOLCHAIN ?= clang` in `local.mk`,
+while its clang pass keeps whatever else the file sets.
+
+Set `IGNORE_LOCAL_MK=1` to skip the file entirely, either on the command line or in the
+environment, so a build depends only on the arguments it was given:
+
+```bash
+make qemu-virt-arm64-test IGNORE_LOCAL_MK=1
+IGNORE_LOCAL_MK=1 ./scripts/run-qemu-boot-tests.py --arch arm64
+IGNORE_LOCAL_MK=1 scripts/buildall -q -e
+```
+
+Use it before reproducing a CI failure, bisecting a build break, or concluding that a
+project builds clean. The scripts do not set it themselves, because `local.mk` is also
+where a toolchain prefix may live and skipping it would break a tree that depends on one;
+pass such settings explicitly alongside it. When reporting a build or test result, say
+which toolchain and flags actually applied rather than which ones were typed.
+
+### Rust support (`USE_RUST=1`)
+
+Rust is opt-in per project. `qemu-virt-arm64-test`, `pc-x86-64-test`,
+`qemu-virt-riscv32-test`, `qemu-virt-riscv64-test` and `qemu-virt-riscv64-supervisor-test`
+accept `USE_RUST=1`, which includes `project/virtual/rust.mk` and builds the rust crates in
+the tree (`rust/lk`, `rust/lk-sys`, and anything listed in `RUST_CRATES`) into a single
+staticlib via `lib/rust_support` that is linked into the kernel:
+
+```bash
+make qemu-virt-riscv64-test USE_RUST=1
+USE_RUST=1 scripts/do-qemuriscv -6      # the do-qemu* scripts pick it up from the environment
+```
+
+- Needs `cargo`/`rustup`; the nightly is pinned by `lib/rust_support/rust-toolchain.toml.in`
+  and `core`/`alloc` are built from source (`build-std`), so no rustup target install is
+  needed.
+- Each architecture supplies a custom target spec, `arch/<arch>/*-llvm.json`, and sets
+  `RUST_TARGET` (which must equal the json basename) and `RUST_TARGET_PATH`; optional
+  `RUST_CFLAGS` are extra rustc flags. arm64 and pc set these in the platform `rules.mk`,
+  riscv in `arch/riscv/rules.mk` since the spec depends on `SUBARCH` and `RISCV_FPU`
+  (the float ABI must match the C side, and it can only be set in the json).
+- The rust init hook prints `*** INIT: lk init` early in boot, which is the quick check
+  that the rust code made it into the image. `.github/workflows/github-ci-rust.yml` builds
+  every rust-enabled project with clang/lld and boots the qemu ones.
+
+### Build output
+
+The build output will be written to the `build-<project>/` directory, where `<project>`
+is the name of the project being built.
+
+Build artifacts include object files, libraries, executables, and generated headers:
+
+- srcfiles.txt - list of source files used in the build
+- include_paths.txt - list of include paths used in the build
+- buildid.h - generated build ID header file
+- config.h - generated config header included by all source files in the system.
+- lk.bin - flattened kernel binary
+- lk.elf - pre-flattened kernel image, ELF format with debugging information
+- lk.elf.lst - disassembly of the kernel image
+- lk.elf.debug.lst - disassembly of the kernel image with debug information
+- lk.elf.map - linker map file
+- lk.elf.size - size information for the kernel image
+- lk.elf.sym - symbol table for the kernel image
+- lk.elf.sym.sorted - symbol table for the kernel image, sorted by address
+- lk.elf.dump - equivalent of objdump -x on the lk.elf file
+- system-onesegment.ld (or the arch's equivalent) - the preprocessed linker script
+- `<module>/module_config.h` - per-module generated header recording its `MODULE_DEPS` and
+  `MODULE_WEAK_DEPS`, which `scripts/check-module-deps.py` reads
+- lk-symtab-pass1.elf / lk-symtab-pass2.elf - intermediate links when `lib/symtab` is in the build
+
+Each module is linked into an ELF intermediate file named `<module>.mod.o` via ld -r.
+The module and object file paths follow the same path structure as the source files.
+
+### Running under QEMU
+
+Scripts in `scripts/` launch QEMU with appropriate flags:
+
+```bash
+# ARM64 (4KB pages)
+scripts/do-qemuarm -6
+
+# ARM64 with 64KB pages
+scripts/do-qemuarm -6 -P 64k
+
+# ARM64 with KVM/HVF acceleration (only if on ARM64 host)
+scripts/do-qemuarm -6 -k
+
+# Cortex-M, on the MPS2/MPS3 boards: an385 (M3), an386 (M4), an500 (M7),
+# an505 (M33), an547 (M55). See platform/mps2/README.md.
+scripts/do-qemuarm -B an385
+scripts/do-qemuarm -B an547
+
+# RISC-V 32-bit in machine mode
+scripts/do-qemuriscv
+
+# RISC-V 64-bit in supervisor mode and paging
+scripts/do-qemuriscv -6S
+
+# x86-32
+scripts/do-qemux86
+
+# x86-64
+scripts/do-qemux86 -6
+
+# x86-64 with KVM acceleration (only if on x86-64 host)
+scripts/do-qemux86 -6 -k
+
+# With various devices (disk, network, display)
+scripts/do-qemux86 -6 -n -d disk.img -g
+```
+
+The do-qemu* scripts auto-build before launching QEMU. Note they default to `dlmalloc`
+(`-c` selects cmpctmalloc, `-M` miniheap), whereas a bare `make <project>` defaults to miniheap.
+
+### Running all unit tests
+
+```bash
+# Run all unit tests for ARM64 architecture
+./scripts/run-qemu-boot-tests.py --arch arm64
+
+# For all architectures
+./scripts/run-qemu-boot-tests.py
+
+# The cortex-m targets are per core generation rather than per architecture:
+# arm-m3, arm-m4, arm-m7, arm-m33 and arm-m55, running on the MPS2/MPS3 boards
+./scripts/run-qemu-boot-tests.py --arch arm-m55
+
+# x86 has machine/firmware variants alongside the default q35 ones: x86-i440fx,
+# x86-64-i440fx and x86-64-uefi. m68k is also covered. See --help for the full list.
+./scripts/run-qemu-boot-tests.py --arch x86-64-uefi
+
+# Raise the per-architecture timeout for longer suites. The defaults (90s, 120s for
+# x86-64-uefi) are hang detectors, not performance targets; see the table in the script.
+./scripts/run-qemu-boot-tests.py --arch arm64 --timeout 600
+
+# Build with UBSAN=1 and fail if the run reports any undefined behavior.
+# This is what .github/workflows/github-ci-ubsan.yml does for the qemu projects;
+# UBSAN is a runtime sanitizer, so compiling with it and never booting finds nothing.
+./scripts/run-qemu-boot-tests.py --arch arm64 --ubsan
+```
+
+### Running a script at boot (`lk.autorun`)
+
+If `app/shell` is in the build, the shell app looks for an `lk.autorun` kernel command line
+variable and runs its value as a shell script before dropping into the interactive shell.
+This is the preferred way to drive a target from a host script — start QEMU and tell it what
+to run, rather than adding a new command line variable per scenario.
+
+```bash
+# spaces encoded as '+', which avoids needing to quote anything along the way
+scripts/do-qemuarm -6 -A 'lk.autorun=sleep+5;ut+all;poweroff'
+
+# real spaces work too: the do-qemu* wrappers quote the value and lib/cmdline unquotes it
+# (don't add the quotes yourself, they'd end up quoted a second time)
+scripts/do-qemuarm -6 -A 'lk.autorun=sleep 5; ut all; poweroff'
+```
+
+- `+` decodes to a space in both forms, `++` decodes to a literal `+`.
+- Commands are separated with `;` or newlines (`\n` in the quoted form), same as any other
+  console script.
+- Ending the script with `poweroff` makes QEMU exit once the script is done, which is how
+  `scripts/run-qemu-boot-tests.py` drives its runs. Note `poweroff` is only registered when
+  `LK_DEBUGLEVEL > 1` (i.e. the default `DEBUG=2`).
+- The script is capped at 511 bytes. On PC targets `platform/pc` copies the multiboot command
+  line into a 256 byte buffer, which caps the *entire* command line there.
+- The script runs on the shell app's thread, whose stack size can be overridden with
+  `SHELL_STACK_SIZE` (`DEFAULT_STACK_SIZE` by default, ×4 under `UBSAN=1`). Commands like
+  `ut all` run close to the default stack size, so keep large buffers in tests on the heap,
+  not the stack. This is tightest on cortex-m, where `ARCH_DEFAULT_STACK_SIZE` is 1KB.
+
+### Filesystem tests against a real disk image
+
+Most unit tests need nothing but the kernel. The FAT tests come in two tiers:
+the RAM backed ones format their own volume with `fs_format_device()` and run
+under `run-qemu-boot-tests.py` on every architecture, while the image based ones need a
+disk attached. `scripts/run-fat-tests.py` drives the latter end to end -- it
+builds the images, boots QEMU with one attached, and then verifies the result
+from the host with both `fsck.fat` and `mtools`:
+
+```bash
+# Build images and run the FAT tests on arm64 (needs dosfstools and mtools)
+./scripts/run-fat-tests.py
+
+# One image type, a different architecture, or the stress suite
+./scripts/run-fat-tests.py --type fat16
+./scripts/run-fat-tests.py --arch x86-64
+./scripts/run-fat-tests.py --stress
+
+# Rebuild the disk images by hand
+./lib/fs/fat/test/mkimage.py --force
+```
+
+It works on a scratch copy of each image and the in-guest tests clean up after
+themselves, so runs are repeatable without rebuilding the images.
+
+## Code Conventions
+
+### Commit Message Style
+
+Commit messages follow Linux kernel style using square-bracket prefixes to identify the affected subsystem(s):
+
+```text
+[module][submodule] short description
+
+Optional longer body.
+```
+
+Examples from the repository:
+
+- `[lib][fdtwalk] fix unaligned FDT memory reservation`
+- `[arch][test] make arch/test follow the unit test pattern`
+- `[bio][disktest] extend the test to use multiple blocks`
+- `[platform][zynq] Check for CFI buffer allocation failure`
+
+For in-progress (WIP) work on a branch that is intended to be collapsed or merged eventually, a `WIP` prefix is acceptable:
+
+- `WIP [fs][fat]: add mkdir support and tests`
+
+### Style enforced by `.clang-format`
+
+- **4 space indentation**, no tabs, no trailing whitespace
+- **Pointer alignment right**: `void *ptr` not `void* ptr`
+- **K&R braces**: `if (x) {` not `if (x)\n{`
+- **Header guards**: Always use `#pragma once` (never `#ifndef` guards)
+- Short if/loops allowed: `if (foo) return;` is acceptable
+- 100 Column soft limit (line breaks preferred before 100 chars)
+
+### Compiler Warnings
+
+- Base flags: `-Wextra -Wall -Werror=return-type -Wshadow -Wdouble-promotion`
+- C-specific: `--std=gnu11 -Werror-implicit-function-declaration -Wstrict-prototypes -Wwrite-strings`
+- C++: `--std=c++17 -fno-exceptions -fno-rtti -fno-threadsafe-statics -nostdinc++`
+  - `-nostdinc++` keeps the host toolchain's C++ headers out of the build; `std::` headers come from `lib/libcpp` only
+- All code compiled with `-ffreestanding` (no hosted environment assumptions)
+- `MODULE_OPTIONS := extra_warnings` adds `-Wmissing-declarations -Wredundant-decls`
+- When compiling with WERROR=1, all warnings are treated as errors.
+
+### Common Patterns
+
+#### Error codes
+
+- Functions return `status_t` (int) with 0 for success, negative for errors
+- If a function needs to return data, it takes an output pointer and returns status: `status_t foo(int arg, int *out)`
+- If a function needs to return a positive value on success, it returns that directly and uses negative for errors: `int count = count_items(); if (count < 0) { /* handle error */ }`
+- Error codes are defined in `include/lk/err.h` (e.g. `ERR_NOT_FOUND`, `ERR_NO_MEMORY`, etc.) and are negative integers.
+
+#### Registering Console Commands
+
+Commands appear in shell when `app/shell` module is included:
+
+```c
+#include <lk/console_cmd.h>
+
+static int my_command(int argc, const console_cmd_args *argv) {
+    printf("hello from %s\n", argv[0].str);
+    return 0;
+}
+
+STATIC_COMMAND_START
+STATIC_COMMAND("mytest", "my test command", &my_command)
+STATIC_COMMAND_END(mytest);
+```
+
+Console commands are placed in linker section `"console_cmds"` and auto-registered at runtime.
+
+**Note:** If `lib/console` not in build, these macros expand to nothing and the code should not be emitted.
+
+#### Defining Applications
+
+Apps start automatically at boot (unless `APP_FLAG_NO_AUTOSTART`):
+
+```c
+#include <app.h>
+
+static void my_app_init(const struct app_descriptor *app) {
+    // Called during boot, before threads start
+}
+
+static void my_app_entry(const struct app_descriptor *app, void *args) {
+    // Runs in separate thread
+    printf("app %s running\n", app->name);
+}
+
+APP_START(myapp)
+    .init = my_app_init,
+    .entry = my_app_entry,
+APP_END
+```
+
+Apps are placed in linker section `"apps"` and auto-discovered at runtime.
+
+#### Memory Management Variants
+
+Select heap implementation in project or via make:
+
+```make
+# In project.mk or command line
+LK_HEAP_IMPLEMENTATION ?= miniheap   # default for make; the do-qemu* scripts pass dlmalloc
+# LK_HEAP_IMPLEMENTATION ?= dlmalloc      # Doug Lea's allocator
+# LK_HEAP_IMPLEMENTATION ?= cmpctmalloc   # compact allocator
+
+# Controlled in lib/heap/rules.mk
+```
+
+#### Virtual Memory Usage
+
+Architectures with MMU set `WITH_KERNEL_VM ?= 1` in `arch/*/rules.mk`:
+
+- Enables `kernel/vm` instead of `kernel/novm`
+- Requires `KERNEL_ASPACE_BASE/SIZE` and `USER_ASPACE_BASE/SIZE` definitions
+- For ARM64 architecture:
+  - Page size configurable: `ARM64_PAGE_SIZE` (4096, 16384, 65536) on ARM64 architecture
+  - Different projects for different page sizes: `qemu-virt-arm64-64k-test`
+- All other architectures use 4KB pages by default.
+
+### Global Defines
+
+Architecture/platform rules set defines via `GLOBAL_DEFINES +=`:
+
+- Goes into `$(BUILDDIR)/config.h` (auto-generated, auto-included)
+- Example: `GLOBAL_DEFINES += WITH_SMP=1 SMP_MAX_CPUS=8`
+- Common defines: `MEMBASE`, `MEMSIZE`, `KERNEL_BASE`, `IS_64BIT`, `WITH_KERNEL_VM`
+- `LK_EMBEDDED` — boolean (0/1), always defined (default in `engine.mk`). Platforms with RAM
+  well under ~1MB set `LK_EMBEDDED := 1` in the `rules.mk` layer that decides `MEMSIZE`. Test
+  with a bare `#if LK_EMBEDDED`. It is a RAM-budget flag, unrelated to the ISA-level
+  `ARCH_ARM_EMBEDDED`/`ARCH_RISCV_EMBEDDED`. For finer thresholds compare `MEMSIZE`
+  numerically, as `lib/heap/test/heap_tests.c` does.
+- `UBSAN` — boolean (0/1), always defined, set from the `UBSAN=1` make variable. Use a
+  bare `#if UBSAN` to compensate for instrumentation, which noticeably inflates stack
+  frames; `app/shell/shell.c` uses it to grow the shell thread's stack.
+
+## Common Workflows
+
+### Adding a New Module
+
+1. Create directory under appropriate location (`lib/`, `dev/`, `app/`)
+2. Create `rules.mk` with module definition
+3. Add source files, set `MODULE_DEPS` for dependencies to other modules from this module
+4. Include new module in project/target/platform as needed
+5. Headers in `<module>/include/` are globally accessible
+
+Because every module's `include/` lands on one global `-I` list, the compiler will not
+catch a missing `MODULE_DEPS` entry: the header resolves as long as *some* other module in
+the project pulled its owner in, and the omission only shows up as a link error in a project
+where nothing else does. `scripts/check-module-deps.py` finds these after a build by resolving
+each module's `#include` lines against the other modules' `include/` dirs and checking the
+owner is in the transitive closure of the `MODULE_DEPS` and `MODULE_WEAK_DEPS` recorded in
+`build-*/…/module_config.h`. Fix a report with `MODULE_DEPS` when the include is
+unconditional and `MODULE_WEAK_DEPS` when it is guarded by `WITH_<MODULE>`:
+
+```bash
+scripts/check-module-deps.py build-qemu-virt-arm64-test   # detailed report for one build
+scripts/check-module-deps.py --edges                      # every build-* dir, one line per edge
+```
+
+It reads existing build output, so run it after `make <project>` or `scripts/buildall`.
+`scripts/buildall -d` runs it (with `--strict`) over the build directories it just produced,
+and CI passes `-d`, so an undeclared dependency fails the gcc CI matrix.
+
+### Adding Platform Support
+
+1. Create `platform/<name>/` directory
+2. Define `platform/<name>/rules.mk` with `PLATFORM := <name>`
+3. Implement: `platform_early_init()`, `platform_init()`, `platform_halt()`
+4. Create target in `target/<board>/rules.mk` that includes platform
+5. Create project in `project/<board>-test.mk`
+
+### Debugging
+
+- Multiple DEBUG build levels, controlled via `DEBUG` make variable:
+  - `DEBUG=0`: no DEBUG_ASSERT, dprintf only for ALWAYS level
+  - `DEBUG=1`: DEBUG_ASSERT enabled, dprintf at INFO and ALWAYS
+  - `DEBUG=2`: DEBUG_ASSERT enabled, dprintf at DEBUG, INFO, ALWAYS
+  - `DEBUG=3`: DEBUG_ASSERT enabled, dprintf at DEBUG, INFO, ALWAYS, some extra runtime checks.
+- 'DEBUG=2' is default
+- The do-qemu* scripts have no GDB flag (`-s` is the CPU count). Use `-X` to print the QEMU
+  command line, then run it by hand with `-s -S` appended to wait for GDB on :1234.
+- Print output via `printf()` goes to console (UART or QEMU serial)
+- dprintf levels:
+  - `dprintf(ALWAYS, "message")` - always printed
+  - `dprintf(INFO, "message")` - printed in DEBUG>=1
+  - `dprintf(DEBUG, "message")` - printed in DEBUG>=2
+- `kernel/debug.c` provides: `hexdump()`, `panic()`, `ASSERT()`
+
+### Symbolic backtraces (`lib/backtrace`, `lib/symtab`)
+
+Two opt-in modules, both already in `project/virtual/test.mk` so every `-test` project
+has them. They are independent: either is useful without the other.
+
+- `lib/backtrace` walks the frame pointer chain. Supported on arm64, x86 and riscv;
+  anywhere else it builds a stub that says so, which is why a shared project fragment
+  can list it unconditionally. Enabling it adds `-fno-omit-frame-pointer` to the whole
+  build. Faults, `panic()`, `assert_fail()` and the `threads` dump print a trace, and
+  `bt` prints one on demand (it is `CMD_AVAIL_ALWAYS`, so it works in the panic shell).
+- `lib/symtab` embeds an address→name table so those traces read
+  `#01 0xffff00000014c9dc console_run_script_etc+0x77` rather than bare addresses.
+  `symtab_lookup()` is panic safe, and `sym <addr>` resolves one address by hand.
+
+Both compile out on `LK_EMBEDDED` targets, where the table costs about a tenth of the
+flash. There the calls remain but do nothing, and traces are symbolized on the host
+against the `lk.elf.sym` that every build already produces.
+
+The table is generated by `scripts/gen-symtab.py` from `nm` output and linked in by
+`lib/symtab/symtab_buildrules.mk`, which needs **three link passes**: the table has to
+describe the image it is part of, and merely adding it moves code (on riscv it changes
+whether accesses to it relax to the gp relative form). The third pass settles because a
+table's size depends only on the set of symbol names, not their addresses. The build
+verifies this rather than trusting it and fails with a symbol diff if the final link
+moved any text the table names, so a link order or relaxation surprise is loud.
+
+### Testing
+
+- Some Shell commands test individual subsystems interactively
+- `app/tests/` contains benchmarks and interactive/operator tools that are run through the shell
+  (`bench`, `cache_tests`, `clock_tests`, `fibo`, `mem_test`, `thread_tests`). These measure cycle
+  counts or need arguments, so they have no pass/fail criterion and are not unit tests.
+- `lib/unittest` contains a unit test framework that other libraries can use to define tests.
+  - Tests are auto-discovered and run with `ut all` on the command line shell, or automatically
+    at boot time via the `lk.autorun` kernel command line variable (see above).
+  - Self-validating tests belong here, next to the code they exercise: `kernel/test/` covers the
+    thread, mutex, semaphore, event and port primitives plus the platform clock invariants,
+    `arch/test/` covers MMU and FPU context switching.
+  - `arch/arm/arm-m` is covered by the `platform/mps2` targets, which run the suite on a
+    Cortex-M3, M4, M7, M33 and M55 under QEMU. The other cortex-m projects in the tree are
+    build-only: they have no way to run a script at boot or to exit the emulator afterwards.
+- When a library adds its own unit tests, it should add a `test/` subdirectory with test source
+  files and a `rules.mk` that defines a module for the tests. The module should have `MODULE_DEPS`
+  on the library being tested. MODULE_OPTIONS of the parent module should have 'test' to ensure the
+  tests module is only built when `WITH_TESTS` is enabled.
+- `ut all` runs at boot in CI under a per-architecture timeout (90s for most targets, set in
+  `scripts/run-qemu-boot-tests.py`) on emulated targets, so
+  keep individual tests fast: prefer joins and events over fixed sleeps, and keep iteration counts
+  low enough to stay well under a second on a slow emulator.
+
+## Key Files Reference
+
+- `engine.mk` - Core build engine, processes modules
+- `make/module.mk` - Module system implementation
+- `arch/*/rules.mk` - Architecture definitions (critical for porting)
+- `kernel/thread.c` - Threading and scheduler implementation
+- `kernel/vm/` - Virtual memory subsystem (for MMU architectures)
+- `lib/libc/` - Minimal C library (string, stdio, stdlib basics)
+- `lib/libcpp/` - Freestanding subset of the C++ standard library (headers in `lib/libcpp/include/`)
+- `top/` - Top level module in the system. Contains the kernel's lk_main() system init routines.
+   Also contains top level lk/ include headers.
+
+For longer documentation see `docs/index.md`, which indexes the threading/scheduler, blocking
+primitives, VMM, source tree layout, UEFI boot and QEMU networking guides.

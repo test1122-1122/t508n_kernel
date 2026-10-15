@@ -1,0 +1,120 @@
+/*
+ * Copyright (c) 2009 Corey Tabaka
+ * Copyright (c) 2013 Travis Geiselbrecht
+ * Copyright (c) 2015 Intel Corporation
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+ENTRY(_start)
+SECTIONS
+{
+    . = %KERNEL_BASE% + %KERNEL_LOAD_OFFSET%;
+
+    .text : AT(%MEMBASE% + %KERNEL_LOAD_OFFSET%) {
+        __code_start = .;
+        KEEP(*(.text.boot.header))
+        KEEP(*(.text.boot))
+        *(.text* .sram.text)
+        *(.gnu.linkonce.t.*)
+        __code_end = .;
+    } =0x9090
+
+    .rodata : ALIGN(4096) {
+        __rodata_start = .;
+        *(.rodata*)
+        *(.gnu.linkonce.r.*)
+        . = ALIGN(8);
+    }
+
+    /*
+     * extra linker scripts tend to insert sections just after .rodata,
+     * so we want to make sure this symbol comes after anything inserted above,
+     * but not aligned to the next section necessarily.
+     */
+    .dummy_post_rodata : {
+        __rodata_end = .;
+    }
+
+    .data : ALIGN(4096) {
+        __data_start = .;
+        *(.data .data.* .gnu.linkonce.d.*)
+        /* The EFI stub (arch/x86/64/efi) is compiled -fpie and must not generate
+         * GOT entries; collect any that appear so the assert below catches
+         * them. Deliberately inside .data: a separate .got output section
+         * trips lld's relro layout checks, and folding it into .rodata would
+         * make that section writable and perturb lld's orphan placement. */
+        __got_start = .;
+        *(.got*)
+        __got_end = .;
+    }
+
+    .ctors : ALIGN(4) {
+        __ctor_list = .;
+        KEEP(*(.ctors .init_array*))
+        __ctor_end = .;
+    }
+    .dtors : ALIGN(4) {
+        __dtor_list = .;
+        KEEP(*(.dtors .fini_array*))
+        __dtor_end = .;
+    }
+
+    .stab   : { *(.stab) }
+    .stabst : { *(.stabstr) }
+
+    /*
+     * extra linker scripts tend to insert sections just after .data,
+     * so we want to make sure this symbol comes after anything inserted above,
+     * but not aligned to the next section necessarily.
+     */
+    .dummy_post_data : {
+        __data_end = .;
+    }
+
+    .bss : ALIGN(4096) {
+        __bss_start = .;
+        *(.bss*)
+        *(.gnu.linkonce.b.*)
+        *(COMMON)
+        . = ALIGN(8);
+        __bss_end = .;
+    }
+
+    _end = .;
+
+    /* put a symbol arbitrarily 4MB past the end of the kernel */
+    /* used by the heap and other early boot time allocators */
+    _end_of_ram = . + (4*1024*1024);
+
+    /DISCARD/ : { *(.comment .note .eh_frame) }
+
+    /* PE/COFF header fields consumed by arch/x86/64/efi-header.S, resolved at
+     * link time. File offsets in the flat lk.bin equal RVAs; the header block
+     * occupies [0, 0x1000) and .text.boot starts at 0x1000. */
+    __pe_entry_rva      = ABSOLUTE(efi_entry - __code_start);
+    __pe_text_size      = ABSOLUTE(__data_start - __code_start - 0x1000);
+    __pe_data_rva       = ABSOLUTE(__data_start - __code_start);
+    __pe_data_raw_size  = ABSOLUTE(__data_end - __data_start);
+    __pe_data_virt_size = ABSOLUTE(__bss_end - __data_start);
+    __pe_size_of_image  = ABSOLUTE((__bss_end - __code_start + 0xfff) & ~(0xfff));
+}
+
+ASSERT(__got_end == __got_start, "unexpected GOT entries; the EFI stub must be GOT-free")

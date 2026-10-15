@@ -1,0 +1,243 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. "$DIR/qemu-shared.sh"
+
+function HELP {
+    echo "help:"
+    echo "-p <project>      : specify the project to build"
+    echo "-6                : 64bit"
+    echo "-S                : supervisor mode (using OpenSBI, only works in 64bit)"
+    echo "-e                : sifive e platform"
+    echo "-u                : sifive u platform"
+    echo "-m <memory in MB> : memory size (default: 512 MB for virt, 8192 MB for sifive_u)"
+    echo "-s <number of cpus> : number of CPUs (default: 1, or 2 for sifive_u)"
+    echo "-X                : print QEMU command and exit (dry run)"
+    echo
+    echo "-c                : cmpctmalloc instead of dlmalloc"
+    echo "-M                : miniheap instead of dlmalloc"
+    echo
+    echo "-A <cmd line>     : append command line (may be used multiple times)"
+    echo "-d <disk image>   : add a virtio block device (may be used multiple times)"
+    echo "-n                : add a virtio network device (user mode networking)"
+    echo "-N <network driver> : specify network driver (requires -n or -t, e.g., virtio-net-device, virtio-net-pci)"
+    echo "-t                : add a virtio tap network device (requires tap interface setup)"
+    echo "-g                : add a virtio display (GPU, keyboard, mouse)"
+    echo "-C                : PCI based virtio devices"
+    echo
+    echo "-h                : show this help"
+    echo "all arguments after -- are passed to qemu directly"
+    exit 1
+}
+
+DO_NET=0
+DO_NET_TAP=0
+DISK_IMAGES=()
+CMDLINE=""
+DO_64BIT=0
+DO_EMBEDDED=0
+DO_UNLEASHED=0
+DO_DISPLAY=0
+DO_CMPCTMALLOC=0
+DO_MINIHEAP=0
+DO_SUPERVISOR=0
+DO_PCI_VIRTIO=0
+SMP=1
+MEMSIZE=0
+SUDO=""
+PROJECT=""
+DO_DRYRUN=0
+NETDEV=""
+DO_NETDEV_OVERRIDE=0
+
+while getopts A:cCd:ghm:MntNeu6p:s:SX FLAG; do
+    case $FLAG in
+        A) CMDLINE+="${CMDLINE:+ }$(quote_cmdline_arg "$OPTARG")";;
+        c) DO_CMPCTMALLOC=1;;
+        C) DO_PCI_VIRTIO=1;;
+        d)
+            DISK_IMAGES+=("$OPTARG")
+            ;;
+        g) DO_DISPLAY=1;;
+        M) DO_MINIHEAP=1;;
+        n) DO_NET=1;;
+        t) DO_NET_TAP=1;;
+        N) NETDEV=$OPTARG; DO_NETDEV_OVERRIDE=1;;
+        e) DO_EMBEDDED=1;;
+        u) DO_UNLEASHED=1;;
+        6) DO_64BIT=1;;
+        m) MEMSIZE=$OPTARG;;
+        s) SMP=$OPTARG;;
+        S) DO_SUPERVISOR=1;;
+        p) PROJECT=$OPTARG;;
+        X) DO_DRYRUN=1;;
+        h) HELP;;
+        \?)
+            echo unrecognized option
+            HELP
+    esac
+done
+
+shift $((OPTIND-1))
+
+if (( DO_NET && DO_NET_TAP )); then
+    echo "Error: Cannot use both -n (user network) and -t (tap network) together"
+    exit 1
+fi
+
+if (( DO_NETDEV_OVERRIDE && ! ( DO_NET || DO_NET_TAP ) )); then
+    echo "Error: -N requires either -n (user network) or -t (tap network)"
+    exit 1
+fi
+
+CPU=""
+BIOS=""
+
+# Pick the appropriate qemu and project for each platform
+# Also pick the default memory size and cpu count if not specified
+if (( DO_UNLEASHED )); then
+    QEMU="qemu-system-riscv64"
+    MACHINE="sifive_u"
+    _PROJECT="qemu-sifive-u-test"
+    if (( $SMP == 1 )); then
+        SMP=2
+    fi
+    _MEMSIZE=8192
+elif (( DO_EMBEDDED )); then
+    QEMU="qemu-system-riscv32"
+    MACHINE="sifive_e"
+    _PROJECT="sifive-e-test"
+    _MEMSIZE=0 # cant set memsize, it's fixed for this board (16K)
+    SMP=0
+elif (( DO_64BIT )); then
+    QEMU="qemu-system-riscv64"
+    CPU="rv64"
+    MACHINE="virt"
+    _MEMSIZE=512
+    if (( DO_SUPERVISOR )); then
+        _PROJECT="qemu-virt-riscv64-supervisor-test"
+        BIOS="default"
+    else
+        _PROJECT="qemu-virt-riscv64-test"
+        BIOS="none"
+    fi
+else
+    QEMU="qemu-system-riscv32"
+    CPU="rv32"
+    MACHINE="virt"
+    BIOS="none"
+    _MEMSIZE=512
+    _PROJECT="qemu-virt-riscv32-test"
+fi
+# command line PROJECT and MEMSIZE override defaults
+if [[ -z "$PROJECT" ]]; then
+    PROJECT=$_PROJECT
+fi
+if [[ -z "$MEMSIZE" ]]; then
+    MEMSIZE=$_MEMSIZE
+fi
+
+if (( $DO_PCI_VIRTIO )); then
+    VIRTIO_BLOCK_DEVICE="virtio-blk-pci"
+    VIRTIO_NET_DEVICE="virtio-net-pci"
+    VIRTIO_GPU_DEVICE="virtio-gpu-pci"
+    VIRTIO_KEYBOARD_DEVICE="virtio-keyboard-pci"
+    VIRTIO_MOUSE_DEVICE="virtio-mouse-pci"
+    VIRTIO_9P_DEVICE="virtio-9p-pci"
+    VIRTIO_RNG_DEVICE="virtio-rng-pci"
+else
+    VIRTIO_BLOCK_DEVICE="virtio-blk-device"
+    VIRTIO_NET_DEVICE="virtio-net-device"
+    VIRTIO_GPU_DEVICE="virtio-gpu-device"
+    VIRTIO_KEYBOARD_DEVICE="virtio-keyboard-device"
+    VIRTIO_MOUSE_DEVICE="virtio-mouse-device"
+    VIRTIO_9P_DEVICE="virtio-9p-device"
+    VIRTIO_RNG_DEVICE="virtio-rng-device"
+fi
+
+if (( ! DO_NETDEV_OVERRIDE )); then
+    NETDEV="$VIRTIO_NET_DEVICE"
+fi
+
+# construct a list of args based on previous variables using arrays
+ARGS=()
+ARGS+=("-machine" "$MACHINE")
+# To dump the device tree for this config, use:
+# ARGS=("-machine" "${MACHINE},dumpdtb=riscv.dtb")
+ARGS+=("-kernel" "build-${PROJECT}/lk.elf")
+
+if [[ -n "$CMDLINE" ]]; then
+    ARGS+=("-append" "$CMDLINE")
+fi
+
+if [[ -n "$CPU" ]]; then
+    ARGS+=("-cpu" "$CPU")
+fi
+if (( MEMSIZE )); then
+    ARGS+=("-m" "$MEMSIZE")
+fi
+if (( SMP )); then
+    ARGS+=("-smp" "$SMP")
+fi
+if [[ -n "$BIOS" ]]; then
+    ARGS+=("-bios" "$BIOS")
+fi
+DISK_COUNT=0
+for img in "${DISK_IMAGES[@]}"; do
+    ARGS+=("-drive" "if=none,file=${img},id=disk${DISK_COUNT},format=raw")
+    ARGS+=("-device" "${VIRTIO_BLOCK_DEVICE},drive=disk${DISK_COUNT}")
+    ((DISK_COUNT++))
+done
+if (( DO_NET )); then
+    ARGS+=("-netdev" "user,id=vmnic,hostname=qemu")
+    ARGS+=("-device" "${NETDEV},netdev=vmnic")
+elif (( DO_NET_TAP )); then
+    # quick note to enable tap interface
+    # IFNAME=qemu0
+    # BRIDGE=bridge0
+    # sudo ip tuntap add name "${IFNAME}" mode tap user $(whoami)
+    # sudo ip link set "${IFNAME}" master "${BRIDGE}"
+    # sudo ip link set "${IFNAME}" up
+    ARGS+=("-netdev" "tap,id=vmnic,ifname=qemu0,script=no,downscript=no")
+    ARGS+=("-device" "${NETDEV},netdev=vmnic")
+    #SUDO="sudo"
+else
+    ARGS+=("-net" "none")
+fi
+if (( DO_DISPLAY )); then
+    ARGS+=("-device" "${VIRTIO_GPU_DEVICE}")
+    ARGS+=("-serial" "stdio")
+    ARGS+=("-device" "${VIRTIO_KEYBOARD_DEVICE}")
+    ARGS+=("-device" "${VIRTIO_MOUSE_DEVICE}")
+else
+    ARGS+=("-nographic")
+fi
+
+if (( ! DO_UNLEASHED && ! DO_EMBEDDED )); then
+    # sifive_u and sifive_e don't expose a virtio bus in QEMU
+    ARGS+=("-device" "${VIRTIO_RNG_DEVICE}")
+fi
+
+MAKE_VARS=""
+
+if (( DO_CMPCTMALLOC )); then
+    MAKE_VARS="LK_HEAP_IMPLEMENTATION=cmpctmalloc"
+elif (( DO_MINIHEAP )); then
+    MAKE_VARS="LK_HEAP_IMPLEMENTATION=miniheap"
+fi
+
+CMD=()
+if [[ -n "$SUDO" ]]; then
+    CMD+=("sudo")
+fi
+CMD+=("$QEMU")
+CMD+=("${ARGS[@]}")
+CMD+=("$@")
+
+if (( DO_DRYRUN )); then
+    echo "${CMD[@]}"
+    exit 0
+fi
+
+"$DIR"/make-parallel $MAKE_VARS "$PROJECT" || exit 1
+echo "${CMD[@]}" && exec "${CMD[@]}"

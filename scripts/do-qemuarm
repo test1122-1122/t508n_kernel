@@ -1,0 +1,391 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. "$DIR/qemu-shared.sh"
+
+# TODO: try to merge this with other architecture's do-qemu scripts if possible
+
+# host operating system
+HOST_OS=$(uname -s)
+
+# host architecture
+HOST_OS_ARCH=$(uname -m)
+case $HOST_OS_ARCH in
+  aarch64*|arm64)
+    # flatten either aarch64 or arm64 to arm64 to keep it simple
+    HOST_OS_ARCH="arm64"
+    ;;
+  *) ;;
+esac
+readonly HOST_OS
+readonly HOST_OS_ARCH
+
+# echo HOST_OS = "$HOST_OS"
+# echo HOST_OS_ARCH = "$HOST_OS_ARCH"
+
+function HELP {
+    echo "help:"
+    echo "-p <project>      : specify the project to build (default qemu-virt-arm32-test, qemu-virt-arm64-test, lm3s6965evb-test or microbit-v1-test)"
+    echo "-6                : 64bit arm (default is 32bit)"
+    echo "-3                : cortex-m3 based platform (most other options ignored)"
+    echo "-0                : cortex-m0 based platform, BBC micro:bit v1 (most other options ignored)"
+    echo "-B <board>        : ARM MPS2/MPS3 cortex-m board (most other options ignored)"
+    echo "                    one of: an385 (M3), an386 (M4), an500 (M7), an505 (M33), an547 (M55)"
+    echo "-P <page size>    : set the page size (default: 4K, valid: 4k/4096, 16k/16384, 64k/65536)"
+    echo "-v                : boot kernel at EL2"
+    echo "-k                : use KVM or HVF acceleration if present (only on 64bit)"
+    echo "-m <memory in MB> : memory size (default: 512 MB)"
+    echo "-s <number of cpus> : number of CPUs (default: 1)"
+    echo "-X                : print QEMU command and exit (dry run)"
+    echo
+    echo "-c                : cmpctmalloc instead of dlmalloc"
+    echo "-M                : miniheap instead of dlmalloc"
+    echo
+    echo "-A <cmd line>     : append command line (may be used multiple times)"
+    echo "-d <disk image>   : add a virtio disk device (may be used multiple times)"
+    echo "-n                : add a virtio network device (user mode networking)"
+    echo "-N <network driver> : specify network driver (requires -n or -t, e.g., virtio-net-device, virtio-net-pci)"
+    echo "-t                : add a virtio tap network device (requires tap interface setup)"
+    echo "-g                : add a virtio display (GPU, keyboard, mouse)"
+    echo "-f <shared dir>   : add a virtio 9p device with a host shared directory"
+    echo "-G <gic version>  : override gic version (2, 3 or host). Default nothing, which lets qemu pick."
+    echo "-C                : PCI based virtio devices"
+    echo
+    echo "-h                : show this help"
+    echo "all arguments after -- are passed to qemu directly"
+    exit 1
+}
+
+DO_NET=0
+DO_NET_TAP=0
+DISK_IMAGES=()
+CMDLINE=""
+DO_64BIT=0
+DO_VIRT=0
+DO_CORTEX_M3=0
+DO_CORTEX_M0=0
+MPS_BOARD=""
+DO_KVM=0
+DO_DISPLAY=0
+DO_CMPCTMALLOC=0
+DO_MINIHEAP=0
+DO_V9P=0
+DO_V9P_DIR=""
+DO_PCI_VIRTIO=0
+PAGE_SIZE=4096
+SMP=1
+MEMSIZE=512
+SUDO=""
+PROJECT=""
+DO_DRYRUN=0
+GIC_VERSION=""
+NETDEV=""
+DO_NETDEV_OVERRIDE=0
+
+while getopts A:B:cCd:gG:hkm:MntN:036vp:P:s:f:X FLAG; do
+    case $FLAG in
+        A) CMDLINE+="${CMDLINE:+ }$(quote_cmdline_arg "$OPTARG")";;
+        B) MPS_BOARD=$OPTARG;;
+        c) DO_CMPCTMALLOC=1;;
+        C) DO_PCI_VIRTIO=1;;
+        d)
+            DISK_IMAGES+=("$OPTARG")
+            ;;
+        g) DO_DISPLAY=1;;
+        G) GIC_VERSION=$OPTARG;;
+        f) DO_V9P=1; DO_V9P_DIR=$OPTARG;;
+        k) DO_KVM=1;;
+        M) DO_MINIHEAP=1;;
+        n) DO_NET=1;;
+        t) DO_NET_TAP=1;;
+        N) NETDEV=$OPTARG; DO_NETDEV_OVERRIDE=1;;
+        0) DO_CORTEX_M0=1;;
+        3) DO_CORTEX_M3=1;;
+        6) DO_64BIT=1;;
+        v) DO_VIRT=1;;
+        m) MEMSIZE=$OPTARG;;
+        s) SMP=$OPTARG;;
+        p) PROJECT=$OPTARG;;
+        P) PAGE_SIZE=$OPTARG;;
+        X) DO_DRYRUN=1;;
+        h) HELP;;
+        \?)
+            echo unrecognized option
+            HELP
+    esac
+done
+
+shift $((OPTIND-1))
+
+# validate option combinations
+DO_MPS=0
+if [[ -n "$MPS_BOARD" ]]; then
+    DO_MPS=1
+fi
+
+if (( DO_CORTEX_M0 + DO_CORTEX_M3 + DO_MPS > 1 )); then
+    echo "Error: -0 (Cortex-M0), -3 (Cortex-M3) and -B (MPS2/MPS3) are mutually exclusive"
+    exit 1
+fi
+
+if (( DO_CORTEX_M0 || DO_CORTEX_M3 || DO_MPS )); then
+    # the Cortex-M platforms are very limited and don't support most features
+    if (( DO_CORTEX_M0 )); then CORTEX_M_OPT="-0 (Cortex-M0)";
+    elif (( DO_MPS )); then CORTEX_M_OPT="-B (MPS2/MPS3)";
+    else CORTEX_M_OPT="-3 (Cortex-M3)"; fi
+    INVALID_OPTS=()
+    if (( DO_64BIT )); then INVALID_OPTS+=("-6 (64-bit)"); fi
+    if (( DO_KVM )); then INVALID_OPTS+=("-k (KVM/HVF)"); fi
+    if (( DO_VIRT )); then INVALID_OPTS+=("-v (EL2)"); fi
+    if (( ${#DISK_IMAGES[@]} > 0 )); then INVALID_OPTS+=("-d (disk)"); fi
+    if (( DO_NET || DO_NET_TAP )); then INVALID_OPTS+=("-n/-t (network)"); fi
+    if (( DO_DISPLAY )); then INVALID_OPTS+=("-g (display)"); fi
+    if (( DO_V9P )); then INVALID_OPTS+=("-f (9p)"); fi
+    if [[ "$PAGE_SIZE" != "4096" ]]; then INVALID_OPTS+=("-P (page size)"); fi
+    # the MPS machines have a fixed amount of ram and reject -m outright
+    if (( DO_MPS )); then
+        if [[ "$MEMSIZE" != "512" ]]; then INVALID_OPTS+=("-m (memory size)"); fi
+        if [[ "$SMP" != "1" ]]; then INVALID_OPTS+=("-s (cpus)"); fi
+    fi
+
+    if (( ${#INVALID_OPTS[@]} > 0 )); then
+        echo "Warning: $CORTEX_M_OPT does not support: ${INVALID_OPTS[*]}"
+        echo "These options will be ignored."
+    fi
+fi
+
+if (( DO_64BIT && DO_VIRT && DO_KVM )); then
+    echo "Error: Cannot use both -v (EL2) and -k (KVM/HVF) together"
+    exit 1
+fi
+
+if (( !DO_64BIT && DO_KVM )); then
+    echo "Error: -k (KVM/HVF) is only supported with -6 (64-bit)"
+    exit 1
+fi
+
+if (( DO_NET && DO_NET_TAP )); then
+    echo "Error: Cannot use both -n (user network) and -t (tap network) together"
+    exit 1
+fi
+
+if (( DO_NETDEV_OVERRIDE && ! ( DO_NET || DO_NET_TAP ) )); then
+    echo "Error: -N requires either -n (user network) or -t (tap network)"
+    exit 1
+fi
+
+# accept some aliases to page size
+if [ "$PAGE_SIZE" == "4k" ]; then
+    PAGE_SIZE=4096
+elif [ "$PAGE_SIZE" == "16k" ]; then
+    PAGE_SIZE=16384
+elif [ "$PAGE_SIZE" == "64k" ]; then
+    PAGE_SIZE=65536
+fi
+
+# if GIC_VERSION is specified, set the appropriate string
+GIC_STRING=""
+if [ -n "$GIC_VERSION" ]; then
+    GIC_STRING=",gic_version=$GIC_VERSION"
+fi
+
+# pick the appropriate qemu and project.
+# the cortex-m machines are checked first, so that the options warned about
+# above really are ignored.
+if (( DO_MPS )); then
+    # ARM's MPS2/MPS3 prototyping boards, which qemu models with a range of
+    # cortex-m cores. See platform/mps2/README.md.
+    QEMU="qemu-system-arm"
+    case $MPS_BOARD in
+        an385) CPU="cortex-m3";  MACHINE="mps2-an385";;
+        an386) CPU="cortex-m4";  MACHINE="mps2-an386";;
+        an500) CPU="cortex-m7";  MACHINE="mps2-an500";;
+        an505) CPU="cortex-m33"; MACHINE="mps2-an505";;
+        an547) CPU="cortex-m55"; MACHINE="mps3-an547";;
+        *)
+            echo "Error: unknown MPS board '$MPS_BOARD'"
+            echo "Valid boards: an385 (M3), an386 (M4), an500 (M7), an505 (M33), an547 (M55)"
+            exit 1
+            ;;
+    esac
+    _PROJECT="${MACHINE}-test"
+elif (( DO_CORTEX_M3 )); then
+    QEMU="qemu-system-arm"
+    CPU="cortex-m3"
+    MACHINE="lm3s6965evb"
+    _PROJECT="lm3s6965evb-test"
+elif (( DO_CORTEX_M0 )); then
+    # the 'microbit' machine models a BBC micro:bit v1: an nrf51822 with 16k of
+    # RAM. Only enough of the SOC is modelled, and only enough RAM to boot to a
+    # shell, so this is a basic cortex-m0 smoke test and not much else.
+    QEMU="qemu-system-arm"
+    CPU="cortex-m0"
+    MACHINE="microbit"
+    _PROJECT="microbit-v1-test"
+elif (( DO_64BIT )); then
+    QEMU="qemu-system-aarch64"
+    CPU="cortex-a76" # default to something recent that modern qemu supports
+    MACHINE="virt"
+    MACHINE+=$GIC_STRING
+
+    # if using KVM/HVF, switch to a host cpu and enable acceleration
+    if (( DO_KVM )); then
+        CPU="host"
+        if [ -n "$GIC_STRING" ]; then
+            echo "error: cannot override GIC version when using KVM/HVF acceleration"
+            exit 1
+        fi
+        if [ "$HOST_OS" == "Darwin" ]; then
+            # TODO: can the gic version be set to host on macOS?
+            MACHINE+=",gic_version=2,accel=hvf"
+        elif [ "$HOST_OS" == "Linux" ]; then
+            MACHINE+=",gic_version=host,accel=kvm"
+        fi
+    elif (( DO_VIRT )); then
+        MACHINE+=",virtualization=on"
+    fi
+
+    if [ "$PAGE_SIZE" == 65536 ]; then
+        _PROJECT="qemu-virt-arm64-64k-test"
+    elif [ "$PAGE_SIZE" == 16384 ]; then
+        _PROJECT="qemu-virt-arm64-16k-test"
+    else
+        _PROJECT="qemu-virt-arm64-test"
+    fi
+else
+    QEMU="qemu-system-arm"
+    CPU="cortex-a15"
+    MACHINE="virt"
+    MACHINE+=$GIC_STRING
+    MACHINE+=",highmem=off" # disable the high PCI ECAM, since we dont support LPAE to map it
+    _PROJECT="qemu-virt-arm32-test"
+
+    if (( DO_KVM )); then
+        echo "error: KVM acceleration is only supported for 64bit ARM"
+        exit 1
+    fi
+fi
+
+# allow overriding the project from the environment
+if [ -z "$PROJECT" ]; then
+    PROJECT=$_PROJECT
+fi
+
+if (( DO_PCI_VIRTIO )); then
+    VIRTIO_BLOCK_DEVICE="virtio-blk-pci"
+    VIRTIO_NET_DEVICE="virtio-net-pci"
+    VIRTIO_GPU_DEVICE="virtio-gpu-pci"
+    VIRTIO_KEYBOARD_DEVICE="virtio-keyboard-pci"
+    VIRTIO_MOUSE_DEVICE="virtio-mouse-pci"
+    VIRTIO_9P_DEVICE="virtio-9p-pci"
+    VIRTIO_RNG_DEVICE="virtio-rng-pci"
+else
+    VIRTIO_BLOCK_DEVICE="virtio-blk-device"
+    VIRTIO_NET_DEVICE="virtio-net-device"
+    VIRTIO_GPU_DEVICE="virtio-gpu-device"
+    VIRTIO_KEYBOARD_DEVICE="virtio-keyboard-device"
+    VIRTIO_MOUSE_DEVICE="virtio-mouse-device"
+    VIRTIO_9P_DEVICE="virtio-9p-device"
+    VIRTIO_RNG_DEVICE="virtio-rng-device"
+fi
+
+if (( ! DO_NETDEV_OVERRIDE )); then
+    NETDEV="$VIRTIO_NET_DEVICE"
+fi
+
+# construct a list of args based on previous variables using arrays
+ARGS=()
+ARGS+=("-cpu" "$CPU")
+if (( ! DO_MPS )); then
+    # the MPS machines have a fixed memory map and a single cpu, and error out
+    # if told otherwise
+    ARGS+=("-m" "$MEMSIZE")
+    ARGS+=("-smp" "$SMP")
+fi
+ARGS+=("-machine" "$MACHINE")
+ARGS+=("-kernel" "build-${PROJECT}/lk.elf")
+
+if (( DO_MPS )); then
+    # These boards have no way to hand a command line to the guest and no way
+    # to power themselves off, so the platform uses semihosting for both. The
+    # kernel reads the command line back with SYS_GET_CMDLINE, which returns
+    # the arg= values joined with spaces.
+    #
+    # Note qemu's option parser splits on commas, so a command line containing
+    # one cannot be passed this way.
+    SEMIHOSTING="enable=on,target=native"
+    if [[ -n "$CMDLINE" ]]; then
+        SEMIHOSTING+=",arg=$CMDLINE"
+    fi
+    ARGS+=("-semihosting-config" "$SEMIHOSTING")
+elif [[ -n "$CMDLINE" ]]; then
+    ARGS+=("-append" "$CMDLINE")
+fi
+
+DISK_COUNT=0
+for img in "${DISK_IMAGES[@]}"; do
+    ARGS+=("-drive" "if=none,file=${img},id=blk${DISK_COUNT},format=raw")
+    ARGS+=("-device" "${VIRTIO_BLOCK_DEVICE},drive=blk${DISK_COUNT}")
+    ((DISK_COUNT++))
+done
+
+if (( DO_NET )); then
+    ARGS+=("-netdev" "user,id=vmnic,hostname=qemu,hostfwd=tcp::10007-:7,hostfwd=tcp::10009-:9,hostfwd=tcp::10019-:19,hostfwd=tcp::10023-:23")
+    ARGS+=("-device" "${NETDEV},netdev=vmnic")
+elif (( DO_NET_TAP )); then
+    # quick note to enable tap interface
+    # IFNAME=qemu0
+    # BRIDGE=bridge0
+    # sudo ip tuntap add name "${IFNAME}" mode tap user $(whoami)
+    # sudo ip link set "${IFNAME}" master "${BRIDGE}"
+    # sudo ip link set "${IFNAME}" up
+    ARGS+=("-netdev" "tap,id=vmnic,ifname=qemu0,script=no,downscript=no")
+    ARGS+=("-device" "${NETDEV},netdev=vmnic")
+    #SUDO="sudo "
+else
+    ARGS+=("-net" "none")
+fi
+
+if (( DO_DISPLAY )); then
+    ARGS+=("-device" "${VIRTIO_GPU_DEVICE}")
+    ARGS+=("-serial" "stdio")
+    ARGS+=("-device" "${VIRTIO_KEYBOARD_DEVICE}")
+    ARGS+=("-device" "${VIRTIO_MOUSE_DEVICE}")
+else
+    ARGS+=("-nographic")
+fi
+
+if (( DO_V9P )); then
+    ARGS+=("-fsdev" "local,path=$DO_V9P_DIR,security_model=mapped,id=v9p0")
+    ARGS+=("-device" "${VIRTIO_9P_DEVICE},fsdev=v9p0,mount_tag=V9P0")
+fi
+
+if (( ! DO_CORTEX_M0 && ! DO_CORTEX_M3 && ! DO_MPS )); then
+    ARGS+=("-device" "${VIRTIO_RNG_DEVICE}")
+fi
+
+MAKE_VARS=""
+
+if (( DO_CMPCTMALLOC )); then
+    MAKE_VARS="LK_HEAP_IMPLEMENTATION=cmpctmalloc"
+elif (( DO_MINIHEAP )); then
+    MAKE_VARS="LK_HEAP_IMPLEMENTATION=miniheap"
+fi
+
+CMD=()
+if [[ -n "$SUDO" ]]; then
+    CMD+=("sudo")
+fi
+CMD+=("$QEMU")
+CMD+=("${ARGS[@]}")
+CMD+=("$@")
+
+if (( DO_DRYRUN )); then
+    echo "${CMD[@]}"
+    exit 0
+fi
+
+set -e
+"$DIR"/make-parallel $MAKE_VARS PROJECT="$PROJECT"
+echo "${CMD[@]}"
+exec "${CMD[@]}"

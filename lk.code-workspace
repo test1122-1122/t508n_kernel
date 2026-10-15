@@ -1,0 +1,58 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        // Disable auto-formatting till the project decides on a
+        // machine-readable config to control it (e.g., .clang-format).
+        "[c]": {
+            "editor.formatOnSave": false,
+        },
+        "[cpp]": {
+            "editor.formatOnSave": false,
+        },
+        "[rust]": {
+            "editor.formatOnSave": true,
+            "editor.defaultFormatter": "rust-lang.rust-analyzer",
+            "editor.formatOnSaveMode": "file",
+            "editor.insertSpaces": true,
+            "editor.tabSize": 4,
+        },
+        // Allows editor.tabSize to be specified (otherwise it is overridden as
+        // auto-detected).
+        "editor.detectIndentation": false,
+        // Convert tabs to spaces.
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4,
+        "files.exclude": {
+            "**/.cache": true,
+            "**/.clangd": true,
+            "build-*": true,
+        },
+        "markdownlint.config": {
+            "MD024": { "siblings_only": true },
+        },
+        "chat.tools.terminal.autoApprove": {
+            "make": true,
+            "./scripts/run-qemu-boot-tests.py": true,
+            "./scripts/do-qemuarm": true,
+            "./scripts/do-qemum68k": true,
+            "./scripts/do-qemumips": true,
+            "./scripts/do-qemuriscv": true,
+            "./scripts/do-qemux86": true,
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "mkornelsen.vscode-arm64",
+            "llvm-vs-code-extensions.vscode-clangd",
+            "sunshaoce.risc-v",
+            "davidanson.vscode-markdownlint",
+            "xaver.clang-format",
+            "ms-vscode.makefile-tools",
+            "foxundermoon.shell-format"
+        ]
+    }
+}

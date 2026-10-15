@@ -1,0 +1,642 @@
+/*
+ * Copyright (c) 2009 Corey Tabaka
+ * Copyright (c) 2015 Intel Corporation
+ * Copyright (c) 2016 Travis Geiselbrecht
+ *
+ * Use of this source code is governed by a MIT-style
+ * license that can be found in the LICENSE file or at
+ * https://opensource.org/licenses/MIT
+ */
+
+#include <arch/mmu.h>
+#include <arch/x86.h>
+#include <arch/x86/apic.h>
+#include <arch/x86/mmu.h>
+#include <assert.h>
+#include <dev/block/ide.h>
+#include <dev/uart.h>
+#include <hw/multiboot.h>
+#include <inttypes.h>
+#include <kernel/vm.h>
+#include <lib/cmdline.h>
+#include <lk/efi_boot_info.h>
+#include <lk/err.h>
+#include <lk/init.h>
+#include <lk/trace.h>
+#include <malloc.h>
+#include <string.h>
+#include <platform.h>
+#include <platform/fb_console.h>
+#include <platform/keyboard.h>
+#include <platform/pc.h>
+#include <platform/vga_console.h>
+
+#include "platform_p.h"
+
+#if WITH_DEV_BUS_PCI
+#include <dev/bus/pci.h>
+#endif
+#if WITH_LIB_MINIP
+#include <lib/minip.h>
+#endif
+#if WITH_LIB_ACPI
+#include <lib/acpi.h>
+
+static bool found_acpi = false;
+#endif
+
+#if WITH_DEV_VIRTIO
+#include <dev/virtio.h>
+#endif
+
+#define LOCAL_TRACE 0
+
+/* multiboot information passed in, if present */
+extern uint32_t _multiboot1_info;
+extern uint32_t _multiboot2_info;
+uint64_t efi64_system_table;
+
+#define DEFAULT_MEMEND (16 * 1024 * 1024)
+
+extern uint64_t __code_start;
+extern uint64_t __code_end;
+extern uint64_t __rodata_start;
+extern uint64_t __rodata_end;
+extern uint64_t __data_start;
+extern uint64_t __data_end;
+extern uint64_t __bss_start;
+extern uint64_t __bss_end;
+
+/* based on multiboot (or other methods) we support up to 16 arenas */
+#define NUM_ARENAS 16
+static pmm_arena_t mem_arena[NUM_ARENAS];
+
+/* A copy of the command line out of the multiboot info, which would otherwise be lost
+ * as the PMM and VM start to use memory.
+ * TODO: a better solution would be to find a way for the entire multiboot structure
+ * to be preserved. */
+static char cmdline_copy[256];
+
+/* validate and record a run of usable physical memory as a pmm arena.
+ * shared by the multiboot and EFI memory map parsers. */
+static void add_arena_range(uint64_t base, uint64_t length, size_t *found_mem_arenas) {
+    if (*found_mem_arenas >= countof(mem_arena)) {
+        return;
+    }
+
+    /* do some sanity checks to cut out small arenas */
+    if (length < PAGE_SIZE * 2) {
+        return;
+    }
+
+    /* align the base and length */
+    uint64_t oldbase = base;
+    base = PAGE_ALIGN(base);
+    if (base > oldbase) {
+        length -= base - oldbase;
+    }
+    length = ROUNDDOWN(length, PAGE_SIZE);
+
+    /* ignore memory < 1MB */
+    if (base < 1 * MB) {
+        /* skip everything < 1MB */
+        return;
+    }
+
+    /* ignore everything that extends past the size PHYSMAP maps into the kernel.
+     * see arch/x86/arch.c mmu_initial_mappings
+     */
+    if (base >= PHYSMAP_SIZE) {
+        return;
+    }
+    uint64_t end = base + length;
+    if (end > PHYSMAP_SIZE) {
+        end = PHYSMAP_SIZE;
+        DEBUG_ASSERT(end > base);
+        length = end - base;
+        dprintf(INFO, "PC: trimmed memory to %" PRIu64 " bytes\n", PHYSMAP_SIZE);
+    }
+
+    /* initialize a new pmm arena */
+    mem_arena[*found_mem_arenas].name = "memory";
+    mem_arena[*found_mem_arenas].base = base;
+    mem_arena[*found_mem_arenas].size = length;
+    mem_arena[*found_mem_arenas].priority = 1;
+    mem_arena[*found_mem_arenas].flags = PMM_ARENA_FLAG_KMAP;
+    (*found_mem_arenas)++;
+}
+
+/* parse an array of multiboot mmap entries */
+static status_t parse_multiboot_mmap(const memory_map_t *mmap, const size_t mmap_length,
+                                     size_t *found_mem_arenas) {
+    for (uint i = 0; i < mmap_length / sizeof(memory_map_t); i++) {
+
+        uint64_t base = mmap[i].base_addr_low | (uint64_t)mmap[i].base_addr_high << 32;
+        uint64_t length = mmap[i].length_low | (uint64_t)mmap[i].length_high << 32;
+
+        dprintf(SPEW, "\ttype %u addr %#" PRIx64 " len %#" PRIx64 "\n", mmap[i].type, base, length);
+        if (mmap[i].type == MB_MMAP_TYPE_AVAILABLE) {
+            add_arena_range(base, length, found_mem_arenas);
+            if (*found_mem_arenas == countof(mem_arena)) {
+                break;
+            }
+        }
+    }
+
+    return NO_ERROR;
+}
+
+/* Walk through the multiboot structure and attempt to discover all of the runs
+ * of physical memory to bootstrap the pmm areas.
+ * Returns number of arenas initialized in passed in pointer
+ */
+static status_t platform_parse_multiboot_info(size_t *found_mem_arenas,
+                                             bool *have_framebuffer_console) {
+    *found_mem_arenas = 0;
+    *have_framebuffer_console = false;
+
+    dprintf(SPEW, "PC: multiboot v2 address %#" PRIx32 "\n", _multiboot2_info);
+    if (_multiboot2_info != 0) {
+        struct multiboot2_info *multiboot_info =
+            paddr_to_kvaddr((paddr_t)_multiboot2_info);
+        if (!multiboot_info) {
+            dprintf(INFO, "PC: multiboot v2 info at %#" PRIx32 " is outside the early kernel mappings\n",
+                    _multiboot2_info);
+            return ERR_NOT_FOUND;
+        }
+
+        dprintf(SPEW, "PC: multiboot info total size: %u\n", multiboot_info->total_size);
+
+        // Foreach tag in the multiboot info structure
+        struct multiboot2_tag *tag = (struct multiboot2_tag *)(multiboot_info + 1);
+        while (tag->type != MULTIBOOT2_TAG_TYPE_END) {
+            switch (tag->type) {
+                case MULTIBOOT2_TAG_TYPE_CMDLINE: {
+                    char *cmdline = (char *)(tag + 1);
+                    dprintf(SPEW, "PC: cmdline = \"%s\"\n", cmdline);
+
+                    // make a copy of the cmdline into a boot alloc block
+                    strlcpy(cmdline_copy, cmdline, sizeof(cmdline_copy));
+
+                    status_t err = cmdline_init(cmdline_copy, strlen(cmdline_copy));
+                    if (err != NO_ERROR && err != ERR_ALREADY_STARTED) {
+                        dprintf(INFO, "PC: failed to initialize cmdline: %d\n", err);
+                    }
+                    break;
+                }
+
+                case MULTIBOOT2_TAG_TYPE_BOOT_LOADER_NAME: {
+                    char *bootloader_name = (char *)(tag + 1);
+                    dprintf(SPEW, "PC: bootloader name: %s\n", bootloader_name);
+                    break;
+                }
+
+                case MULTIBOOT2_TAG_TYPE_MMAP: {
+                    struct multiboot2_tag_mmap *mmap_tag = (struct multiboot2_tag_mmap *)tag;
+
+                    dprintf(SPEW, "PC: multiboot memory map, entry size: %u\n",
+                            mmap_tag->entry_size);
+                    // basic validation: ensure tag has at least the header and entries are
+                    // reasonable
+                    if (tag->size < sizeof(*mmap_tag) ||
+                        mmap_tag->entry_size < sizeof(struct multiboot2_mmap_entry)) {
+                        dprintf(INFO, "PC: malformed multiboot mmap tag (size %u entry_size %u)\n",
+                                tag->size, mmap_tag->entry_size);
+                        break;
+                    }
+
+                    // iterate entries in-place and convert one-by-one to avoid using heap during
+                    // early init
+                    size_t entry_count = (tag->size - sizeof(*mmap_tag)) / mmap_tag->entry_size;
+
+                    struct multiboot2_mmap_entry *entry =
+                        (struct multiboot2_mmap_entry *)(mmap_tag + 1);
+                    for (size_t i = 0; i < entry_count; i++) {
+                        memory_map_t mm = {};
+                        // Cut the address and length into high and low 32-bit pieces for the legacy
+                        // parser
+                        mm.base_addr_low = entry->addr & 0xFFFFFFFF;
+                        mm.base_addr_high = (entry->addr >> 32) & 0xFFFFFFFF;
+                        mm.length_low = entry->len & 0xFFFFFFFF;
+                        mm.length_high = (entry->len >> 32) & 0xFFFFFFFF;
+                        mm.type = entry->type;
+
+                        // parse single entry (parse_multiboot_mmap accepts buffer+length)
+                        parse_multiboot_mmap(&mm, sizeof(mm), found_mem_arenas);
+
+                        entry = (struct multiboot2_mmap_entry *)((uint8_t *)entry +
+                                                                 mmap_tag->entry_size);
+                    }
+
+                    break;
+                }
+
+                case MULTIBOOT2_TAG_TYPE_FRAMEBUFFER: {
+                    struct multiboot2_tag_framebuffer *framebuffer_tag =
+                        (struct multiboot2_tag_framebuffer *)tag;
+
+                    if (framebuffer_tag->common.framebuffer_type == MULTIBOOT_FRAMEBUFFER_TYPE_RGB) {
+                        struct fb_console_boot_info fb_info = {
+                            .framebuffer_addr = framebuffer_tag->common.framebuffer_addr,
+                            .framebuffer_pitch = framebuffer_tag->common.framebuffer_pitch,
+                            .framebuffer_width = framebuffer_tag->common.framebuffer_width,
+                            .framebuffer_height = framebuffer_tag->common.framebuffer_height,
+                            .framebuffer_bpp = framebuffer_tag->common.framebuffer_bpp,
+                        };
+
+                        fb_console_init(&fb_info);
+                        *have_framebuffer_console = true;
+                    }
+
+                    dprintf(SPEW, "PC: multiboot framebuffer info present:\n");
+                    dprintf(SPEW, "\taddress %#" PRIx64 " pitch %u, width %u height %u bpp %hhu ",
+                            framebuffer_tag->common.framebuffer_addr,
+                            framebuffer_tag->common.framebuffer_pitch,
+                            framebuffer_tag->common.framebuffer_width,
+                            framebuffer_tag->common.framebuffer_height,
+                            framebuffer_tag->common.framebuffer_bpp);
+                    dprintf(SPEW, "(%ux%u@%hhu) ", framebuffer_tag->common.framebuffer_width,
+                            framebuffer_tag->common.framebuffer_height,
+                            framebuffer_tag->common.framebuffer_bpp);
+                    dprintf(SPEW, "framebuffer type %u\n",
+                            framebuffer_tag->common.framebuffer_type);
+
+                    if (framebuffer_tag->common.framebuffer_type ==
+                        MULTIBOOT_FRAMEBUFFER_TYPE_RGB) {
+                        dprintf(SPEW, "\tcolor bit layout: R %u:%u G %u:%u B %u:%u\n",
+                                framebuffer_tag->rgb_bitmasks.framebuffer_red_field_position,
+                                framebuffer_tag->rgb_bitmasks.framebuffer_red_mask_size,
+                                framebuffer_tag->rgb_bitmasks.framebuffer_green_field_position,
+                                framebuffer_tag->rgb_bitmasks.framebuffer_green_mask_size,
+                                framebuffer_tag->rgb_bitmasks.framebuffer_blue_field_position,
+                                framebuffer_tag->rgb_bitmasks.framebuffer_blue_mask_size);
+                    }
+
+                    break;
+                }
+
+                case MULTIBOOT2_TAG_TYPE_EFI64:
+                    efi64_system_table = ((struct multiboot2_tag_efi64 *)tag)->pointer;
+                    dprintf(SPEW, "PC: EFI 64 system table at %#" PRIx64 "\n", efi64_system_table);
+                    break;
+
+                case MULTIBOOT2_TAG_TYPE_ACPI_NEW:
+                    // NEW RSDP Is an immediate data in the tag, not a pointer (left value).
+                    // dprintf(SPEW, "PC: found multiboot ACPI NEW RSDP at %#" PRIxPTR "\n",
+                    // *(uint64_t *)(tag + 1));
+                    break;
+
+                case MULTIBOOT2_TAG_TYPE_LOAD_BASE_ADDR:
+                    dprintf(SPEW, "PC: base addr at %#" PRIx64 "\n", *(uint64_t *)(tag + 1));
+                    break;
+
+                default:
+                    // dprintf(SPEW, "PC: unknown multiboot tag type: %u\n", tag->type);
+                    break;
+            }
+
+            // move to next tag (8-byte aligned)
+            tag = (struct multiboot2_tag *)((uint8_t *)tag + ((tag->size + 7) & ~7));
+        }
+
+        return NO_ERROR;
+    }
+
+    dprintf(SPEW, "PC: multiboot v1 address %#" PRIx32 "\n", _multiboot1_info);
+    if (_multiboot1_info == 0) {
+        return ERR_NOT_FOUND;
+    }
+
+    const multiboot_info_t *multiboot_info = paddr_to_kvaddr((paddr_t)_multiboot1_info);
+    if (!multiboot_info) {
+        dprintf(INFO, "PC: multiboot v1 info at %#" PRIx32 " is outside the early kernel mappings\n",
+                _multiboot1_info);
+        return ERR_NOT_FOUND;
+    }
+
+    dprintf(SPEW, "\tflags %#x\n", multiboot_info->flags);
+
+    // legacy multiboot memory size field
+    if (multiboot_info->flags & MB_INFO_MEM_SIZE) {
+        dprintf(SPEW, "PC: multiboot memory lower %#x upper %#" PRIx64 "\n",
+                multiboot_info->mem_lower * 1024U, multiboot_info->mem_upper * 1024ULL);
+        if ((multiboot_info->flags & MB_INFO_MMAP) == 0) {
+            // There is no mmap to give us a more detailed memory map
+            // so we'll need to use this one. Synthesize a fake mmap array to pass
+            // to the mmap code.
+            memory_map_t mmap[2] = {};
+            mmap[0].length_low = multiboot_info->mem_lower * 1024U;
+            mmap[0].type = MB_MMAP_TYPE_AVAILABLE;
+            mmap[1].base_addr_low = 1 * 1024U * 1024U;
+            mmap[1].length_low = multiboot_info->mem_upper * 1024U;
+            mmap[1].type = MB_MMAP_TYPE_AVAILABLE;
+            parse_multiboot_mmap(mmap, 2 * sizeof(memory_map_t), found_mem_arenas);
+        }
+    }
+
+    // more modern multiboot mmap array
+    if (multiboot_info->flags & MB_INFO_MMAP) {
+        const memory_map_t *mmap = paddr_to_kvaddr((paddr_t)multiboot_info->mmap_addr);
+        if (!mmap) {
+            dprintf(INFO, "PC: multiboot mmap at %#" PRIx32 " is outside the early kernel mappings\n",
+                    multiboot_info->mmap_addr);
+            return ERR_NOT_FOUND;
+        }
+
+        dprintf(SPEW, "PC: multiboot memory map, length %u:\n", multiboot_info->mmap_length);
+        parse_multiboot_mmap(mmap, multiboot_info->mmap_length, found_mem_arenas);
+    }
+
+    // multiboot v1 command line
+    if (multiboot_info->flags & MB_INFO_CMD_LINE) {
+        const char *cmdline = paddr_to_kvaddr((paddr_t)multiboot_info->cmdline);
+        if (!cmdline) {
+            dprintf(INFO, "PC: multiboot cmdline at %#" PRIx32 " is outside the early kernel mappings\n",
+                    multiboot_info->cmdline);
+            return ERR_NOT_FOUND;
+        }
+        dprintf(SPEW, "PC: multiboot cmdline = \"%s\"\n", cmdline);
+
+        strlcpy(cmdline_copy, cmdline, sizeof(cmdline_copy));
+
+        status_t err = cmdline_init(cmdline_copy, strlen(cmdline_copy));
+        if (err != NO_ERROR && err != ERR_ALREADY_STARTED) {
+            dprintf(INFO, "PC: failed to initialize cmdline: %d\n", err);
+        }
+    }
+
+    if (multiboot_info->flags & MB_INFO_FRAMEBUFFER) {
+        if (multiboot_info->framebuffer_type == MULTIBOOT_FRAMEBUFFER_TYPE_RGB) {
+            struct fb_console_boot_info fb_info = {
+                .framebuffer_addr = multiboot_info->framebuffer_addr,
+                .framebuffer_pitch = multiboot_info->framebuffer_pitch,
+                .framebuffer_width = multiboot_info->framebuffer_width,
+                .framebuffer_height = multiboot_info->framebuffer_height,
+                .framebuffer_bpp = multiboot_info->framebuffer_bpp,
+            };
+
+            fb_console_init(&fb_info);
+            *have_framebuffer_console = true;
+        }
+
+        dprintf(SPEW, "PC: multiboot framebuffer info present\n");
+        dprintf(SPEW, "\taddress %#" PRIx64 " pitch %u width %u height %u bpp %hhu type %u\n",
+                multiboot_info->framebuffer_addr, multiboot_info->framebuffer_pitch,
+                multiboot_info->framebuffer_width, multiboot_info->framebuffer_height,
+                multiboot_info->framebuffer_bpp, multiboot_info->framebuffer_type);
+
+        if (multiboot_info->framebuffer_type == MULTIBOOT_FRAMEBUFFER_TYPE_RGB) {
+            dprintf(SPEW, "\tcolor bit layout: R %u:%u G %u:%u B %u:%u\n",
+                    multiboot_info->framebuffer_red_field_position,
+                    multiboot_info->framebuffer_red_mask_size,
+                    multiboot_info->framebuffer_green_field_position,
+                    multiboot_info->framebuffer_green_mask_size,
+                    multiboot_info->framebuffer_blue_field_position,
+                    multiboot_info->framebuffer_blue_mask_size);
+        }
+    }
+
+    return NO_ERROR;
+}
+
+/* Parse the boot information left in lk_efi_boot_info by the in-kernel UEFI
+ * stub (arch/x86/64/efi), if the kernel was entered that way. */
+static status_t platform_parse_efi_boot_info(size_t *found_mem_arenas,
+                                             bool *have_framebuffer_console) {
+#if ARCH_X86_64
+    const struct lk_efi_boot_info *info = &lk_efi_boot_info;
+    if (info->magic != LK_EFI_BOOT_MAGIC) {
+        return ERR_NOT_FOUND;
+    }
+
+    dprintf(INFO, "PC: EFI boot info found, version %u\n", info->version);
+    dprintf(SPEW, "\timage was loaded at %#" PRIx64 ", system table %#" PRIx64
+            ", rsdp %#" PRIx64 "\n",
+            info->image_base, info->efi_system_table, info->rsdp_phys);
+
+    efi64_system_table = info->efi_system_table;
+
+    /* Walk the EFI memory map. Boot services memory and the loader ranges
+     * (including the allocation covering this very image; the VM wire
+     * reserves the kernel's pages) are all reclaimable. EFI maps are heavily
+     * fragmented, so coalesce adjacent usable runs before adding arenas or
+     * NUM_ARENAS would overflow. */
+    uint64_t run_base = 0;
+    uint64_t run_len = 0;
+    for (uint32_t i = 0; i < info->mmap_entries; i++) {
+        const struct lk_efi_memory_descriptor *desc =
+            (const struct lk_efi_memory_descriptor *)(info->mmap +
+                                                      (size_t)i * info->mmap_desc_size);
+
+        bool usable;
+        switch (desc->type) {
+            case LK_EFI_MEM_LOADER_CODE:
+            case LK_EFI_MEM_LOADER_DATA:
+            case LK_EFI_MEM_BOOT_SERVICES_CODE:
+            case LK_EFI_MEM_BOOT_SERVICES_DATA:
+            case LK_EFI_MEM_CONVENTIONAL:
+                usable = true;
+                break;
+            default:
+                usable = false;
+                break;
+        }
+
+        const uint64_t base = desc->physical_start;
+        const uint64_t len = desc->number_of_pages * LK_EFI_PAGE_SIZE;
+        dprintf(SPEW, "\ttype %u addr %#" PRIx64 " len %#" PRIx64 " attr %#" PRIx64 "\n",
+                desc->type, base, len, desc->attributes);
+
+        if (usable && run_len > 0 && base == run_base + run_len) {
+            /* extends the current run */
+            run_len += len;
+        } else if (usable) {
+            /* starts a new run */
+            if (run_len > 0) {
+                add_arena_range(run_base, run_len, found_mem_arenas);
+            }
+            run_base = base;
+            run_len = len;
+        } else if (run_len > 0) {
+            /* ends the current run */
+            add_arena_range(run_base, run_len, found_mem_arenas);
+            run_len = 0;
+        }
+    }
+    if (run_len > 0) {
+        add_arena_range(run_base, run_len, found_mem_arenas);
+    }
+
+    /* command line from EFI LoadOptions; the buffer is persistent .data so
+     * it can be handed to cmdline directly */
+    if (info->cmdline[0] != '\0') {
+        dprintf(INFO, "PC: EFI command line: '%s'\n", info->cmdline);
+        status_t err = cmdline_init(info->cmdline, strlen(info->cmdline));
+        if (err != NO_ERROR && err != ERR_ALREADY_STARTED) {
+            dprintf(INFO, "PC: failed to initialize cmdline library: %d\n", err);
+        }
+    }
+
+    /* GOP framebuffer */
+    if (info->fb_present) {
+        const struct fb_console_boot_info fb_info = {
+            .framebuffer_addr = info->fb_base,
+            .framebuffer_pitch = info->fb_pitch,
+            .framebuffer_width = info->fb_width,
+            .framebuffer_height = info->fb_height,
+            .framebuffer_bpp = info->fb_bpp,
+        };
+        dprintf(SPEW, "\tframebuffer at %#" PRIx64 " pitch %u width %u height %u bpp %u\n",
+                info->fb_base, info->fb_pitch, info->fb_width, info->fb_height, info->fb_bpp);
+        fb_console_init(&fb_info);
+        *have_framebuffer_console = true;
+    }
+
+    return NO_ERROR;
+#else
+    (void)found_mem_arenas;
+    (void)have_framebuffer_console;
+    return ERR_NOT_FOUND;
+#endif
+}
+
+void platform_early_init(void) {
+    /* get the debug output working */
+    platform_init_debug_early();
+
+    /* initialize the interrupt controller */
+    platform_init_interrupts();
+
+    /* look for boot info from the UEFI stub first, fall back to multiboot */
+    size_t found_arenas = 0;
+    bool have_framebuffer_console = false;
+    if (platform_parse_efi_boot_info(&found_arenas, &have_framebuffer_console) != NO_ERROR) {
+        platform_parse_multiboot_info(&found_arenas, &have_framebuffer_console);
+    }
+
+    /* try to get the vga console working only if we don't have a framebuffer console */
+    if (!have_framebuffer_console) {
+        dprintf(INFO, "PC: using VGA console\n");
+        vga_console_init();
+    }
+
+    /* if we couldn't find any memory, initialize a default arena */
+    if (found_arenas == 0) {
+        mem_arena[0] = (pmm_arena_t){ .name = "memory",
+                                      .base = MEMBASE,
+                                      .size = DEFAULT_MEMEND,
+                                      .priority = 1,
+                                      .flags = PMM_ARENA_FLAG_KMAP };
+        found_arenas = 1;
+        printf("PC: WARNING failed to detect memory map from multiboot, using default\n");
+    }
+
+    DEBUG_ASSERT(found_arenas > 0 && found_arenas <= countof(mem_arena));
+
+    /* add the arenas we just set up to the pmm */
+    uint64_t total_mem = 0;
+    for (size_t i = 0; i < found_arenas; i++) {
+        pmm_add_arena(&mem_arena[i]);
+        total_mem += mem_arena[i].size;
+    }
+    dprintf(INFO, "PC: total memory detected %" PRIu64 " bytes\n", total_mem);
+}
+
+// Look for the ACPI tables just after the vm is initialized.
+static void platform_init_postvm(uint level) {
+    fb_console_init_postvm();
+
+#if WITH_LIB_ACPI
+    // Look for the root ACPI table. Failing to find one is not fatal: the interrupt and
+    // timer init below both cope with there being no ACPI, and returning early here would
+    // leave the system with no event timer at all.
+    status_t err = acpi_init();
+    if (err == NO_ERROR) {
+        found_acpi = true;
+
+        if (LOCAL_TRACE) {
+            acpi_dump_tables(false);
+        }
+        acpi_dump_madt_table();
+    } else {
+        dprintf(INFO, "PC: no ACPI tables found\n");
+    }
+#endif
+
+    platform_init_interrupts_postvm();
+    platform_init_timer();
+}
+
+LK_INIT_HOOK(platform_init_postvm, platform_init_postvm, LK_INIT_LEVEL_VM);
+
+void platform_init(void) {
+    platform_init_debug();
+
+    platform_init_keyboard(&console_input_buf);
+
+    // Look for secondary cpus
+#if WITH_SMP
+    platform_start_secondary_cpus();
+#endif
+
+#if WITH_DEV_BUS_PCI
+    // pci and, if present, the acpi namespace
+#if WITH_LIB_ACPI
+    pc_pci_init(found_acpi);
+#else
+    pc_pci_init(false);
+#endif
+#elif WITH_LIB_ACPI
+    if (found_acpi) {
+        acpi_init_namespace();
+    }
+#endif
+
+    const struct platform_ide_config pci_ide0 = {
+        .isa = false,
+        .channel = 0,
+        .io_base = 0x1f0,
+        .ctrl_base = 0x3f6,
+        .irq = INT_IDE0,
+    };
+    const struct platform_ide_config isa_ide0 = {
+        .isa = true,
+        .channel = 0,
+        .io_base = 0x1f0,
+        .ctrl_base = 0x3f6,
+        .irq = INT_IDE0,
+    };
+    const struct platform_ide_config pci_ide1 = {
+        .isa = false,
+        .channel = 1,
+        .io_base = 0x170,
+        .ctrl_base = 0x376,
+        .irq = INT_IDE1,
+    };
+    const struct platform_ide_config isa_ide1 = {
+        .isa = true,
+        .channel = 1,
+        .io_base = 0x170,
+        .ctrl_base = 0x376,
+        .irq = INT_IDE1,
+    };
+
+    // try PCI IDE first, then fall back to ISA channel-by-channel.
+    status_t ide_err = platform_ide_init(&pci_ide0);
+    if (ide_err != NO_ERROR && ide_err != ERR_ALREADY_EXISTS) {
+        ide_err = platform_ide_init(&isa_ide0);
+        if (ide_err == ERR_ALREADY_EXISTS) {
+            ide_err = NO_ERROR;
+        }
+    }
+
+    ide_err = platform_ide_init(&pci_ide1);
+    if (ide_err != NO_ERROR && ide_err != ERR_ALREADY_EXISTS) {
+        ide_err = platform_ide_init(&isa_ide1);
+        if (ide_err == ERR_ALREADY_EXISTS) {
+            ide_err = NO_ERROR;
+        }
+    }
+
+    platform_init_mmu_mappings();
+}

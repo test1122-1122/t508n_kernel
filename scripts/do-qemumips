@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+set -e
+set -x
+
+"$DIR"/make-parallel qemu-mips-test
+exec qemu-system-mips -machine malta -cpu M14K -kernel build-qemu-mips-test/lk.elf -nographic $@

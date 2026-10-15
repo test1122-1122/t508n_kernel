@@ -1,0 +1,171 @@
+name: LK CI (Clang)
+
+# Brute force build a bunch of variants of LK in parallel jobs.
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**.md'   # Skip builds when only documentation changes
+      - 'LICENSE'
+      - 'docs/**'
+  push:
+    branches-ignore:
+      - 'wip/**'
+      - 'docs/**' # Skip builds for documentation branches
+    paths-ignore:
+      - '**.md'   # Skip builds when only documentation changes
+      - 'LICENSE'
+      - 'docs/**'
+
+# These jobs only build the tree; they never write back to the repo.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        # Spot-check the version range rather than every consecutive release:
+        # 14 is the floor we claim to support, 18 is Ubuntu 24.04's own
+        # default clang, 20 is the newest available here.
+        toolchain-ver: [14, 18, 20]
+        debug: [2, 0]
+        project:
+          # Clang toolchains do not ship a libgcc, but lib/libc carries a
+          # software fallback for the 64-bit divide/mod routines (and the
+          # ARM EABI helpers built on top of them) that's only compiled in
+          # when no usable libgcc is found for the target, so 32-bit targets
+          # build fine here too now.
+          #
+          # m68k and mips are left out: they don't build under Clang yet
+          # (m68k crashes the Clang integrated assembler on inline asm, and
+          # mips rejects the -march=m14k CPU name).
+          #
+          # The Stellaris Cortex-M boards are left out for a different reason:
+          # their M4F has a single-precision-only FPU, so double math still
+          # lowers to __aeabi_d* calls, and the fallback above covers only
+          # 64-bit divide/mod -- not float. Ubuntu's libclang-rt ships no ARM
+          # baremetal multilib and this image has no cross-GCC, so LIBGCC comes
+          # out empty and those calls go unresolved at link time (on every
+          # Clang version, not just the old one). Building them here would need
+          # either a real arm-none-eabi libgcc installed in the job or soft
+          # float added to lib/libc; a normal build with a proper libgcc is
+          # fine, which is what the GCC matrix already covers.
+          - qemu-virt-arm32-test
+          - qemu-virt-arm64-test
+          - qemu-virt-riscv32-test
+          - qemu-virt-riscv64-test
+          - qemu-virt-riscv64-supervisor-test
+          - pc-x86-test
+          - pc-x86-64-test
+    env:
+      PROJECT: ${{ matrix.project }}
+      TOOLCHAIN_VER: ${{ matrix.toolchain-ver }}
+      DEBUG: ${{ matrix.debug }}
+      UBSAN: 0  # UBSan runtimes for baremetal are not part of the toolchain
+      TOOLCHAIN: clang
+      LD: ld.lld  # force the LLVM linker instead of falling back to bfd
+    steps:
+    - name: banner
+      shell: bash
+      run: |
+        printf "Building with %d processors\n" "$(nproc)"
+        grep -oP '(?<=model name\t: ).*' /proc/cpuinfo|head -n1
+        echo PROJECT = $PROJECT
+        echo TOOLCHAIN_VER = $TOOLCHAIN_VER
+        echo DEBUG = $DEBUG
+        echo UBSAN = $UBSAN
+
+    - name: checkout
+      uses: actions/checkout@v6
+
+    # Install LLVM and point the build at it via the engine's native
+    # TOOLCHAIN=clang support: CLANG_BINDIR is enough for engine.mk to
+    # locate clang/ld.lld/llvm-* itself and resolve LIBGCC correctly
+    # (querying clang directly, then falling back to a matching cross-GCC
+    # if one happens to be on PATH -- neither is present in this image, so
+    # the software fallback in lib/libc kicks in for 32-bit targets).
+    - name: compute toolchain
+      shell: bash
+      run: |
+        env -i DEBIAN_FRONTEND=noninteractive sudo apt-get update
+        sudo apt-get install -y clang-${{ matrix.toolchain-ver }} lld-${{ matrix.toolchain-ver }}
+        echo "CLANG_BINDIR=/usr/lib/llvm-${{ matrix.toolchain-ver }}/bin" >> $GITHUB_ENV
+        cat "$GITHUB_ENV"
+
+    # build it
+    - name: build
+      shell: bash
+      run: |
+        make -j $(nproc)
+    # When LK is compiled with DEBUG=0, there's no console and no way for us
+    # to read test output
+    - name: qemu
+      if: ${{ matrix.project == 'qemu-virt-arm64-test' }}
+      shell: bash
+      run: |
+        env -i DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends qemu-system-arm expect
+    - name: uefi unittest
+      if: ${{ matrix.project == 'qemu-virt-arm64-test' }}
+      shell: bash
+      run: |
+        ./scripts/uefi_unittest.exp
+    - name: unittest
+      if: ${{ matrix.project == 'qemu-virt-arm64-test' }}
+      shell: bash
+      run: |
+        ./scripts/unittest.exp
+
+  # Separate from the build matrix above: LTO only needs spot-checking (one
+  # project, one toolchain version), not the full cross product. Kept as its
+  # own job rather than an `include:` entry in the build matrix, since an
+  # include entry that shares toolchain-ver/debug/project with an existing
+  # combination merges into that job instead of adding a new one -- two such
+  # entries (thin and full) would just clobber each other.
+  lto:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        lto: [thin, full]
+    env:
+      PROJECT: qemu-virt-arm64-test
+      TOOLCHAIN_VER: 20
+      DEBUG: 0
+      TOOLCHAIN: clang
+      LD: ld.lld
+      LTO_MODE: ${{ matrix.lto }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v6
+
+    - name: compute toolchain
+      shell: bash
+      run: |
+        env -i DEBIAN_FRONTEND=noninteractive sudo apt-get update
+        sudo apt-get install -y clang-${{ env.TOOLCHAIN_VER }} lld-${{ env.TOOLCHAIN_VER }}
+        echo "CLANG_BINDIR=/usr/lib/llvm-${{ env.TOOLCHAIN_VER }}/bin" >> $GITHUB_ENV
+
+    - name: build
+      shell: bash
+      run: |
+        make -j $(nproc)
+
+    - name: qemu
+      shell: bash
+      run: |
+        env -i DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends qemu-system-arm expect
+
+    - name: uefi unittest
+      shell: bash
+      run: |
+        ./scripts/uefi_unittest.exp
+
+    - name: unittest
+      shell: bash
+      run: |
+        ./scripts/unittest.exp
+
+# vim: ts=2 sw=2 expandtab

@@ -1,0 +1,160 @@
+/*
+ * Copyright (c) 2018 Travis Geiselbrecht
+ *
+ * Use of this source code is governed by a MIT-style
+ * license that can be found in the LICENSE file or at
+ * https://opensource.org/licenses/MIT
+ */
+#include <dev/virtio.h>
+#include <kernel/thread.h>
+#include <lk/err.h>
+#include <lk/reg.h>
+#include <lk/trace.h>
+#include <platform.h>
+#include <platform/debug.h>
+#include <platform/interrupts.h>
+#include <platform/timer.h>
+#include <platform/virt.h>
+#include <sys/types.h>
+#include <string.h>
+#if WITH_LIB_CMDLINE
+#include <lib/cmdline.h>
+#endif
+#if WITH_KERNEL_VM
+#include <kernel/vm.h>
+#else
+#include <kernel/novm.h>
+#endif
+
+#include "bootinfo.h"
+#include "platform_p.h"
+
+#define LOCAL_TRACE 0
+
+// Add the one memory region we have detected from the bootinfo
+static status_t add_memory_region(paddr_t base, size_t size, uint flags) {
+#if WITH_KERNEL_VM
+    static pmm_arena_t arena;
+
+    arena.name = "mem";
+    arena.base = base;
+    arena.size = size;
+    arena.priority = 1;
+    arena.flags = PMM_ARENA_FLAG_KMAP | flags;
+
+    status_t err = pmm_add_arena(&arena);
+    if (err < 0) {
+        panic("pmm_add_arena failed\n");
+    }
+    return err;
+#else
+    novm_add_arena("mem", base, size);
+    return NO_ERROR;
+#endif
+}
+
+void platform_early_init(void) {
+
+#if M68K_MMU == 68040
+    // use DTTR1 to map in all of peripheral space
+    // map 0xff000000 - 0xffffffff (16MB) to 0xff000000
+    // Logical address base: 0xff000000, mask 0x00000000, enable, supervisor, noncachable, serialized
+    uint32_t ttbr1 = 0xff00a040;
+    asm volatile("movec %0, %%dtt1" ::"r"(ttbr1) : "memory");
+#endif
+
+    goldfish_tty_early_init();
+    pic_early_init();
+    goldfish_rtc_early_init();
+
+    // Dump the bootinfo structure
+    if (LK_DEBUGLEVEL >= INFO) {
+        dump_all_bootinfo_records();
+    }
+
+    // look for command line in bootinfo records
+    uint16_t cmdline_size;
+    const char *cmdline = (const char *)bootinfo_find_record(BOOTINFO_TAG_COMMAND_LINE, &cmdline_size);
+    if (cmdline && cmdline_size > 0) {
+        dprintf(SPEW, "VIRT: bootinfo command line = \"%s\" (size %hu)\n", cmdline, cmdline_size);
+        // command line seems to always be zero terminated
+        status_t err = cmdline_init(cmdline, strlen(cmdline));
+        if (err != NO_ERROR && err != ERR_ALREADY_STARTED) {
+            dprintf(INFO, "VIRT: failed to initialize cmdline: %d\n", err);
+        }
+    }
+
+    // look for tag 0x5, which describes the memory layout of the system
+    uint16_t size;
+    const void *ptr = bootinfo_find_record(BOOTINFO_TAG_MEMCHUNK, &size);
+    if (!ptr) {
+        panic("68K VIRT: unable to find MEMCHUNK BOOTINFO record\n");
+    }
+    if (size < sizeof(struct bootinfo_item_memchunk)) {
+        panic("68K VIRT: MEMCHUNK BOOTINFO record too small\n");
+    }
+    LTRACEF("MEMCHUNK ptr %p, size %hu\n", ptr, size);
+
+    const struct bootinfo_item_memchunk *memchunk = (const struct bootinfo_item_memchunk *)ptr;
+    uint32_t membase = memchunk->base;
+    uint32_t memsize = memchunk->size;
+
+    dprintf(INFO, "VIRT: memory base %#x size %#x\n", membase, memsize);
+    add_memory_region((paddr_t)membase, (size_t)memsize, 0);
+
+    // TODO: read the rest of the device bootinfo records and dynamically locate devices
+}
+
+void platform_init(void) {
+    pic_init();
+    goldfish_tty_init();
+    goldfish_rtc_init();
+
+#if M68K_MMU == 68040
+    // create a VM reservation for peripheral space thats using DTTR1
+    vmm_reserve_space(vmm_get_kernel_aspace(), "periph", 0x1000000, 0xff000000);
+#endif
+
+    /* detect any virtio devices */
+    const struct bootinfo_item_device *virtio_dev = NULL;
+    uint16_t virtio_record_size;
+    const void *virtio_ptr = bootinfo_find_record(BOOTINFO_TAG_VIRT_VIRTIO_BASE, &virtio_record_size);
+    if (virtio_ptr && virtio_record_size >= sizeof(struct bootinfo_item_device)) {
+        virtio_dev = (const struct bootinfo_item_device *)virtio_ptr;
+    }
+
+    uint32_t virtio_base = virtio_dev ? virtio_dev->base : VIRT_VIRTIO_MMIO_BASE;
+    uint32_t virtio_irq_base = VIRT_VIRTIO_IRQ_BASE;
+    if (virtio_dev) {
+        uint32_t raw_irq_base = virtio_dev->irq_base;
+
+        // QEMU bootinfo uses PIC_IRQ() numbering where PIC#1 starts at 8.
+        // LK's m68k PIC driver uses a 0-based linear vector per PIC bank.
+        if (raw_irq_base >= 8 && raw_irq_base < (8 + NUM_IRQS)) {
+            virtio_irq_base = raw_irq_base - 8;
+        } else if (raw_irq_base < NUM_IRQS) {
+            // Accept already-normalized values for compatibility.
+            virtio_irq_base = raw_irq_base;
+        }
+    }
+
+    uint virtio_irqs[NUM_VIRT_VIRTIO];
+    for (int i = 0; i < NUM_VIRT_VIRTIO; i++) {
+        virtio_irqs[i] = virtio_irq_base + i;
+    }
+
+    virtio_mmio_detect((void *)virtio_base, NUM_VIRT_VIRTIO, virtio_irqs, 0x200);
+
+}
+
+static void virt_ctrl_system_reset(void) {
+    writel(VIRT_CTRL_CMD_RESET, VIRT_CTRL_MMIO_BASE + VIRT_CTRL_REG_CMD);
+}
+
+static void virt_ctrl_system_off(void) {
+    writel(VIRT_CTRL_CMD_HALT, VIRT_CTRL_MMIO_BASE + VIRT_CTRL_REG_CMD);
+}
+
+void platform_halt(platform_halt_action action, platform_halt_reason reason) {
+    platform_halt_default(action, reason, &virt_ctrl_system_reset, &virt_ctrl_system_off);
+}

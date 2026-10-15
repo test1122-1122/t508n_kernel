@@ -1,0 +1,443 @@
+#!/usr/bin/env python3
+import shlex
+import subprocess
+import sys
+import os
+import time
+import argparse
+from pathlib import Path
+
+class QEMUTestRunner:
+    # Per-architecture wall clock budget for the QEMU run, in seconds. This is a
+    # hang detector, not a performance target: a healthy `ut all` finishes in well
+    # under ten seconds locally, but CI runners are slower and the suite grows.
+    # Override with --timeout for the longer suites (e.g. FAT stress).
+    def __init__(self, lk_root):
+        self.lk_root = Path(lk_root)
+        self.architectures = {
+            'arm': {
+                'script': 'do-qemuarm',
+                'args': '',
+                'timeout': 90
+            },
+            'arm64': {
+                'script': 'do-qemuarm',
+                'args': '-6s4',
+                'timeout': 90
+            },
+            # The cortex-m boards qemu models for ARM's MPS2/MPS3 prototyping
+            # systems, one per core generation. These exercise arch/arm/arm-m,
+            # which nothing else here covers.
+            'arm-m3': {
+                'script': 'do-qemuarm',
+                'args': '-Ban385',
+                'timeout': 90
+            },
+            'arm-m4': {
+                'script': 'do-qemuarm',
+                'args': '-Ban386',
+                'timeout': 90
+            },
+            'arm-m7': {
+                'script': 'do-qemuarm',
+                'args': '-Ban500',
+                'timeout': 90
+            },
+            'arm-m33': {
+                'script': 'do-qemuarm',
+                'args': '-Ban505',
+                'timeout': 90
+            },
+            'arm-m55': {
+                'script': 'do-qemuarm',
+                'args': '-Ban547',
+                'timeout': 90
+            },
+            'm68k': {
+                'script': 'do-qemum68k',
+                'args': '',
+                'timeout': 90,
+                'experimental_toolchains': ['clang', 'clang-lld']
+            },
+            'riscv32': {
+                'script': 'do-qemuriscv',
+                'args': '',
+                'timeout': 90
+            },
+            'riscv64': {
+                'script': 'do-qemuriscv',
+                'args': '-6Ss4',
+                'timeout': 90
+            },
+            'x86': {
+                'script': 'do-qemux86',
+                'args': '-s4',
+                'timeout': 90
+            },
+            'x86-64': {
+                'script': 'do-qemux86',
+                'args': '-6s4',
+                'timeout': 90
+            },
+            # same kernels on the i440fx/PIIX machine: no MCFG/ECAM (legacy
+            # config access), PIC-mode _PRT link devices, PIIX IDE
+            'x86-i440fx': {
+                'script': 'do-qemux86',
+                'args': '-M pc -s4',
+                'timeout': 90
+            },
+            'x86-64-i440fx': {
+                'script': 'do-qemux86',
+                'args': '-6 -M pc -s4',
+                'timeout': 90
+            },
+            # same kernel booted through OVMF via the EFI stub; the extra
+            # timeout headroom covers the firmware and EFI shell startup delay
+            'x86-64-uefi': {
+                'script': 'do-qemux86',
+                'args': '-us4',
+                'timeout': 120
+            }
+        }
+
+    def run_qemu_test(self, arch, arch_config, quiet=False, log_dir=None, disk_images=None, append_cmdline=None, toolchain='gcc', timeout=None, ubsan=False):
+        """Run QEMU for the specified architecture and monitor for test completion"""
+        tc_label = f" ({toolchain})" if toolchain != 'gcc' else ""
+        print(f"\nRunning QEMU test for {arch}{tc_label}...")
+
+        # an explicit timeout overrides the per-arch default
+        if timeout is None:
+            timeout = arch_config['timeout']
+
+        script_path = self.lk_root / 'scripts' / arch_config['script']
+        if not script_path.exists():
+            print(f"Script {script_path} not found")
+            return False
+
+        # Create environment with toolchain settings
+        env = {**os.environ, 'LK_ROOT': str(self.lk_root)}
+        if ubsan:
+            # the do-qemu* scripts build before launching, so this reaches the build
+            env['UBSAN'] = '1' 
+        if toolchain in ('clang', 'clang-lld'):
+            env['TOOLCHAIN'] = 'clang'
+            if toolchain == 'clang-lld':
+                env['LD'] = 'ld.lld'
+            if 'CLANG_BINDIR' not in env:
+                import glob
+                bindirs = glob.glob('/usr/lib/llvm-*/bin')
+                if bindirs and os.path.exists(os.path.join(bindirs[0], 'clang')):
+                    env['CLANG_BINDIR'] = bindirs[0]
+                    env['PATH'] = f"{bindirs[0]}:{env.get('PATH', '')}"
+
+        # Create the QEMU commandline
+        qemu_cmdline = [str(script_path)]
+        if arch_config['args']:
+            qemu_cmdline.extend(shlex.split(str(arch_config['args'])))
+        # Drive the test run from a shell script passed on the kernel command line.
+        # Spaces are encoded as '+' so the value passes through the do-qemu* wrappers
+        # unquoted. The sleep gives device probing a chance to settle and the poweroff
+        # lets qemu exit on its own once the tests have run.
+        qemu_cmdline.extend(['-A', 'lk.autorun=sleep+5;ut+all;poweroff'])
+        for cmdline in (append_cmdline or []):
+            qemu_cmdline.extend(['-A', str(cmdline)])
+        for disk in (disk_images or []):
+            qemu_cmdline.extend(['-d', str(disk)])
+
+        if not quiet:
+            print(f"Executing command: {' '.join(qemu_cmdline)}")
+
+        # Run the QEMU script
+        try:
+            process = subprocess.Popen(
+                qemu_cmdline,
+                cwd=self.lk_root,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+                universal_newlines=True,
+                env=env,
+            )
+
+            stdout = process.stdout
+            if stdout is None:
+                print("Failed to capture stdout")
+                return False
+
+            # Monitor output for success/failure indicators
+            success_indicators = [
+                "SUCCESS! All test cases passed",
+            ]
+
+            failure_indicators = [
+                "FAILURE! Some test cases failed",
+                "panic (caller",
+                "CRASH: starting debug shell"
+            ]
+
+            start_time = time.time()
+            output_lines = []
+            buffer = ''
+            test_passed = False
+            test_failed = False
+            # Sites reported by lib/ubsan at runtime. Only meaningful with --ubsan,
+            # and a report is a failure: the kernel did something undefined even if
+            # every test case still passed.
+            ubsan_sites = []
+
+            # Use select + nonblocking fd to avoid blocking on partial lines
+            import select, fcntl, os as _os
+            fd = stdout.fileno()
+            flags = fcntl.fcntl(fd, fcntl.F_GETFL)
+            fcntl.fcntl(fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
+
+            eof = False
+
+            while True:
+                # Check timeout
+                if time.time() - start_time > timeout:
+                    print(f"Timeout reached for {arch} after {timeout}s")
+                    process.terminate()
+                    break
+
+                # Wait up to 1s for data to arrive
+                rlist, _, _ = select.select([fd], [], [], 1)
+                if rlist:
+                    try:
+                        chunk = _os.read(fd, 4096).decode(errors='replace')
+                    except BlockingIOError:
+                        pass
+                    else:
+                        if chunk == '':
+                            # Real EOF: qemu has exited and the pipe is fully drained.
+                            # Note this is deliberately not keyed off process.poll(),
+                            # which can report an exit while output is still in flight.
+                            eof = True
+                        else:
+                            buffer += chunk
+
+                # Emit full lines from buffer
+                while True:
+                    if '\n' not in buffer:
+                        break
+                    line, buffer = buffer.split('\n', 1)
+                    output_lines.append(line)
+                    if not quiet:
+                        print(f"[{arch}] {line}")
+                        sys.stdout.flush()
+
+                    # Check for success indicators
+                    for indicator in success_indicators:
+                        if indicator.lower() in line.lower():
+                            test_passed = True
+                            print(f"✓ Test success detected for {arch}")
+                            sys.stdout.flush()
+                            break
+
+                    # Collect UBSAN reports. lib/ubsan prints one
+                    # "ubsan: <what> in <file>:<line>:<col>" line per report.
+                    if ubsan and 'ubsan: ' in line.lower():
+                        ubsan_sites.append(line.strip())
+
+                    # Check for failure indicators
+                    for indicator in failure_indicators:
+                        if indicator.lower() in line.lower():
+                            test_failed = True
+                            print(f"✗ Test failure detected for {arch}")
+                            sys.stdout.flush()
+                            break
+
+                    # In UBSAN mode keep reading to EOF so reports emitted after the
+                    # test summary are still counted; qemu exits on its own via the
+                    # poweroff at the end of the autorun script.
+                    if test_failed or (test_passed and not ubsan):
+                        break
+
+                if test_failed or (test_passed and not ubsan):
+                    break
+
+                if eof:
+                    break
+
+            # Emit any trailing partial line for visibility
+            if buffer:
+                tail = buffer.rstrip('\n')
+                if tail:
+                    output_lines.append(tail)
+                    if not quiet:
+                        print(f"[{arch}] {tail}")
+                        sys.stdout.flush()
+
+            # Clean up process
+            if not quiet:
+                print("Terminating QEMU process...")
+                sys.stdout.flush()
+            if process.poll() is None:
+                process.terminate()
+                time.sleep(1)
+                if process.poll() is None:
+                    process.kill()
+
+            # If requested, write captured output to a log file
+            if log_dir:
+                try:
+                    suffix = f"-{toolchain}" if toolchain != 'gcc' else ""
+                    log_path = Path(log_dir) / f"{arch}{suffix}.log"
+                    log_path.parent.mkdir(parents=True, exist_ok=True)
+                    with open(log_path, 'w', encoding='utf-8') as f:
+                        f.write("\n".join(output_lines))
+                    if not quiet:
+                        print(f"[{arch}] wrote log to {log_path}")
+                        sys.stdout.flush()
+                except Exception as le:
+                    print(f"[{arch}] failed to write log: {le}")
+                    sys.stdout.flush()
+
+            if ubsan and ubsan_sites:
+                counts = {}
+                for site in ubsan_sites:
+                    key = site.split(' in ', 1)[-1] if ' in ' in site else site
+                    counts[key] = counts.get(key, 0) + 1
+                print(f"\u2717 {len(ubsan_sites)} UBSAN report(s) for {arch}, {len(counts)} distinct site(s):")
+                for key, n in sorted(counts.items(), key=lambda kv: -kv[1]):
+                    print(f"    {n:5d}  {key}")
+                sys.stdout.flush()
+                return False
+
+            return test_passed and not test_failed
+
+        except Exception as e:
+            print(f"Error running QEMU for {arch}: {e}")
+            sys.stdout.flush()
+            return False
+
+    def run_all_tests(self, selected_archs=None, quiet=False, log_dir=None, disk_images=None, append_cmdline=None, toolchain='gcc', timeout=None, ubsan=False):
+        """Run tests for all or selected architectures"""
+        if selected_archs is None:
+            selected_archs = list(self.architectures.keys())
+
+        results = {}
+
+        for arch in selected_archs:
+            if arch not in self.architectures:
+                print(f"Unknown architecture: {arch}")
+                continue
+
+            arch_config = self.architectures[arch]
+
+            # Run the test
+            results[arch] = self.run_qemu_test(arch, arch_config, quiet, log_dir, disk_images, append_cmdline, toolchain, timeout, ubsan)
+
+        return results
+
+    def print_summary(self, results, log_dir=None, toolchain='gcc'):
+        """Print a summary of test results and optionally write to summary.txt"""
+        summary_lines = []
+        summary_lines.append("" + "="*50)
+        summary_lines.append("TEST SUMMARY")
+        summary_lines.append("="*50)
+
+        total_tests = len(results)
+        passed_tests = 0
+        fatal_failures = 0
+
+        for arch, passed in results.items():
+            experimental = toolchain in self.architectures.get(arch, {}).get('experimental_toolchains', [])
+            if passed:
+                status = "PASSED"
+                symbol = "✓"
+                passed_tests += 1
+            elif experimental:
+                status = "FAILED (EXPERIMENTAL)"
+                symbol = "⚠"
+                passed_tests += 1
+            else:
+                status = "FAILED"
+                symbol = "✗"
+                fatal_failures += 1
+
+            line = f"{symbol} {arch:10} {status}"
+            print(line)
+            summary_lines.append(line)
+
+        print("-"*50)
+        summary_lines.append("-"*50)
+        print(f"Total: {passed_tests}/{total_tests} architectures passed")
+        summary_lines.append(f"Total: {passed_tests}/{total_tests} architectures passed")
+
+        if fatal_failures == 0:
+            print("🎉 All required architectures passed!")
+            summary_lines.append("All required architectures passed!")
+            exit_code = 0
+        else:
+            print("❌ Some architectures failed!")
+            summary_lines.append("Some architectures failed!")
+            exit_code = 1
+
+        # Optionally write summary.txt
+        if log_dir:
+            try:
+                log_path = Path(log_dir)
+                log_path.mkdir(parents=True, exist_ok=True)
+                summary_file = log_path / "summary.txt"
+                with open(summary_file, 'w', encoding='utf-8') as f:
+                    f.write("\n".join(summary_lines) + "\n")
+                print(f"Summary written to {summary_file}")
+            except Exception as e:
+                print(f"Failed to write summary: {e}")
+
+        return exit_code
+
+def main():
+    parser = argparse.ArgumentParser(description='Run LK QEMU tests for multiple architectures')
+    parser.add_argument('--arch', choices=['arm', 'arm64', 'arm-m3', 'arm-m4', 'arm-m7',
+                                          'arm-m33', 'arm-m55', 'm68k', 'riscv32', 'riscv64',
+                                          'x86', 'x86-64', 'x86-i440fx', 'x86-64-i440fx',
+                                          'x86-64-uefi'], action='append',
+                       help='Architecture to test (can be specified multiple times)')
+    parser.add_argument('--lk-root', default='.',
+                       help='Path to LK root directory (default: current directory)')
+    parser.add_argument('--quiet', action='store_true',
+                       help='Run tests in quiet mode (suppress output)')
+    parser.add_argument('--log-dir', default=None,
+                       help='Directory to write per-architecture logs (optional)')
+    parser.add_argument('--append-cmdline', '-A', dest='append_cmdline', action='append', metavar='CMDLINE',
+                       help='Command line to append via the QEMU wrapper (can be specified multiple times)')
+    parser.add_argument('--disk', '-d', dest='disk_images', action='append', metavar='IMAGE',
+                       help='Disk image to pass to QEMU via -d (can be specified multiple times)')
+    parser.add_argument('--clang', '-c', action='store_true',
+                       help='Build and run tests using Clang toolchain')
+    parser.add_argument('--clang-lld', '-l', action='store_true',
+                       help='Build and run tests using Clang toolchain with LLD linker')
+    parser.add_argument('--toolchain', choices=['gcc', 'clang', 'clang-lld'], default=None,
+                       help='Specify toolchain to use (gcc, clang, or clang-lld)')
+    parser.add_argument('--ubsan', action='store_true',
+                        help='build with UBSAN=1 and fail if the run reports any undefined behavior')
+    parser.add_argument('--timeout', type=int, default=None, metavar='SECONDS',
+                       help='Override the per-architecture QEMU timeout (default: 30s)')
+
+    args = parser.parse_args()
+
+    toolchain = 'gcc'
+    if args.clang_lld or args.toolchain == 'clang-lld':
+        toolchain = 'clang-lld'
+    elif args.clang or args.toolchain == 'clang':
+        toolchain = 'clang'
+
+    # Change to LK root directory
+    lk_root = os.path.abspath(args.lk_root)
+    if not os.path.exists(os.path.join(lk_root, 'makefile')) and not os.path.exists(os.path.join(lk_root, 'Makefile')):
+        print(f"Error: {lk_root} doesn't appear to be the LK root directory")
+        return 1
+
+    runner = QEMUTestRunner(lk_root)
+
+    # Run tests
+    results = runner.run_all_tests(args.arch, args.quiet, args.log_dir, args.disk_images, args.append_cmdline, toolchain=toolchain, timeout=args.timeout, ubsan=args.ubsan)
+
+    # Print summary and return appropriate exit code
+    return runner.print_summary(results, args.log_dir, toolchain=toolchain)
+
+if __name__ == '__main__':
+    sys.exit(main())

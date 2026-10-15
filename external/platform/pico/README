@@ -1,0 +1,9 @@
+Origin: https://github.com/raspberrypi/pico-sdk
+Change: a1438dff1d38bd9c65dbd693f0e5db4b9ae91779
+Tag: 2.2.0
+
+This is a trimmed import of src/boards, src/common,
+src/rp2040, src/rp2350, and src/rp2_common from pico-sdk.
+
+CMake/Bazel build metadata files are stripped to keep this
+vendored tree focused on headers and source needed by LK.

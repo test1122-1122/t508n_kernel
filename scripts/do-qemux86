@@ -1,0 +1,294 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. "$DIR/qemu-shared.sh"
+
+function HELP {
+    local ec=${1:-0}
+    echo "help:"
+    echo "-6                  : x86-64"
+    echo "-u                  : boot via UEFI firmware (OVMF, implies -6)"
+    echo "-l                  : legacy mode build (386 emulated machine)"
+    echo "-m <memory in MB>   : memory size (default: 512 MB, 4 MB for legacy)"
+    echo "-M <machine>        : QEMU machine type (default: q35; pc for i440fx; ignored with -l)"
+    echo "-s <number of cpus> : number of CPUs (default: 1)"
+    echo "-X                  : print QEMU command and exit (dry run)"
+    echo
+    echo "-A <cmd line>       : append command line (may be used multiple times)"
+    echo "-d <disk image>     : add an IDE disk device (may be used multiple times)"
+    echo "-g                  : with graphics (VGA display, keyboard, mouse)"
+    echo "-n                  : enable user mode networking (default driver: e1000e)"
+    echo "-N <network driver> : specify network driver (requires -n or -t, e.g., virtio-net-pci, e1000e)"
+    echo "-t                  : use tap interface qemu0 for networking"
+    echo "-f <shared dir>   : add a virtio 9p device with a host shared directory"
+    echo "-V                  : use virtio versions of devices where possible"
+    echo "-k                  : use KVM acceleration"
+    echo
+    echo "-h                  : show this help"
+    echo "all arguments after -- are passed to qemu directly"
+    exit $ec
+}
+
+DO_64BIT=0
+DO_LEGACY=0
+DO_GRAPHICS=0
+DO_KVM=0
+DISK_IMAGES=()
+CMDLINE=""
+DO_NET=0
+DO_NET_TAP=0
+DO_VIRTIO=0
+DO_V9P=0
+DO_V9P_DIR=""
+NETDEV=e1000e
+DO_NETDEV_OVERRIDE=0
+MEMSIZE=0
+SMP=1
+SUDO=""
+DO_DRYRUN=0
+DO_UEFI=0
+MACHINE_OVERRIDE=""
+
+while getopts A:6d:gf:klm:M:nN:s:tuhVX FLAG; do
+    case $FLAG in
+        A) CMDLINE+="${CMDLINE:+ }$(quote_cmdline_arg "$OPTARG")";;
+        6) DO_64BIT=1;;
+        u) DO_UEFI=1; DO_64BIT=1;;
+        d)
+            DISK_IMAGES+=("$OPTARG")
+            ;;
+        g) DO_GRAPHICS=1;;
+        f) DO_V9P=1; DO_V9P_DIR=$OPTARG;;
+        k) DO_KVM=1;;
+        l) DO_LEGACY=1;;
+        m) MEMSIZE=$OPTARG;;
+        M) MACHINE_OVERRIDE=$OPTARG;;
+        n) DO_NET=1;;
+        t) DO_NET_TAP=1;;
+        N) NETDEV=$OPTARG; DO_NETDEV_OVERRIDE=1;;
+        s) SMP=$OPTARG;;
+        V) DO_VIRTIO=1;;
+        X) DO_DRYRUN=1;;
+        h) HELP 0;;
+        \?)
+            echo unrecognized option $OPTARG
+            HELP 1
+    esac
+done
+
+shift $((OPTIND-1))
+
+if (( DO_NET && DO_NET_TAP )); then
+    echo "Error: Cannot use both -n (user network) and -t (tap network) together"
+    exit 1
+fi
+
+if (( DO_NETDEV_OVERRIDE && ! ( DO_NET || DO_NET_TAP ) )); then
+    echo "Error: -N requires either -n (user network) or -t (tap network)"
+    exit 1
+fi
+
+if (( DO_UEFI && DO_LEGACY )); then
+    echo "Error: -u (UEFI) is x86-64 only, cannot combine with -l"
+    exit 1
+fi
+
+# find an OVMF firmware code/vars pair for -u
+OVMF_CODE=""
+OVMF_VARS=""
+if (( DO_UEFI )); then
+    for pair in \
+        "/usr/share/OVMF/OVMF_CODE_4M.fd:/usr/share/OVMF/OVMF_VARS_4M.fd" \
+        "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd" \
+        "/usr/share/edk2/x64/OVMF_CODE.4m.fd:/usr/share/edk2/x64/OVMF_VARS.4m.fd" \
+        "/usr/share/edk2/ovmf/OVMF_CODE.fd:/usr/share/edk2/ovmf/OVMF_VARS.fd" \
+        "/usr/share/qemu/edk2-x86_64-code.fd:/usr/share/qemu/edk2-i386-vars.fd" \
+        "/usr/local/share/qemu/edk2-x86_64-code.fd:/usr/local/share/qemu/edk2-i386-vars.fd" \
+        ; do
+        code="${pair%%:*}"
+        vars="${pair##*:}"
+        if [[ -f "$code" && -f "$vars" ]]; then
+            OVMF_CODE="$code"
+            OVMF_VARS="$vars"
+            break
+        fi
+    done
+    if [[ -z "$OVMF_CODE" ]]; then
+        echo "Error: no OVMF firmware found (install the ovmf / edk2-ovmf package)"
+        exit 1
+    fi
+fi
+
+# pick the appropriate qemu and project
+if (( DO_64BIT )); then
+    QEMU="qemu-system-x86_64"
+    PROJECT="pc-x86-64-test"
+    CPU=max
+    MACHINE=q35
+elif (( DO_LEGACY )); then
+    QEMU="qemu-system-i386"
+    PROJECT="pc-x86-legacy-test"
+    CPU=486
+    MACHINE=isapc
+else
+    QEMU="qemu-system-i386"
+    PROJECT="pc-x86-test"
+    CPU=max
+    MACHINE=q35
+fi
+
+# -M overrides the machine type for the non-legacy builds (e.g. pc for i440fx)
+if [[ -n "$MACHINE_OVERRIDE" ]] && (( ! DO_LEGACY )); then
+    MACHINE=$MACHINE_OVERRIDE
+fi
+
+if (( DO_LEGACY )); then
+    if (( ! MEMSIZE )); then
+        MEMSIZE=4
+    fi
+else
+    if (( ! MEMSIZE )); then
+        MEMSIZE=512
+    fi
+fi
+
+VIRTIO_BLOCK_DEVICE="virtio-blk-pci"
+VIRTIO_NET_DEVICE="virtio-net-pci"
+VIRTIO_GPU_DEVICE="virtio-gpu-pci"
+VIRTIO_KEYBOARD_DEVICE="virtio-keyboard-pci"
+VIRTIO_MOUSE_DEVICE="virtio-mouse-pci"
+VIRTIO_9P_DEVICE="virtio-9p-pci"
+VIRTIO_RNG_DEVICE="virtio-rng-pci"
+if (( DO_VIRTIO )); then
+    NETDEV=$VIRTIO_NET_DEVICE
+fi
+
+
+ARGS=()
+if (( DO_KVM )); then
+    ARGS+=("-accel" "kvm" "-cpu" "host")
+else
+    ARGS+=("-cpu" "$CPU")
+fi
+ARGS+=("-m" "$MEMSIZE")
+ARGS+=("-smp" "$SMP")
+ARGS+=("-machine" "$MACHINE")
+if (( DO_UEFI )); then
+    # Boot the PE-wrapped kernel through OVMF from a synthesized FAT ESP.
+    # With a command line, boot via the EFI shell's startup.nsh so LoadOptions
+    # carries it (a default EFI/BOOT/BOOTX64.EFI boot gets empty LoadOptions);
+    # the ESP contents are staged by prepare_esp below, after the build.
+    ARGS+=("-drive" "if=pflash,format=raw,readonly=on,file=${OVMF_CODE}")
+    ARGS+=("-drive" "if=pflash,format=raw,file=build-${PROJECT}/OVMF_VARS.fd")
+    ARGS+=("-drive" "format=raw,file=fat:rw:build-${PROJECT}/esp")
+else
+    ARGS+=("-kernel" "build-${PROJECT}/lk.elf")
+
+    if [[ -n "$CMDLINE" ]]; then
+        ARGS+=("-append" "$CMDLINE")
+    fi
+fi
+
+ARGS+=("-device" "isa-debug-exit,iobase=0xf4,iosize=0x04")
+ARGS+=("-fw_cfg" "name=etc/sercon-port,string=0")
+
+if (( DO_GRAPHICS )); then
+    ARGS+=("-serial" "stdio")
+    # TODO: get -vga virtio working
+    ARGS+=("-vga" "std")
+    if (( DO_VIRTIO )); then
+        # this will create an additional virtio GPU device for graphics output in addition
+        # to the primary VGA device
+        ARGS+=("-device" "${VIRTIO_GPU_DEVICE}")
+        ARGS+=("-device" "${VIRTIO_KEYBOARD_DEVICE}")
+        ARGS+=("-device" "${VIRTIO_MOUSE_DEVICE}")
+    fi
+else
+    ARGS+=("-nographic")
+fi
+
+function append_disk_image {
+    local disk_image=$1
+    local disk_number=$2
+    ARGS+=("-drive" "if=none,file=${disk_image},id=disk${disk_number},discard=on")
+    if (( DO_VIRTIO )); then
+        ARGS+=("-device" "${VIRTIO_BLOCK_DEVICE},drive=disk${disk_number}")
+    else
+        # for q35 machines this will add to an ahci controller
+        # for legacy machines will end up appending to the ISA ide controller
+        ARGS+=("-device" "ide-hd,drive=disk${disk_number},bus=ide.${disk_number}")
+    fi
+}
+
+DISK_COUNT=0
+for img in "${DISK_IMAGES[@]}"; do
+    append_disk_image "$img" "$DISK_COUNT"
+    ((DISK_COUNT++))
+done
+
+if (( DO_NET || DO_NET_TAP )); then
+    if (( ! DO_LEGACY )); then
+        if (( DO_NET )); then
+            ARGS+=("-netdev" "user,id=vmnic,hostname=qemu")
+        elif (( DO_NET_TAP )); then
+            # quick note to enable tap interface
+            # IFNAME=qemu0
+            # BRIDGE=bridge0
+            # sudo ip tuntap add name "${IFNAME}" mode tap user $(whoami)
+            # sudo ip link set "${IFNAME}" master "${BRIDGE}"
+            # sudo ip link set "${IFNAME}" up
+            ARGS+=("-netdev" "tap,id=vmnic,ifname=qemu0,script=no,downscript=no")
+            #SUDO="sudo"
+        fi
+        ARGS+=("-device" "$NETDEV,netdev=vmnic")
+    else
+        echo "implement legacy + network config"
+        exit 1
+    fi
+else
+    ARGS+=("-net" "none")
+fi
+if (( DO_V9P )); then
+    ARGS+=("-fsdev" "local,path=$DO_V9P_DIR,security_model=mapped,id=v9p0")
+    ARGS+=("-device" "${VIRTIO_9P_DEVICE},fsdev=v9p0,mount_tag=V9P0")
+fi
+
+if (( ! DO_LEGACY )); then
+    ARGS+=("-device" "${VIRTIO_RNG_DEVICE}")
+fi
+
+CMD=()
+if [[ -n "$SUDO" ]]; then
+    CMD+=("sudo")
+fi
+CMD+=("$QEMU")
+CMD+=("${ARGS[@]}")
+CMD+=("$@")
+
+# stage the ESP directory that the fat:rw: drive above serves; must run after
+# the build so lk.efi exists
+function prepare_esp {
+    (( DO_UEFI )) || return 0
+    local esp="build-${PROJECT}/esp"
+    rm -rf "$esp"
+    mkdir -p "$esp"
+    # fresh NVRAM every run so stale Boot#### entries don't redirect the boot
+    cp "$OVMF_VARS" "build-${PROJECT}/OVMF_VARS.fd"
+    if [[ -n "$CMDLINE" ]]; then
+        cp "build-${PROJECT}/lk.efi" "$esp/lk.efi"
+        printf 'echo -off\n\\lk.efi %s\n' "$CMDLINE" > "$esp/startup.nsh"
+    else
+        mkdir -p "$esp/EFI/BOOT"
+        cp "build-${PROJECT}/lk.efi" "$esp/EFI/BOOT/BOOTX64.EFI"
+    fi
+}
+
+if (( DO_DRYRUN )); then
+    echo "${CMD[@]}"
+    exit 0
+fi
+
+"$DIR"/make-parallel $PROJECT &&
+prepare_esp &&
+echo "${CMD[@]}" &&
+exec "${CMD[@]}"

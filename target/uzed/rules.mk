@@ -1,0 +1,21 @@
+LOCAL_DIR := $(GET_LOCAL_DIR)
+
+MODULE := $(LOCAL_DIR)
+
+PLATFORM := zynq
+
+# set the system base to sram
+ZYNQ_USE_SRAM ?= 1
+
+ZYNQ_SDRAM_SIZE := 0x10000000
+
+GLOBAL_DEFINES += \
+	EXTERNAL_CLOCK_FREQ=33333333 \
+	TARGET_HAS_DEBUG_LED=1 \
+
+MODULE_SRCS += \
+	$(LOCAL_DIR)/target.c
+
+MODULE_DEPS += lib/minip
+
+include make/module.mk
