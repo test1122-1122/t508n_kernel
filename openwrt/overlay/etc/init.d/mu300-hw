@@ -1,0 +1,38 @@
+#!/bin/sh /etc/rc.common
+# Hardware bring-up before netifd: vendor drivers, zram, Wi-Fi (SC2355), first-boot Wi-Fi config, Bluetooth off
+START=12
+export PATH="$PATH:/opt/mu300/busybox-bin"
+
+# Everything here runs in the background on purpose. busybox init only spawns the consoles after sysinit has
+# finished, so anything slow (or hanging) in here costs the device its serial console *and* its network - which
+# is exactly what a hanging wifi-start did on the mainline kernel, leaving no way in at all.
+boot() {
+	/opt/mu300/bin/mu300-led power on
+	/opt/mu300/bin/mu300-usb boot
+	hw_bringup > /tmp/mu300-hw.log 2>&1 &
+}
+
+hw_bringup() {
+	/opt/mu300/bin/extra-modules >/tmp/mu300-extra-modules.log 2>&1
+	/opt/mu300/bin/zram-start >/dev/null 2>&1
+	/opt/mu300/bin/wifi-start >/tmp/mu300-wifi-start.log 2>&1
+	# cfg80211 looked for regulatory.db before the rootfs was mounted; load it now so hostapd sees the country rules
+	/opt/mu300/bin/regdb-load >>/tmp/mu300-wifi-start.log 2>&1
+	/opt/mu300/bin/openwrt-wifi-config >>/tmp/mu300-wifi-start.log 2>&1
+	# the U30 Air's NFC tag: the hotspot's name and password, if that is what it holds (see mu300-nfc)
+	[ "$(/opt/mu300/bin/mu300-device)" = u30air ] && /opt/mu300/bin/mu300-nfc sync >/tmp/mu300-nfc.log 2>&1
+	# apply the country before netifd starts hostapd, otherwise 5 GHz channels are still NO-IR under world rules
+	country=$(uci -q get wireless.radio0.country)
+	if [ -n "$country" ]; then
+		iw reg set "$country"
+		for n in $(seq 1 10); do iw reg get | grep -q "country $country:" && break; sleep 1; done
+	fi
+	# a reload does not restart a hostapd interface that went AP-DISABLED while the world regulatory domain
+	# was still active; one down/up right after the country is live does
+	wifi down >>/tmp/mu300-wifi-start.log 2>&1
+	wifi up >>/tmp/mu300-wifi-start.log 2>&1
+}
+
+start() {
+	boot
+}

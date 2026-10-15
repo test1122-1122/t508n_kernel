@@ -1,0 +1,1333 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: tr\n"
+
+msgid "Status dashboard"
+msgstr "Durum paneli"
+
+msgid "Cellular"
+msgstr "Hücresel"
+
+msgid "Network locks"
+msgstr "Ağ kilitleri"
+
+msgid "SMS"
+msgstr "SMS"
+
+msgid "AT terminal"
+msgstr "AT terminali"
+
+msgid "Adapter settings"
+msgstr "Bağdaştırıcı ayarları"
+
+msgid "TTL"
+msgstr "TTL"
+
+msgid "Device management"
+msgstr "Cihaz yönetimi"
+
+msgid "Languages"
+msgstr "Diller"
+
+msgid "MU300 control center: status dashboard, network locks, AT terminal and SMS"
+msgstr "MU300 kontrol merkezi: durum paneli, ağ kilitleri, AT terminali ve SMS"
+
+msgid "China Mobile"
+msgstr "China Mobile"
+
+msgid "China Unicom"
+msgstr "China Unicom"
+
+msgid "China Telecom"
+msgstr "China Telecom"
+
+msgid "China Broadnet"
+msgstr "China Broadnet"
+
+msgid "China Tietong"
+msgstr "China Tietong"
+
+msgid "Excellent"
+msgstr "Mükemmel"
+
+msgid "Good"
+msgstr "İyi"
+
+msgid "Fair"
+msgstr "Orta"
+
+msgid "Poor"
+msgstr "Zayıf"
+
+msgid "Unknown"
+msgstr "Bilinmiyor"
+
+msgid "%d d %d h"
+msgstr "%d gün %d sa"
+
+msgid "%d h %d min"
+msgstr "%d sa %d dk"
+
+msgid "%d min"
+msgstr "%d dk"
+
+msgid "No neighbor-cell data"
+msgstr "Komşu hücre verisi yok"
+
+msgid "Locked"
+msgstr "Kilitli"
+
+msgid "Lock"
+msgstr "Kilitle"
+
+msgid "Unknown error"
+msgstr "Bilinmeyen hata"
+
+msgid "Confirm"
+msgstr "Onayla"
+
+msgid "OK"
+msgstr "Tamam"
+
+msgid "Cancel"
+msgstr "İptal"
+
+msgid "New SMS · %s"
+msgstr "Yeni SMS · %s"
+
+msgid "Unknown number"
+msgstr "Bilinmeyen numara"
+
+msgid "Select"
+msgstr "Seç"
+
+msgid "Basic"
+msgstr "Temel"
+
+msgid "Registration/signal"
+msgstr "Kayıt/sinyal"
+
+msgid "Bearer"
+msgstr "Taşıyıcı"
+
+msgid "Engineering mode"
+msgstr "Mühendislik modu"
+
+msgid "AT command (↑↓ history, Enter to send)"
+msgstr "AT komutu (↑↓ geçmiş, göndermek için Enter)"
+
+msgid "Send"
+msgstr "Gönder"
+
+msgid "Clear screen"
+msgstr "Ekranı temizle"
+
+msgid "Ready."
+msgstr "Hazır."
+
+msgid "Session history (click to reuse)"
+msgstr "Oturum geçmişi (yeniden kullanmak için tıklayın)"
+
+msgid "(no output)"
+msgstr "(çıktı yok)"
+
+msgid "Request failed"
+msgstr "İstek başarısız"
+
+msgid "(empty)"
+msgstr "(boş)"
+
+msgid "USB role"
+msgstr "USB rolü"
+
+msgid "Current role"
+msgstr "Geçerli rol"
+
+msgid "Switch USB role"
+msgstr "USB rolünü değiştir"
+
+msgid "Device mode"
+msgstr "Cihaz modu"
+
+msgid "Host mode"
+msgstr "Ana makine modu"
+
+msgid "Enable host mode at boot"
+msgstr "Açılışta ana makine modunu etkinleştir"
+
+msgid "Apply role"
+msgstr "Rolü uygula"
+
+msgid "Host mode disconnects USB networking and serial on this port. F50 has no battery; management may be lost and a USB adapter usually needs a powered hub."
+msgstr "Ana makine modu bu bağlantı noktasındaki USB ağını ve seri bağlantıyı keser. F50 bataryasızdır; yönetim bağlantısı kaybolabilir ve USB bağdaştırıcısı genellikle harici güçlü bir hub gerektirir."
+
+msgid "USB network mode"
+msgstr "USB ağ modu"
+
+msgid "Network protocol"
+msgstr "Ağ protokolü"
+
+msgid "Apply duration"
+msgstr "Uygulama süresi"
+
+msgid "Next reboot only"
+msgstr "Yalnızca sonraki yeniden başlatma"
+
+msgid "Permanent"
+msgstr "Kalıcı"
+
+msgid "Enable selected protocol"
+msgstr "Seçilen protokolü etkinleştir"
+
+msgid "Save; apply after reboot"
+msgstr "Kaydet; yeniden başlatınca uygula"
+
+msgid "NCM is the default. Windows does not natively support ECM; RNDIS changes enumeration. With Enable selected protocol off, only your choice is saved. Next reboot only applies once, then returns to NCM."
+msgstr "NCM varsayılandır. Windows ECM’yi yerel olarak desteklemez; RNDIS aygıt tanımayı değiştirir. Seçilen protokolü etkinleştir kapalıysa yalnızca seçim kaydedilir. Yalnızca sonraki yeniden başlatma bir kez uygulanır, ardından NCM’ye dönülür."
+
+msgid "USB adapters"
+msgstr "USB bağdaştırıcıları"
+
+msgid "Refresh"
+msgstr "Yenile"
+
+msgid "Available only in host mode. Refresh brings discovered USB adapters up; adding to LAN saves the bridge and reloads networking."
+msgstr "Yalnızca ana makine modunda kullanılabilir. Yenileme bulunan USB bağdaştırıcılarını açar; LAN’a ekleme köprüyü kaydeder ve ağı yeniden yükler."
+
+msgid "Unavailable"
+msgstr "Kullanılamıyor"
+
+msgid "USB network mode is unavailable in host mode; host auto-start also disables USB network auto-start."
+msgstr "Ana makine modunda USB ağ modu kullanılamaz; ana makine otomatik başlatma USB ağının otomatik başlatmasını da kapatır."
+
+msgid "Host mode immediately disconnects USB management. F50 has no battery and peripherals may need external power; make sure another management path exists."
+msgstr "Ana makine modu USB yönetimini hemen keser. F50 bataryasızdır ve çevre birimleri harici güç gerektirebilir; başka bir yönetim yolu olduğundan emin olun."
+
+msgid "USB networking and serial will re-enumerate in device mode."
+msgstr "Cihaz modunda USB ağı ve seri bağlantı yeniden tanınır."
+
+msgid "Switch USB role?"
+msgstr "USB rolü değiştirilsin mi?"
+
+msgid "Apply"
+msgstr "Uygula"
+
+msgid "Switching USB role…"
+msgstr "USB rolü değiştiriliyor…"
+
+msgid "Switch failed: %s"
+msgstr "Değiştirme başarısız: %s"
+
+msgid "Management connection lost; reconnect to confirm the USB role."
+msgstr "Yönetim bağlantısı kesildi; USB rolünü doğrulamak için yeniden bağlanın."
+
+msgid "Switch request accepted; the USB connection may briefly disconnect."
+msgstr "Geçiş isteği alındı; USB bağlantısı kısa süreli kesilebilir."
+
+msgid "USB role applied"
+msgstr "USB rolü uygulandı"
+
+msgid "Save USB network mode?"
+msgstr "USB ağ modu kaydedilsin mi?"
+
+msgid "The network mode applies on the next reboot; USB management may need to reconnect."
+msgstr "Ağ modu sonraki yeniden başlatmada uygulanır; USB yönetimi yeniden bağlanabilir."
+
+msgid "Save the selection only; with the selected protocol disabled, the next boot still uses default NCM."
+msgstr "Yalnızca seçim kaydedilir; seçilen protokol etkin değilse sonraki açılışta varsayılan NCM kullanılır."
+
+msgid "Save"
+msgstr "Kaydet"
+
+msgid "Saving USB network settings…"
+msgstr "USB ağ ayarları kaydediliyor…"
+
+msgid "Settings saved"
+msgstr "Ayarlar kaydedildi"
+
+msgid "Save failed: %s"
+msgstr "Kaydetme başarısız: %s"
+
+msgid "Unable to confirm the role yet; reconnect and refresh the page."
+msgstr "Rol henüz doğrulanamadı; yeniden bağlanıp sayfayı yenileyin."
+
+msgid "Switch to host mode to see USB adapters."
+msgstr "USB bağdaştırıcılarını görmek için ana makine moduna geçin."
+
+msgid "Scanning USB adapters…"
+msgstr "USB bağdaştırıcıları taranıyor…"
+
+msgid "No USB adapters found."
+msgstr "USB bağdaştırıcısı bulunamadı."
+
+msgid "Link connected"
+msgstr "Bağlantı kuruldu"
+
+msgid "No link; enable attempted"
+msgstr "Bağlantı yok; etkinleştirme denendi"
+
+msgid "Added to LAN"
+msgstr "LAN’a eklendi"
+
+msgid "Add to LAN"
+msgstr "LAN’a ekle"
+
+msgid "Add USB adapter to LAN?"
+msgstr "USB bağdaştırıcısı LAN’a eklensin mi?"
+
+msgid "This saves the bridge configuration and reloads networking; existing connections may briefly drop."
+msgstr "Bu işlem köprü yapılandırmasını kaydedip ağı yeniden yükler; mevcut bağlantılar kısa süreli kesilebilir."
+
+msgid "Add"
+msgstr "Ekle"
+
+msgid "Adding USB adapter…"
+msgstr "USB bağdaştırıcısı ekleniyor…"
+
+msgid "Add failed: %s"
+msgstr "Ekleme başarısız: %s"
+
+msgid "Modulation DL/UL"
+msgstr "Modülasyon İndirme/Yükleme"
+
+msgid "Estimated from current MCS"
+msgstr "Geçerli MCS değerinden tahmin"
+
+msgid "MCS DL/UL"
+msgstr "MCS İndirme/Yükleme"
+
+msgid "BLER DL/UL"
+msgstr "BLER İndirme/Yükleme"
+
+msgid "Link & traffic"
+msgstr "Bağlantı ve trafik"
+
+msgid "Download rate"
+msgstr "İndirme hızı"
+
+msgid "Upload rate"
+msgstr "Yükleme hızı"
+
+msgid "Total received"
+msgstr "Toplam alınan"
+
+msgid "Total sent"
+msgstr "Toplam gönderilen"
+
+msgid "Session duration"
+msgstr "Oturum süresi"
+
+msgid "Registration"
+msgstr "Kayıt durumu"
+
+msgid "Bandwidth"
+msgstr "Bant genişliği"
+
+msgid "AMBR DL/UL"
+msgstr "AMBR İndirme/Yükleme"
+
+msgid "Wi-Fi · LAN · Device · SIM"
+msgstr "Wi-Fi · LAN · Cihaz · SIM"
+
+msgid "CPU usage"
+msgstr "CPU kullanımı"
+
+msgid "Memory"
+msgstr "Bellek"
+
+msgid "Storage"
+msgstr "Depolama"
+
+msgid "Battery"
+msgstr "Pil"
+
+msgid "Channel"
+msgstr "Kanal"
+
+msgid "Encryption"
+msgstr "Şifreleme"
+
+msgid "Hidden SSID"
+msgstr "Gizli SSID"
+
+msgid "Country"
+msgstr "Ülke"
+
+msgid "AP status"
+msgstr "AP durumu"
+
+msgid "USB network"
+msgstr "USB ağı"
+
+msgid "Connection tracking"
+msgstr "Bağlantı izleme"
+
+msgid "LAN address"
+msgstr "LAN adresi"
+
+msgid "Wi-Fi clients"
+msgstr "Wi-Fi istemcileri"
+
+msgid "DHCP leases"
+msgstr "DHCP kiraları"
+
+msgid "Device model"
+msgstr "Cihaz modeli"
+
+msgid "System"
+msgstr "Sistem"
+
+msgid "Modem"
+msgstr "Modem"
+
+msgid "Carrier"
+msgstr "Operatör"
+
+msgid "Module"
+msgstr "Modül"
+
+msgid "Firmware"
+msgstr "Ürün yazılımı"
+
+msgid "Show SIM identifiers"
+msgstr "SIM kimliklerini göster"
+
+msgid "Quick controls"
+msgstr "Hızlı denetimler"
+
+msgid "Data connection"
+msgstr "Veri bağlantısı"
+
+msgid "Cellular radio"
+msgstr "Hücresel radyo"
+
+msgid "Wi-Fi hotspot"
+msgstr "Wi-Fi erişim noktası"
+
+msgid "Restart modem"
+msgstr "Modemi yeniden başlat"
+
+msgid "Restart device"
+msgstr "Cihazı yeniden başlat"
+
+msgid "Switch to Android"
+msgstr "Android’e geç"
+
+msgid "Neighbor cells"
+msgstr "Komşu hücreler"
+
+msgid "RAT/Band"
+msgstr "Teknoloji/Bant"
+
+msgid "Frequency"
+msgstr "Frekans"
+
+msgid "Running %s…"
+msgstr "%s çalıştırılıyor…"
+
+msgid "Started in background: %s"
+msgstr "Arka planda başlatıldı: %s"
+
+msgid "Done: %s"
+msgstr "Tamamlandı: %s"
+
+msgid "Failed: %s"
+msgstr "Başarısız: %s"
+
+msgid "Disconnecting data…"
+msgstr "Veri bağlantısı kesiliyor…"
+
+msgid "Connecting data…"
+msgstr "Veri bağlantısı kuruluyor…"
+
+msgid "Turn off cellular radio"
+msgstr "Hücresel radyoyu kapat"
+
+msgid "Cellular connectivity will be interrupted."
+msgstr "Hücresel bağlantı kesilecek."
+
+msgid "Turn on cellular radio"
+msgstr "Hücresel radyoyu aç"
+
+msgid "The SFUN power-on sequence will run (up to about 1 minute)."
+msgstr "SFUN açılış sırası çalışacak (yaklaşık 1 dakikaya kadar)."
+
+msgid "Cellular connectivity may stop for 1–2 minutes."
+msgstr "Hücresel bağlantı 1–2 dakika kesilebilir."
+
+msgid "Restart the entire device"
+msgstr "Tüm cihazı yeniden başlat"
+
+msgid "All connections will be interrupted."
+msgstr "Tüm bağlantılar kesilecek."
+
+msgid "The next boot will enter Android and reboot now. This management page and cellular sharing will disconnect."
+msgstr "Sonraki açılış Android’e geçecek ve cihaz şimdi yeniden başlayacak. Yönetim sayfası ve hücresel paylaşım kesilecek."
+
+msgid "To return to OpenWrt, run mu300-next-boot linux in Android and reboot."
+msgstr "OpenWrt’ye dönmek için Android’de mu300-next-boot linux çalıştırıp yeniden başlatın."
+
+msgid "Or do nothing: after five boots that do not finish, it falls back automatically."
+msgstr "Ya da hiçbir şey yapmayın: tamamlanmayan beş açılıştan sonra otomatik olarak geri dönülür."
+
+msgid "Switch and reboot"
+msgstr "Geç ve yeniden başlat"
+
+msgid "Preparing Android boot and rebooting…"
+msgstr "Android açılışı hazırlanıyor ve yeniden başlatılıyor…"
+
+msgid "Hide SIM identifiers"
+msgstr "SIM kimliklerini gizle"
+
+msgid "Lock cell %s?"
+msgstr "%s hücresi kilitlensin mi?"
+
+msgid "The radio stack will restart (SFUN); cellular service will stop for about 30 seconds."
+msgstr "Radyo yığını yeniden başlayacak (SFUN); hücresel bağlantı yaklaşık 30 saniye kesilecek."
+
+msgid "Locking %s in the background, about 30 seconds"
+msgstr "%s arka planda kilitleniyor, yaklaşık 30 saniye"
+
+msgid "Locked %s in the background; the status will refresh shortly"
+msgstr "%s arka planda kilitlendi; durum birazdan yenilenecek"
+
+msgid "Lock failed: %s"
+msgstr "Kilitleme başarısız: %s"
+
+msgid "Uptime %s"
+msgstr "Çalışma süresi %s"
+
+msgid "Radio off"
+msgstr "Radyo kapalı"
+
+msgid "No response"
+msgstr "Yanıt yok"
+
+msgid "%s · Signal %s %s/10"
+msgstr "%s · Sinyal %s %s/10"
+
+msgid "%s · Signal %s"
+msgstr "%s · Sinyal %s"
+
+msgid "Anchor B%s"
+msgstr "Ankraj hücresi B%s"
+
+msgid "No serving cell"
+msgstr "Bağlı olunan hücre yok"
+
+msgid "Not registered"
+msgstr "Kayıtlı değil"
+
+msgid "Registered"
+msgstr "Kayıtlı"
+
+msgid "Searching"
+msgstr "Aranıyor"
+
+msgid "Registration denied"
+msgstr "Kayıt reddedildi"
+
+msgid "Registered (roaming)"
+msgstr "Kayıtlı (dolaşım)"
+
+msgid "Emergency only"
+msgstr "Yalnızca acil arama"
+
+msgid "Status %s"
+msgstr "Durum %s"
+
+msgid "LTE anchor"
+msgstr "LTE ankraj hücresi"
+
+msgid "LTE link"
+msgstr "LTE bağlantısı"
+
+msgid "Hidden"
+msgstr "Gizli"
+
+msgid "No"
+msgstr "Hayır"
+
+msgid "Running"
+msgstr "Çalışıyor"
+
+msgid "Not running"
+msgstr "Çalışmıyor"
+
+msgid "Connected"
+msgstr "Bağlı"
+
+msgid "Disconnected"
+msgstr "Bağlı değil"
+
+msgid "%s entries"
+msgstr "%s kayıt"
+
+msgid "%s clients"
+msgstr "%s istemci"
+
+msgid "Recent DHCP leases"
+msgstr "Son DHCP kiraları"
+
+msgid "%d h"
+msgstr "%d sa"
+
+msgid "Board"
+msgstr "Anakart"
+
+msgid "No temperature readings"
+msgstr "Sıcaklık verisi yok"
+
+msgid "Cluster %d"
+msgstr "Küme %d"
+
+msgid "Total %s · free %s"
+msgstr "Toplam %s · boş %s"
+
+msgid "charging %s W"
+msgstr "%s W ile şarj oluyor"
+
+msgid "charging"
+msgstr "şarj oluyor"
+
+msgid "drawing %s W"
+msgstr "%s W çekiyor"
+
+msgid "not charging"
+msgstr "şarj edilmiyor"
+
+msgid "on battery"
+msgstr "pille çalışıyor"
+
+msgid "full"
+msgstr "dolu"
+
+msgid "USB in %s W"
+msgstr "USB girişi %s W"
+
+msgid "Online"
+msgstr "Çevrimiçi"
+
+msgid "AT adapter unavailable"
+msgstr "AT bağdaştırıcısı kullanılamıyor"
+
+msgid "Saved"
+msgstr "Kaydedildi"
+
+msgid "Management connection lost"
+msgstr "Yönetim bağlantısı kesildi"
+
+msgid "Installing the language pack…"
+msgstr "Dil paketi kuruluyor…"
+
+msgid "The language pack is installed"
+msgstr "Dil paketi kuruldu"
+
+msgid "The language pack could not be installed"
+msgstr "Dil paketi kurulamadı"
+
+msgid "Upload failed: %s"
+msgstr "Yükleme başarısız: %s"
+
+msgid "Language of the browser"
+msgstr "Tarayıcının dili"
+
+msgid "Language of the web interface"
+msgstr "Web arayüzünün dili"
+
+msgid "English, Turkish and Chinese come with the system; the language pack adds the others."
+msgstr "İngilizce, Türkçe ve Çince sistemle birlikte gelir; diğerlerini dil paketi ekler."
+
+msgid "The same setting is in System > System > Language and Style."
+msgstr "Aynı ayar Sistem > Sistem > Dil ve Stil altında da bulunur."
+
+msgid "Language pack"
+msgstr "Dil paketi"
+
+msgid "The language pack (mu300-extra-lang.tar.gz, about 2 MB) adds LuCI in about 40 more languages and this panel in 29 of them. Download it from the release of this system, or upload the file from the release page when the device has no internet."
+msgstr "Dil paketi (mu300-extra-lang.tar.gz, yaklaşık 2 MB) LuCI’ye yaklaşık 40 dil daha, bu panele de bunlardan 29’unu ekler. Paketi bu sistemin sürümünden indirin veya cihazın internet bağlantısı yoksa dosyayı sürüm sayfasından alıp yükleyin."
+
+msgid "Download from the release"
+msgstr "Sürümden indir"
+
+msgid "Upload the file…"
+msgstr "Dosyayı yükle…"
+
+msgid "Release"
+msgstr "Sürüm"
+
+msgid "Enable all"
+msgstr "Tümünü etkinleştir"
+
+msgid "Disable all"
+msgstr "Tümünü devre dışı bırak"
+
+msgid "Remove the language pack"
+msgstr "Dil paketini kaldır"
+
+msgid "Remove the language pack?"
+msgstr "Dil paketi kaldırılsın mı?"
+
+msgid "Its languages disappear from the list; a page in one of them switches to English."
+msgstr "Paketteki diller listeden kaybolur; bu dillerden birindeki sayfa İngilizceye geçer."
+
+msgid "Remove"
+msgstr "Kaldır"
+
+msgid "Disable"
+msgstr "Devre dışı bırak"
+
+msgid "Enable"
+msgstr "Etkinleştir"
+
+msgid "LuCI and this panel"
+msgstr "LuCI ve bu panel"
+
+msgid "LuCI only"
+msgstr "Yalnızca LuCI"
+
+msgid "Enabled"
+msgstr "Etkin"
+
+msgid "Disabled"
+msgstr "Devre dışı"
+
+msgid "Language"
+msgstr "Dil"
+
+msgid "Code"
+msgstr "Kod"
+
+msgid "Translated"
+msgstr "Çeviri"
+
+msgid "State"
+msgstr "Durum"
+
+msgid "LuCI's own translations come from OpenWrt. This panel's translations other than Turkish and Chinese are machine (AI) translations; corrections are welcome."
+msgstr "LuCI’nin kendi çevirileri OpenWrt’den gelir. Bu panelin Türkçe ve Çince dışındaki çevirileri makine (yapay zekâ) çevirisidir; düzeltmeler memnuniyetle karşılanır."
+
+msgid "Automatic"
+msgstr "Otomatik"
+
+msgid "4G only"
+msgstr "Yalnızca 4G"
+
+msgid "Serving network"
+msgstr "Bağlı olunan ağ"
+
+msgid "Network mode · EN-DC"
+msgstr "Ağ modu · EN-DC"
+
+msgid "Refresh lock status"
+msgstr "Kilit durumunu yenile"
+
+msgid "Apply at startup"
+msgstr "Başlangıçta uygula"
+
+msgid "Turning this off only stops replay at the next boot; saved network mode, EN-DC, band and cell settings remain."
+msgstr "Kapatılması yalnızca sonraki açılışta yeniden uygulamayı durdurur; kayıtlı ağ modu, EN-DC, bant ve hücre ayarları korunur."
+
+msgid "Band locking"
+msgstr "Bant kilitleme"
+
+msgid "NR bands"
+msgstr "NR bantları"
+
+msgid "LTE bands"
+msgstr "LTE bantları"
+
+msgid "Apply NR bands"
+msgstr "NR bantlarını uygula"
+
+msgid "Apply LTE bands"
+msgstr "LTE bantlarını uygula"
+
+msgid "Neighbor cells and cell locking"
+msgstr "Komşu hücreler ve hücre kilidi"
+
+msgid "Lock current serving cell"
+msgstr "Geçerli hizmet hücresini kilitle"
+
+msgid "Unlock cell"
+msgstr "Hücre kilidini kaldır"
+
+msgid "Applying restarts the radio stack (SFUN) and briefly interrupts cellular service. Settings are saved and replayed by the plugin after AT is ready when Apply at startup is enabled. A platform pre-radio hook can replay without a restart. Apply with no bands selected to restore automatic mode."
+msgstr "Uygulama radyo yığınını (SFUN) yeniden başlatır ve hücresel bağlantıyı kısa süre keser. Ayarlar kaydedilir ve Başlangıçta uygula etkinse AT hazır olduğunda eklenti tarafından yeniden uygulanır. Platformun radyo öncesi kancasıyla yeniden başlatmadan uygulanabilir. Otomatik moda dönmek için hiçbir bant seçmeden uygulayın."
+
+msgid "Apply “%s”?"
+msgstr "“%s” uygulansın mı?"
+
+msgid "Applying %s in the background…"
+msgstr "%s arka planda uygulanıyor…"
+
+msgid "Applying %s in the background… (SFUN restart and re-registration, about 30 seconds)"
+msgstr "%s arka planda uygulanıyor… (SFUN yeniden başlatması ve ağa yeniden kayıt, yaklaşık 30 saniye)"
+
+msgid "Queued: another lock is being applied during SFUN restart; this will take effect afterward"
+msgstr "Sıraya alındı: SFUN yeniden başlarken başka bir kilit uygulanıyor; ardından etkinleşecek"
+
+msgid "Confirming the EN-DC status…"
+msgstr "EN-DC durumu doğrulanıyor…"
+
+msgid "Confirming apply at startup…"
+msgstr "Başlangıçta uygulama doğrulanıyor…"
+
+msgid "Started in background: %s (SFUN restart, about 30 seconds); reading the status back…"
+msgstr "Arka planda başlatıldı: %s (SFUN yeniden başlatması, yaklaşık 30 saniye); durum geri okunuyor…"
+
+msgid "Network mode: %s"
+msgstr "Ağ modu: %s"
+
+msgid "Disable EN-DC (NSA anchor)"
+msgstr "EN-DC’yi kapat (NSA ankraj hücresi)"
+
+msgid "Enable EN-DC (NSA anchor)"
+msgstr "EN-DC’yi aç (NSA ankraj hücresi)"
+
+msgid "Disable apply at startup"
+msgstr "Başlangıçta uygulamayı kapat"
+
+msgid "Enable apply at startup"
+msgstr "Başlangıçta uygulamayı aç"
+
+msgid "Reading the modem directly (a few seconds at most)…"
+msgstr "Modem doğrudan okunuyor (en fazla birkaç saniye)…"
+
+msgid "Refreshed"
+msgstr "Yenilendi"
+
+msgid "Refresh failed"
+msgstr "Yenileme başarısız"
+
+msgid "NR bands: back to automatic"
+msgstr "NR bantları: otomatiğe dön"
+
+msgid "NR band lock: %s"
+msgstr "NR bant kilidi: %s"
+
+msgid "LTE bands: back to automatic"
+msgstr "LTE bantları: otomatiğe dön"
+
+msgid "LTE band lock: %s"
+msgstr "LTE bant kilidi: %s"
+
+msgid "Remove the %s cell lock"
+msgstr "%s hücre kilidini kaldır"
+
+msgid "The radio stack will restart (SFUN), taking about 30 seconds."
+msgstr "Radyo yığını yeniden başlayacak (SFUN), yaklaşık 30 saniye sürecek."
+
+msgid "Removing the %s cell lock…"
+msgstr "%s hücre kilidi kaldırılıyor…"
+
+msgid "Unlock failed: %s"
+msgstr "Kilit kaldırılamadı: %s"
+
+msgid "Unlock started in background (SFUN restart, about 30 seconds); reading the status back…"
+msgstr "Kilit kaldırma arka planda başlatıldı (SFUN yeniden başlatması, yaklaşık 30 saniye); durum geri okunuyor…"
+
+msgid "Locking %s in the background…"
+msgstr "%s arka planda kilitleniyor…"
+
+msgid "Locked %s in the background (SFUN restart, about 30 seconds); reading the status back…"
+msgstr "%s arka planda kilitlendi (SFUN yeniden başlatması, yaklaşık 30 saniye); durum geri okunuyor…"
+
+msgid "No serving-network data"
+msgstr "Bağlı olunan ağ verisi yok"
+
+msgid "NR serving cell"
+msgstr "NR hizmet hücresi"
+
+msgid "Status confirmed"
+msgstr "Durum doğrulandı"
+
+msgid "Readback timed out; select “Refresh lock status”"
+msgstr "Geri okuma zaman aşımına uğradı; “Kilit durumunu yenile”yi seçin"
+
+msgid "Applied (EN-DC does not require a radio-stack restart)"
+msgstr "Uygulandı (EN-DC için radyo yığını yeniden başlatılmaz)"
+
+msgid "Apply at startup is on"
+msgstr "Başlangıçta uygulama açık"
+
+msgid "Apply at startup is off"
+msgstr "Başlangıçta uygulama kapalı"
+
+msgid "EN-DC status readback timed out; use “Refresh lock status” to confirm"
+msgstr "EN-DC durumunun geri okuması zaman aşımına uğradı; doğrulamak için “Kilit durumunu yenile”yi kullanın"
+
+msgid "Apply-at-startup status readback timed out; use “Refresh lock status” to confirm"
+msgstr "Başlangıçta uygulama durumunun geri okuması zaman aşımına uğradı; doğrulamak için “Kilit durumunu yenile”yi kullanın"
+
+msgid "Locked cells"
+msgstr "Kilitli hücreler"
+
+msgid "Unlock %s"
+msgstr "%s kilidini kaldır"
+
+msgid "Automatic (%d supported)"
+msgstr "Otomatik (%d destekleniyor)"
+
+msgid "%d locked: %s"
+msgstr "%d kilitli: %s"
+
+msgid "Configure how this plugin connects to the current Unisoc OpenWrt platform. Changes do not require editing the dashboard, AT, locks or SMS pages."
+msgstr "Bu eklentinin mevcut Unisoc OpenWrt platformuna nasıl bağlandığını yapılandırın. Değişiklikler panel, AT, kilit veya SMS sayfalarını düzenlemeyi gerektirmez."
+
+msgid "Platform adapter"
+msgstr "Platform bağdaştırıcısı"
+
+msgid "AT backend"
+msgstr "AT arka ucu"
+
+msgid "Auto-detect"
+msgstr "Otomatik algıla"
+
+msgid "atinout + serial port"
+msgstr "atinout + seri port"
+
+msgid "Custom adapter"
+msgstr "Özel bağdaştırıcı"
+
+msgid "AT serial port"
+msgstr "AT seri portu"
+
+msgid "Custom AT adapter"
+msgstr "Özel AT bağdaştırıcısı"
+
+msgid "The executable receives a timeout in seconds and the complete AT command, in that order. It must share the serial lock with the platform dialer."
+msgstr "Yürütülebilir dosya sırayla saniye cinsinden zaman aşımını ve tam AT komutunu alır. Seri port kilidini platform arama programıyla paylaşmalıdır."
+
+msgid "SMS adapter"
+msgstr "SMS bağdaştırıcısı"
+
+msgid "Implement the list, show, send, delete and sync subcommands; leave blank to find mu300-sms automatically."
+msgstr "list, show, send, delete ve sync alt komutlarını uygulayın; mu300-sms otomatik bulunsun diye boş bırakın."
+
+msgid "SMS pool directory"
+msgstr "SMS havuzu dizini"
+
+msgid "Cellular logical interface"
+msgstr "Hücresel mantıksal arabirim"
+
+msgid "Cellular IPv6 interface"
+msgstr "Hücresel IPv6 arabirimi"
+
+msgid "Cellular network device"
+msgstr "Hücresel ağ aygıtı"
+
+msgid "Leave blank to detect from netifd"
+msgstr "netifd’den otomatik algılamak için boş bırakın"
+
+msgid "LAN bridge"
+msgstr "LAN köprüsü"
+
+msgid "Wi-Fi device"
+msgstr "Wi-Fi aygıtı"
+
+msgid "USB device"
+msgstr "USB aygıtı"
+
+msgid "Maximum wait for AT readiness (seconds)"
+msgstr "AT hazır olma üst bekleme süresi (saniye)"
+
+msgid "Home dashboard refresh interval (seconds)"
+msgstr "Ana pano yenileme aralığı (saniye)"
+
+msgid "Controls only the home dashboard refresh rate; 0.5–60 seconds. Reopen Home after saving to apply."
+msgstr "Yalnızca ana panonun yenileme hızını kontrol eder; 0,5–60 saniye. Kaydettikten sonra uygulamak için Ana Sayfa’yı yeniden açın."
+
+msgid "Persistent state directory"
+msgstr "Kalıcı durum dizini"
+
+msgid "Recipient: number, e.g. 10086 or +86..."
+msgstr "Alıcı: numara, ör. 10086 veya +86..."
+
+msgid "Sync from SIM"
+msgstr "SIM’den eşitle"
+
+msgid "Clear local pool"
+msgstr "Yerel havuzu temizle"
+
+msgid "Loading…"
+msgstr "Yükleniyor…"
+
+msgid "Select a conversation on the left, or enter a number below to send."
+msgstr "Soldan bir görüşme seçin veya göndermek için aşağıya bir numara girin."
+
+msgid "Message (Enter to send, Shift+Enter for newline)"
+msgstr "Mesaj (göndermek için Enter, yeni satır için Shift+Enter)"
+
+msgid "Sending uses AT+CMGS (PDU mode); retry if the channel is busy. To delete one message, use the bin icon on its bubble."
+msgstr "Gönderme AT+CMGS (PDU modu) kullanır; kanal meşgulse yeniden deneyin. Bir mesajı silmek için balonundaki çöp kutusu simgesini kullanın."
+
+msgid "Syncing from the SIM in the background (AT+CMGL)…"
+msgstr "SIM’den arka planda eşitleniyor (AT+CMGL)…"
+
+msgid "SIM sync started; the list refreshes in a few seconds."
+msgstr "SIM eşitlemesi başladı; liste birkaç saniye içinde yenilenecek."
+
+msgid "Clear local SMS pool"
+msgstr "Yerel SMS havuzunu temizle"
+
+msgid "Only local files will be deleted; messages on the SIM remain."
+msgstr "Yalnızca yerel dosyalar silinir; SIM’deki mesajlar korunur."
+
+msgid "Clear"
+msgstr "Temizle"
+
+msgid "Delete this SMS"
+msgstr "Bu SMS’i sil"
+
+msgid "Deletion cannot be undone."
+msgstr "Silme işlemi geri alınamaz."
+
+msgid "Local only"
+msgstr "Yalnızca yerel"
+
+msgid "Local + SIM"
+msgstr "Yerel + SIM"
+
+msgid "Delete failed"
+msgstr "Silme başarısız"
+
+msgid "Deleted (local + SIM)"
+msgstr "Silindi (yerel + SIM)"
+
+msgid "Deleted (local only)"
+msgstr "Silindi (yalnızca yerel)"
+
+msgid "Enter both a number and a message."
+msgstr "Numara ve mesaj girin."
+
+msgid "Sending…"
+msgstr "Gönderiliyor…"
+
+msgid "Sent; the list refreshes shortly."
+msgstr "Gönderildi; liste birazdan yenilenecek."
+
+msgid "Sending failed"
+msgstr "Gönderme başarısız"
+
+msgid "· %d messages, %d unread · %d conversations"
+msgstr "· %d mesaj, %d okunmamış · %d görüşme"
+
+msgid "· %d messages · %d conversations"
+msgstr "· %d mesaj · %d görüşme"
+
+msgid "The pool is empty. Incoming and sent messages appear here, or select “Sync from SIM”."
+msgstr "Havuz boş. Gelen ve gönderilen mesajlar burada görünür veya “SIM’den eşitle”yi seçin."
+
+msgid "Me: %s"
+msgstr "Ben: %s"
+
+msgid "Delete"
+msgstr "Sil"
+
+msgid "Current setting"
+msgstr "Geçerli ayar"
+
+msgid "Fixed at %d"
+msgstr "%d olarak sabit"
+
+msgid "Not changed (default)"
+msgstr "Değiştirilmedi (varsayılan)"
+
+msgid "Rule in force"
+msgstr "Etkin kural"
+
+msgid "Flow offloading"
+msgstr "Akış hızlandırma (flow offloading)"
+
+msgid "TTL of mobile data"
+msgstr "Mobil verinin TTL değeri"
+
+msgid "Every packet that leaves through mobile data gets this TTL (IPv6: hop limit). A phone or laptop behind the hotspot sends 64 (Windows: 128) and the device forwards it with one less, which is how an operator can tell tethered traffic apart."
+msgstr "Mobil veriden çıkan her paket bu TTL değerini alır (IPv6: hop limit). Hotspot'a bağlı bir telefon ya da dizüstü bilgisayar 64 (Windows: 128) gönderir ve cihaz paketi bir eksiğiyle iletir; operatör paylaşılan trafiği bu farktan anlayabilir."
+
+msgid "On this kernel the firewall fast-path is off while a TTL is set"
+msgstr "Bu çekirdekte TTL ayarlıyken güvenlik duvarının hızlı yolu kapalıdır"
+
+msgid "Set %d"
+msgstr "%d yap"
+
+msgid "Set"
+msgstr "Ayarla"
+
+msgid "Enter a number from 1 to 255"
+msgstr "1 ile 255 arasında bir sayı girin"
+
+msgid "Turn off"
+msgstr "Kapat"
+
+msgid "64 makes every packet leave like the device's own traffic"
+msgstr "64, her paketin cihazın kendi trafiği gibi çıkmasını sağlar"
+
+msgid "Dashboard info failed"
+msgstr "Gösterge paneli bilgisi alınamadı"
+
+msgid "Applying network locks: no live signal right now"
+msgstr "Ağ kilitleri uygulanıyor: şu anda canlı sinyal yok"
+
+msgid "Live signal read failed"
+msgstr "Canlı sinyal okunamadı"
+
+msgid "Unknown op"
+msgstr "Bilinmeyen işlem"
+
+msgid "Invalid argument for this op"
+msgstr "Bu işlem için geçersiz bağımsız değişken"
+
+msgid "The radio is busy: the dial or the watchdog is switching it, try again shortly"
+msgstr "Radyo meşgul: bağlantı kurulumu ya da izleyici (watchdog) onu değiştiriyor, birazdan yeniden deneyin"
+
+msgid "The action gave no valid reply"
+msgstr "İşlem geçerli bir yanıt vermedi"
+
+msgid "An AT command is one line of printable ASCII, at most 512 characters"
+msgstr "AT komutu, en fazla 512 karakterlik tek satır yazdırılabilir ASCII olmalıdır"
+
+msgid "Must be an AT command"
+msgstr "Bir AT komutu olmalı"
+
+msgid "No \";\" command chaining"
+msgstr "\";\" ile komut zincirleme yapılamaz"
+
+msgid "Denied: this command wedges the AT port until a reboot"
+msgstr "Reddedildi: bu komut AT bağlantı noktasını yeniden başlatmaya kadar kilitler"
+
+msgid "Applying network locks: the modem is restarting (about half a minute), try again shortly"
+msgstr "Ağ kilitleri uygulanıyor: modem yeniden başlıyor (yaklaşık yarım dakika), birazdan yeniden deneyin"
+
+msgid "The AT channel is busy; the command was not sent, try again"
+msgstr "AT kanalı meşgul; komut gönderilmedi, yeniden deneyin"
+
+msgid "The modem did not answer in time; the command may still run, check before sending it again"
+msgstr "Modem zamanında yanıt vermedi; komut hâlâ çalışıyor olabilir, yeniden göndermeden önce denetleyin"
+
+msgid "The fresh parameter must be 0 or 1"
+msgstr "fresh parametresi 0 veya 1 olmalı"
+
+msgid "Lock read failed"
+msgstr "Kilit durumu okunamadı"
+
+msgid "Unknown lock kind"
+msgstr "Bilinmeyen kilit türü"
+
+msgid "Invalid value for this lock kind"
+msgstr "Bu kilit türü için geçersiz değer"
+
+msgid "Invalid page"
+msgstr "Geçersiz sayfa"
+
+msgid "mu300-sms is not available (the SMS service is not installed or not running)"
+msgstr "mu300-sms kullanılamıyor (SMS hizmeti kurulu değil veya çalışmıyor)"
+
+msgid "No output"
+msgstr "Çıktı yok"
+
+msgid "Bad ID"
+msgstr "Geçersiz kimlik"
+
+msgid "Read failed"
+msgstr "Okuma başarısız"
+
+msgid "The number may only contain digits (and a leading +)"
+msgstr "Numara yalnızca rakam içerebilir (başta + olabilir)"
+
+msgid "The message is empty"
+msgstr "Mesaj boş"
+
+msgid "The message is too long (over 480 characters)"
+msgstr "Mesaj çok uzun (480 karakterden fazla)"
+
+msgid "The message contains a control character"
+msgstr "Mesaj bir denetim karakteri içeriyor"
+
+msgid "The sim parameter must be 0 or 1"
+msgstr "sim parametresi 0 veya 1 olmalı"
+
+msgid "The USB adapter (device-usb) gave no valid reply"
+msgstr "USB bağdaştırıcısı (device-usb) geçerli bir yanıt vermedi"
+
+msgid "The auto parameter must be 0 or 1"
+msgstr "auto parametresi 0 veya 1 olmalı"
+
+msgid "Invalid USB role"
+msgstr "Geçersiz USB rolü"
+
+msgid "A USB role takes no scope"
+msgstr "USB rolü kapsam almaz"
+
+msgid "Invalid USB network mode"
+msgstr "Geçersiz USB ağ modu"
+
+msgid "Invalid USB network scope"
+msgstr "Geçersiz USB ağ süresi"
+
+msgid "Unknown USB setting"
+msgstr "Bilinmeyen USB ayarı"
+
+msgid "Invalid interface name"
+msgstr "Geçersiz arayüz adı"
+
+msgid "The languages adapter gave no valid reply"
+msgstr "Dil bağdaştırıcısı geçerli bir yanıt vermedi"
+
+msgid "Unknown language operation"
+msgstr "Bilinmeyen dil işlemi"
+
+msgid "Invalid language code"
+msgstr "Geçersiz dil kodu"
+
+msgid "Invalid language request"
+msgstr "Geçersiz dil isteği"
+
+msgid "Unknown source"
+msgstr "Bilinmeyen kaynak"
+
+msgid "The TTL adapter gave no valid reply"
+msgstr "TTL bağdaştırıcısı geçerli bir yanıt vermedi"
+
+msgid "Invalid TTL"
+msgstr "Geçersiz TTL"
+
+msgid "Request too large"
+msgstr "İstek çok büyük"
+
+msgid "The runtime directory is not safe; nothing was run"
+msgstr "Çalışma dizini güvenli değil; hiçbir şey çalıştırılmadı"
+
+msgid "No such method"
+msgstr "Böyle bir yöntem yok"
+
+msgid "Radio did not come up"
+msgstr "Radyo açılmadı"
+
+msgid "Expected on or off"
+msgstr "on veya off bekleniyor"
+
+msgid "VPN integration is not provided by this platform"
+msgstr "Bu platform VPN tümleştirmesi sağlamıyor"
+
+msgid "Dual-boot integration is not provided by this platform"
+msgstr "Bu platform çift önyükleme tümleştirmesi sağlamıyor"
+
+msgid "mu300-next-boot failed"
+msgstr "mu300-next-boot başarısız oldu"
+
+msgid "AT backend did not answer (radio off, modem restarting, or adapter unavailable)"
+msgstr "AT arka ucu yanıt vermedi (radyo kapalı, modem yeniden başlıyor veya bağdaştırıcı kullanılamıyor)"
+
+msgid "USB role adapter is not executable"
+msgstr "USB rol bağdaştırıcısı çalıştırılabilir değil"
+
+msgid "USB role adapter failed"
+msgstr "USB rol bağdaştırıcısı başarısız"
+
+msgid "USB role switch is unavailable"
+msgstr "USB rol anahtarı kullanılamıyor"
+
+msgid "USB role switch failed"
+msgstr "USB rol değişimi başarısız"
+
+msgid "USB role switch was refused by platform safety checks"
+msgstr "USB rol değişimi platform güvenlik denetimi tarafından reddedildi"
+
+msgid "Cannot create USB boot settings directory"
+msgstr "USB açılış ayarları dizini oluşturulamıyor"
+
+msgid "Cannot write USB boot settings"
+msgstr "USB açılış ayarları yazılamıyor"
+
+msgid "Cannot save USB boot settings"
+msgstr "USB açılış ayarları kaydedilemiyor"
+
+msgid "Invalid boot-auto value"
+msgstr "Geçersiz otomatik başlatma değeri"
+
+msgid "Device is the boot default; host auto-apply is the only persistent role"
+msgstr "Cihaz modu açılış varsayılanıdır; yalnızca ana makine otomatik uygulaması kalıcıdır"
+
+msgid "Cannot save USB role policy"
+msgstr "USB rol ilkesi kaydedilemiyor"
+
+msgid "Cannot disable USB network boot policy"
+msgstr "USB ağı açılış ilkesi kapatılamıyor"
+
+msgid "Cannot commit USB role policy"
+msgstr "USB rol ilkesi uygulanamıyor"
+
+msgid "USB network mode is unavailable in host role"
+msgstr "Ana makine rolünde USB ağ modu kullanılamaz"
+
+msgid "Disable host boot-auto before configuring USB network"
+msgstr "USB ağını yapılandırmadan önce ana makine otomatik başlatmasını kapatın"
+
+msgid "Cannot save USB network policy"
+msgstr "USB ağ ilkesi kaydedilemiyor"
+
+msgid "Cannot commit USB network policy"
+msgstr "USB ağ ilkesi uygulanamıyor"
+
+msgid "USB host mode is required"
+msgstr "USB ana makine modu gerekli"
+
+msgid "Not a USB network interface"
+msgstr "USB ağ arayüzü değil"
+
+msgid "LAN bridge device section was not found"
+msgstr "LAN köprü aygıtı bölümü bulunamadı"
+
+msgid "Cannot bring USB network interface up"
+msgstr "USB ağ arayüzü etkinleştirilemiyor"
+
+msgid "Cannot add interface to LAN bridge"
+msgstr "Arayüz LAN köprüsüne eklenemiyor"
+
+msgid "Cannot save LAN bridge"
+msgstr "LAN köprüsü kaydedilemiyor"
+
+msgid "Network reload failed"
+msgstr "Ağ yeniden yüklenemedi"
+
+msgid "Cannot attach USB interface to LAN bridge"
+msgstr "USB arayüzü LAN köprüsüne bağlanamıyor"
+
+msgid "The language pack is not installed"
+msgstr "Dil paketi kurulu değil"
+
+msgid "No language given"
+msgstr "Dil belirtilmedi"
+
+msgid "The language could not be changed"
+msgstr "Dil değiştirilemedi"
+
+msgid "LuCI does not offer this language"
+msgstr "LuCI bu dili sunmuyor"
+
+msgid "No uploaded language pack"
+msgstr "Yüklenmiş dil paketi yok"
+
+msgid "An installation is already running"
+msgstr "Zaten bir kurulum sürüyor"
+
+msgid "The language pack could not be removed"
+msgstr "Dil paketi kaldırılamadı"
+
+msgid "Lock cache unavailable"
+msgstr "Kilit önbelleği kullanılamıyor"
+
+msgid "No serving cell to lock to"
+msgstr "Kilitlenecek hizmet hücresi yok"
+
+msgid "The TTL setting could not be read"
+msgstr "TTL ayarı okunamadı"
+
+msgid "The TTL could not be set"
+msgstr "TTL ayarlanamadı"
+
+msgid "Unknown TTL operation"
+msgstr "Bilinmeyen TTL işlemi"

@@ -1,0 +1,29 @@
+# MU300 VPN (VLESS). Copy to /etc/mu300/vpn.conf, edit, then: mu300-vpn gen && restart the service
+#   Ubuntu:  sudo systemctl restart mu300-vpn        OpenWrt: /etc/init.d/mu300-vpn restart
+ENABLE=1
+# the share link from your server/panel (vless://uuid@host:port?type=...&security=...#name)
+VLESS_URI=""
+# xray: Xray-core behind hev-socks5-tunnel on a kernel TUN
+# sing-box: sing-box's own TUN (FINDINGS 26b)
+# unset: xray, or sing-box when KILL_SWITCH=1
+ENGINE=xray
+# 1: nothing leaves through the cellular interface except the tunnel itself (also while the tunnel is down).
+# It needs sing-box: with ENGINE=xray, sing-box runs instead (and without sing-box the kill switch stays up and
+# nothing goes out). Missing engines are downloaded through it: only the device, only to the release hosts.
+KILL_SWITCH=0
+# 1: Tailscale on the device connects through the tunnel too (its own WireGuard/DERP traffic, which it otherwise
+# sends straight to the carrier); 0: it goes out directly, as without the VPN (and the kill switch then drops it)
+TAILSCALE=1
+# DNS for the device and its clients, resolved through the tunnel
+REMOTE_DNS=1.1.1.1
+# sing-box only: used to look up the VPN server's own name (sent directly, outside the tunnel)
+BOOTSTRAP_DNS=1.1.1.1
+# more networks that stay local, comma-separated (the device's own USB/Wi-Fi LAN always does)
+#LAN_CIDRS=192.168.1.0/24
+# 1: also carry IPv6 (sing-box only, and only if the server has IPv6 connectivity)
+IPV6=0
+# sing-box only, optional: reach the VPN server through an HTTP proxy (host:port)
+UPSTREAM_HTTP_PROXY=
+# xray only. Xray 26 no longer has allowInsecure; for a link that asks for it, the certificate the server presents
+# is fetched once (needs openssl), pinned here, and fetched again by itself if the server renews it. Leave empty.
+TLS_PIN_SHA256=

@@ -1,0 +1,11 @@
+# Mobile data settings for the MU300 (Ubuntu). Copy to /etc/mu300/mobile-data.conf and edit.
+# The OpenWrt build does not read this - there the same settings live in /etc/config/network on the
+# 'wan' interface (option apn / option pdptype) and are editable in LuCI under Network -> Interfaces.
+
+# Access point name. Leave empty unless your carrier needs a specific one: empty means the modem keeps the
+# context the SIM already defines, which is what most SIMs expect and what this device has been using.
+#MU300_APN=internet
+
+# PDP type. IP (IPv4 only) is what Android asks this modem for and what has been measured working here;
+# IPV4V6 asks for both, for a carrier that requires it.
+#MU300_PDP_TYPE=IP

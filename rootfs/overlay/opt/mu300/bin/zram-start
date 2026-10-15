@@ -1,0 +1,13 @@
+#!/bin/sh
+# Compressed swap in RAM: about half of RAM as lz4-compressed zram, preferred over any other swap.
+set -e
+[ -e /sys/block/zram0 ] || modprobe zram num_devices=1
+if ! swapon --show=NAME --noheadings | grep -q zram0; then
+    size=$(awk '/MemTotal/ {printf "%d", $2 / 2}' /proc/meminfo)
+    echo 1 > /sys/block/zram0/reset 2>/dev/null || true
+    echo lz4 > /sys/block/zram0/comp_algorithm 2>/dev/null || true
+    echo "${size}K" > /sys/block/zram0/disksize
+    mkswap /dev/zram0 >/dev/null
+    swapon -p 100 /dev/zram0
+fi
+sysctl -qw vm.swappiness=100 vm.page-cluster=0

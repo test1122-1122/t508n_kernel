@@ -1,0 +1,49 @@
+#!/bin/sh
+# The hotspot's band (Ubuntu and OpenWrt). The chip runs one access point at a time, on 2.4 or on 5 GHz.
+#   mu300-wifi-band            show it
+#   mu300-wifi-band 2.4|5      switch to that band and restart the hotspot (kept across reboots)
+#   mu300-wifi-band toggle     the other one (the U30 Air's Wi-Fi key, see mu300-buttons)
+# The channel goes back to automatic: 5 GHz channels mean nothing on 2.4 GHz and the other way round.
+# Ubuntu: BAND and CHANNEL in /etc/mu300/hotspot.conf (hotspot-start). OpenWrt: wireless.radio0 in UCI.
+# (MU300_HOTSPOT_CONF is for tests/)
+CONF=${MU300_HOTSPOT_CONF:-/etc/mu300/hotspot.conf}
+is_openwrt() { [ -e /etc/openwrt_release ] && [ -z "${MU300_HOTSPOT_CONF:-}" ]; }
+
+current() {
+    if is_openwrt; then
+        case $(uci -q get wireless.radio0.band) in 2g) echo 2.4 ;; *) echo 5 ;; esac
+    elif [ ! -r "$CONF" ] && ch=$(iw dev wlan0 info 2>/dev/null | sed -n 's/.*channel \([0-9]*\).*/\1/p') && [ -n "$ch" ]; then
+        # the file holds the passphrase and only root reads it: the channel the hotspot runs on tells too
+        [ "$ch" -gt 14 ] && echo 5 || echo 2.4
+    else
+        case $(sed -n 's/^BAND=//p' "$CONF" 2>/dev/null | head -n1) in 2.4) echo 2.4 ;; *) echo 5 ;; esac
+    fi
+}
+
+set_band() {  # set_band 2.4|5
+    if is_openwrt; then
+        if [ "$1" = 2.4 ]; then b=2g ch=6 ht=HT20; else b=5g ch=36 ht=VHT80; fi
+        uci -q batch <<UCI
+set wireless.radio0.band='$b'
+set wireless.radio0.channel='$ch'
+set wireless.radio0.htmode='$ht'
+commit wireless
+UCI
+        wifi reload >/dev/null 2>&1 &
+    else
+        [ -f "$CONF" ] || { echo "no $CONF (the hotspot has not run yet)" >&2; exit 1; }
+        # the file holds the passphrase: rewrite its contents in place, keeping its owner and mode
+        for k in BAND CHANNEL; do grep -q "^$k=" "$CONF" || echo "$k=" >> "$CONF"; done
+        new=$(sed -e "s/^BAND=.*/BAND=$1/" -e 's/^CHANNEL=.*/CHANNEL=auto/' "$CONF") && printf '%s\n' "$new" > "$CONF"
+        [ -n "${MU300_HOTSPOT_CONF:-}" ] || systemctl restart mu300-hotspot >/dev/null 2>&1 &
+    fi
+    echo "hotspot: $1 GHz"
+}
+
+case ${1:-} in
+    '') echo "hotspot: $(current) GHz" ;;
+    2.4|2|2g) set_band 2.4 ;;
+    5|5g) set_band 5 ;;
+    toggle) if [ "$(current)" = 5 ]; then set_band 2.4; else set_band 5; fi ;;
+    *) echo "usage: mu300-wifi-band [2.4|5|toggle]" >&2; exit 2 ;;
+esac

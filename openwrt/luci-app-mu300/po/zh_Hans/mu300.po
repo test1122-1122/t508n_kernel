@@ -1,0 +1,1333 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh_Hans\n"
+
+msgid "Status dashboard"
+msgstr "状态看板"
+
+msgid "Cellular"
+msgstr "蜂窝"
+
+msgid "Network locks"
+msgstr "网络锁定"
+
+msgid "SMS"
+msgstr "短信"
+
+msgid "AT terminal"
+msgstr "AT 终端"
+
+msgid "Adapter settings"
+msgstr "适配设置"
+
+msgid "TTL"
+msgstr "TTL"
+
+msgid "Device management"
+msgstr "设备管理"
+
+msgid "Languages"
+msgstr "语言"
+
+msgid "MU300 control center: status dashboard, network locks, AT terminal and SMS"
+msgstr "MU300 控制中心：状态看板、网络锁定、AT 终端与短信"
+
+msgid "China Mobile"
+msgstr "中国移动"
+
+msgid "China Unicom"
+msgstr "中国联通"
+
+msgid "China Telecom"
+msgstr "中国电信"
+
+msgid "China Broadnet"
+msgstr "中国广电"
+
+msgid "China Tietong"
+msgstr "中国铁通"
+
+msgid "Excellent"
+msgstr "优秀"
+
+msgid "Good"
+msgstr "良好"
+
+msgid "Fair"
+msgstr "一般"
+
+msgid "Poor"
+msgstr "较差"
+
+msgid "Unknown"
+msgstr "未知"
+
+msgid "%d d %d h"
+msgstr "%d 天 %d 小时"
+
+msgid "%d h %d min"
+msgstr "%d 小时 %d 分"
+
+msgid "%d min"
+msgstr "%d 分"
+
+msgid "No neighbor-cell data"
+msgstr "暂无邻区数据"
+
+msgid "Locked"
+msgstr "已锁定"
+
+msgid "Lock"
+msgstr "锁定"
+
+msgid "Unknown error"
+msgstr "未知错误"
+
+msgid "Confirm"
+msgstr "确认"
+
+msgid "OK"
+msgstr "确定"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "New SMS · %s"
+msgstr "新短信 · %s"
+
+msgid "Unknown number"
+msgstr "未知号码"
+
+msgid "Select"
+msgstr "选择"
+
+msgid "Basic"
+msgstr "基础"
+
+msgid "Registration/signal"
+msgstr "注册/信号"
+
+msgid "Bearer"
+msgstr "承载"
+
+msgid "Engineering mode"
+msgstr "工程模式"
+
+msgid "AT command (↑↓ history, Enter to send)"
+msgstr "AT 命令（↑↓ 翻历史，Enter 发送）"
+
+msgid "Send"
+msgstr "发送"
+
+msgid "Clear screen"
+msgstr "清屏"
+
+msgid "Ready."
+msgstr "就绪。"
+
+msgid "Session history (click to reuse)"
+msgstr "会话历史（点击复用）"
+
+msgid "(no output)"
+msgstr "(无输出)"
+
+msgid "Request failed"
+msgstr "调用失败"
+
+msgid "(empty)"
+msgstr "（空）"
+
+msgid "USB role"
+msgstr "USB 角色"
+
+msgid "Current role"
+msgstr "当前角色"
+
+msgid "Switch USB role"
+msgstr "切换 USB 角色"
+
+msgid "Device mode"
+msgstr "设备模式"
+
+msgid "Host mode"
+msgstr "主机模式"
+
+msgid "Enable host mode at boot"
+msgstr "开机自动启用主机模式"
+
+msgid "Apply role"
+msgstr "应用角色"
+
+msgid "Host mode disconnects USB networking and serial on this port. F50 has no battery; management may be lost and a USB adapter usually needs a powered hub."
+msgstr "主机模式会断开本端口的 USB 网络与串口。F50 没有电池；切换后可能失去管理连接，外接 USB 网卡通常需要自供电 Hub。"
+
+msgid "USB network mode"
+msgstr "USB 网络模式"
+
+msgid "Network protocol"
+msgstr "网络协议"
+
+msgid "Apply duration"
+msgstr "生效期限"
+
+msgid "Next reboot only"
+msgstr "仅下次重启"
+
+msgid "Permanent"
+msgstr "永久生效"
+
+msgid "Enable selected protocol"
+msgstr "启用所选协议"
+
+msgid "Save; apply after reboot"
+msgstr "保存，重启后生效"
+
+msgid "NCM is the default. Windows does not natively support ECM; RNDIS changes enumeration. With Enable selected protocol off, only your choice is saved. Next reboot only applies once, then returns to NCM."
+msgstr "NCM 为默认模式。Windows 不原生支持 ECM；RNDIS 会改变枚举方式。关闭“启用所选协议”时仅保存选择；选择“仅下次重启”则成功应用一次后恢复默认 NCM。"
+
+msgid "USB adapters"
+msgstr "USB 网卡"
+
+msgid "Refresh"
+msgstr "刷新"
+
+msgid "Available only in host mode. Refresh brings discovered USB adapters up; adding to LAN saves the bridge and reloads networking."
+msgstr "仅主机模式可用。刷新时会尝试启用发现的 USB 网卡；添加到 LAN 后将保存到网桥并重新加载网络。"
+
+msgid "Unavailable"
+msgstr "不可用"
+
+msgid "USB network mode is unavailable in host mode; host auto-start also disables USB network auto-start."
+msgstr "主机模式下不可选择 USB 网络模式；主机开机自启会自动关闭 USB 网络开机自启。"
+
+msgid "Host mode immediately disconnects USB management. F50 has no battery and peripherals may need external power; make sure another management path exists."
+msgstr "切换主机模式会立即断开 USB 管理连接。F50 没有电池，外设可能需要自供电；请确认有其他管理途径。"
+
+msgid "USB networking and serial will re-enumerate in device mode."
+msgstr "切回设备模式后 USB 网络和串口会重新枚举。"
+
+msgid "Switch USB role?"
+msgstr "确认切换 USB 角色？"
+
+msgid "Apply"
+msgstr "应用"
+
+msgid "Switching USB role…"
+msgstr "正在切换 USB 角色…"
+
+msgid "Switch failed: %s"
+msgstr "切换失败：%s"
+
+msgid "Management connection lost; reconnect to confirm the USB role."
+msgstr "管理连接已中断；请重新连接后确认 USB 角色。"
+
+msgid "Switch request accepted; the USB connection may briefly disconnect."
+msgstr "切换请求已接收，USB 连接可能短暂中断。"
+
+msgid "USB role applied"
+msgstr "USB 角色已应用"
+
+msgid "Save USB network mode?"
+msgstr "保存 USB 网络模式？"
+
+msgid "The network mode applies on the next reboot; USB management may need to reconnect."
+msgstr "网络模式将在下次重启时生效，USB 管理连接可能需要重新识别。"
+
+msgid "Save the selection only; with the selected protocol disabled, the next boot still uses default NCM."
+msgstr "只保存选择；未启用所选协议，下次重启仍使用默认 NCM。"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Saving USB network settings…"
+msgstr "正在保存 USB 网络设置…"
+
+msgid "Settings saved"
+msgstr "设置已保存"
+
+msgid "Save failed: %s"
+msgstr "保存失败：%s"
+
+msgid "Unable to confirm the role yet; reconnect and refresh the page."
+msgstr "暂时无法确认角色；请重新连接后刷新页面。"
+
+msgid "Switch to host mode to see USB adapters."
+msgstr "切换到主机模式后显示 USB 网卡。"
+
+msgid "Scanning USB adapters…"
+msgstr "正在扫描 USB 网卡…"
+
+msgid "No USB adapters found."
+msgstr "没有发现 USB 网卡。"
+
+msgid "Link connected"
+msgstr "链路已连接"
+
+msgid "No link; enable attempted"
+msgstr "链路未连接，已尝试启用"
+
+msgid "Added to LAN"
+msgstr "已添加到 LAN"
+
+msgid "Add to LAN"
+msgstr "添加到 LAN"
+
+msgid "Add USB adapter to LAN?"
+msgstr "添加 USB 网卡到 LAN？"
+
+msgid "This saves the bridge configuration and reloads networking; existing connections may briefly drop."
+msgstr "这会保存网桥配置并重新加载网络，现有连接可能短暂中断。"
+
+msgid "Add"
+msgstr "添加"
+
+msgid "Adding USB adapter…"
+msgstr "正在添加 USB 网卡…"
+
+msgid "Add failed: %s"
+msgstr "添加失败：%s"
+
+msgid "Modulation DL/UL"
+msgstr "调制方式 下/上"
+
+msgid "Estimated from current MCS"
+msgstr "按当前 MCS 估算"
+
+msgid "MCS DL/UL"
+msgstr "MCS 下/上"
+
+msgid "BLER DL/UL"
+msgstr "BLER 下/上"
+
+msgid "Link & traffic"
+msgstr "链路与流量"
+
+msgid "Download rate"
+msgstr "下行速率"
+
+msgid "Upload rate"
+msgstr "上行速率"
+
+msgid "Total received"
+msgstr "累计接收"
+
+msgid "Total sent"
+msgstr "累计发送"
+
+msgid "Session duration"
+msgstr "会话时长"
+
+msgid "Registration"
+msgstr "注册状态"
+
+msgid "Bandwidth"
+msgstr "频宽"
+
+msgid "AMBR DL/UL"
+msgstr "AMBR 下/上"
+
+msgid "Wi-Fi · LAN · Device · SIM"
+msgstr "无线 · 局域网 · 设备 · SIM"
+
+msgid "CPU usage"
+msgstr "CPU 占用"
+
+msgid "Memory"
+msgstr "内存"
+
+msgid "Storage"
+msgstr "存储"
+
+msgid "Battery"
+msgstr "电池"
+
+msgid "Channel"
+msgstr "信道"
+
+msgid "Encryption"
+msgstr "加密"
+
+msgid "Hidden SSID"
+msgstr "隐藏 SSID"
+
+msgid "Country"
+msgstr "国家"
+
+msgid "AP status"
+msgstr "AP 状态"
+
+msgid "USB network"
+msgstr "USB 网络"
+
+msgid "Connection tracking"
+msgstr "连接跟踪"
+
+msgid "LAN address"
+msgstr "LAN 地址"
+
+msgid "Wi-Fi clients"
+msgstr "无线客户端"
+
+msgid "DHCP leases"
+msgstr "DHCP 租约"
+
+msgid "Device model"
+msgstr "设备型号"
+
+msgid "System"
+msgstr "系统"
+
+msgid "Modem"
+msgstr "调制解调器"
+
+msgid "Carrier"
+msgstr "运营商"
+
+msgid "Module"
+msgstr "模组"
+
+msgid "Firmware"
+msgstr "固件"
+
+msgid "Show SIM identifiers"
+msgstr "显示卡号信息"
+
+msgid "Quick controls"
+msgstr "快捷控制"
+
+msgid "Data connection"
+msgstr "数据连接"
+
+msgid "Cellular radio"
+msgstr "蜂窝射频"
+
+msgid "Wi-Fi hotspot"
+msgstr "Wi-Fi 热点"
+
+msgid "Restart modem"
+msgstr "重启调制解调器"
+
+msgid "Restart device"
+msgstr "重启设备"
+
+msgid "Switch to Android"
+msgstr "切换到 Android"
+
+msgid "Neighbor cells"
+msgstr "邻区"
+
+msgid "RAT/Band"
+msgstr "制式/频段"
+
+msgid "Frequency"
+msgstr "频点"
+
+msgid "Running %s…"
+msgstr "正在执行 %s …"
+
+msgid "Started in background: %s"
+msgstr "已后台执行：%s"
+
+msgid "Done: %s"
+msgstr "已执行：%s"
+
+msgid "Failed: %s"
+msgstr "失败：%s"
+
+msgid "Disconnecting data…"
+msgstr "正在断开数据连接…"
+
+msgid "Connecting data…"
+msgstr "正在拨号…"
+
+msgid "Turn off cellular radio"
+msgstr "关闭蜂窝射频"
+
+msgid "Cellular connectivity will be interrupted."
+msgstr "蜂窝连接会中断。"
+
+msgid "Turn on cellular radio"
+msgstr "打开蜂窝射频"
+
+msgid "The SFUN power-on sequence will run (up to about 1 minute)."
+msgstr "将执行 SFUN 上电序列（最多约 1 分钟）。"
+
+msgid "Cellular connectivity may stop for 1–2 minutes."
+msgstr "蜂窝连接会中断 1-2 分钟。"
+
+msgid "Restart the entire device"
+msgstr "重启整个设备"
+
+msgid "All connections will be interrupted."
+msgstr "所有连接会断开。"
+
+msgid "The next boot will enter Android and reboot now. This management page and cellular sharing will disconnect."
+msgstr "下次启动将进入 Android 并立即重启，此管理页面与蜂窝共享都会断开。"
+
+msgid "To return to OpenWrt, run mu300-next-boot linux in Android and reboot."
+msgstr "回到 OpenWrt：在 Android 上执行 mu300-next-boot linux 后重启；"
+
+msgid "Or do nothing: after five boots that do not finish, it falls back automatically."
+msgstr "或什么都不做，连续 5 次开机未完成会自动回退。"
+
+msgid "Switch and reboot"
+msgstr "切换并重启"
+
+msgid "Preparing Android boot and rebooting…"
+msgstr "正在武装 Android 引导并重启…"
+
+msgid "Hide SIM identifiers"
+msgstr "隐藏卡号信息"
+
+msgid "Lock cell %s?"
+msgstr "锁定小区 %s?"
+
+msgid "The radio stack will restart (SFUN); cellular service will stop for about 30 seconds."
+msgstr "协议栈会重启（SFUN），蜂窝断开约半分钟。"
+
+msgid "Locking %s in the background, about 30 seconds"
+msgstr "正在后台锁定 %s，约半分钟"
+
+msgid "Locked %s in the background; the status will refresh shortly"
+msgstr "已后台锁定 %s，稍后自动刷新状态"
+
+msgid "Lock failed: %s"
+msgstr "锁定失败：%s"
+
+msgid "Uptime %s"
+msgstr "已运行 %s"
+
+msgid "Radio off"
+msgstr "无线电已关"
+
+msgid "No response"
+msgstr "无应答"
+
+msgid "%s · Signal %s %s/10"
+msgstr "%s · 信号 %s %s 分"
+
+msgid "%s · Signal %s"
+msgstr "%s · 信号 %s"
+
+msgid "Anchor B%s"
+msgstr "锚点 B%s"
+
+msgid "No serving cell"
+msgstr "未驻留小区"
+
+msgid "Not registered"
+msgstr "未注册"
+
+msgid "Registered"
+msgstr "已注册"
+
+msgid "Searching"
+msgstr "搜索中"
+
+msgid "Registration denied"
+msgstr "注册被拒"
+
+msgid "Registered (roaming)"
+msgstr "已注册（漫游）"
+
+msgid "Emergency only"
+msgstr "仅紧急"
+
+msgid "Status %s"
+msgstr "状态 %s"
+
+msgid "LTE anchor"
+msgstr "LTE 锚点"
+
+msgid "LTE link"
+msgstr "LTE 链路"
+
+msgid "Hidden"
+msgstr "已隐藏"
+
+msgid "No"
+msgstr "否"
+
+msgid "Running"
+msgstr "运行中"
+
+msgid "Not running"
+msgstr "未运行"
+
+msgid "Connected"
+msgstr "已连接"
+
+msgid "Disconnected"
+msgstr "未连接"
+
+msgid "%s entries"
+msgstr "%s 条"
+
+msgid "%s clients"
+msgstr "%s 台"
+
+msgid "Recent DHCP leases"
+msgstr "近期 DHCP 租约"
+
+msgid "%d h"
+msgstr "%d 小时"
+
+msgid "Board"
+msgstr "主板"
+
+msgid "No temperature readings"
+msgstr "无温度读数"
+
+msgid "Cluster %d"
+msgstr "簇%d"
+
+msgid "Total %s · free %s"
+msgstr "共 %s · 余 %s"
+
+msgid "charging %s W"
+msgstr "充电中 %s W"
+
+msgid "charging"
+msgstr "充电中"
+
+msgid "drawing %s W"
+msgstr "耗电 %s W"
+
+msgid "not charging"
+msgstr "未充电"
+
+msgid "on battery"
+msgstr "电池供电"
+
+msgid "full"
+msgstr "已充满"
+
+msgid "USB in %s W"
+msgstr "USB 输入 %s W"
+
+msgid "Online"
+msgstr "在线"
+
+msgid "AT adapter unavailable"
+msgstr "AT 适配器不可用"
+
+msgid "Saved"
+msgstr "已保存"
+
+msgid "Management connection lost"
+msgstr "管理连接已中断"
+
+msgid "Installing the language pack…"
+msgstr "正在安装语言包…"
+
+msgid "The language pack is installed"
+msgstr "语言包已安装"
+
+msgid "The language pack could not be installed"
+msgstr "语言包安装失败"
+
+msgid "Upload failed: %s"
+msgstr "上传失败：%s"
+
+msgid "Language of the browser"
+msgstr "浏览器语言"
+
+msgid "Language of the web interface"
+msgstr "Web 界面语言"
+
+msgid "English, Turkish and Chinese come with the system; the language pack adds the others."
+msgstr "系统自带英语、土耳其语和中文；其他语言由语言包提供。"
+
+msgid "The same setting is in System > System > Language and Style."
+msgstr "同样的设置也在「系统 > 系统 > 语言和界面」中。"
+
+msgid "Language pack"
+msgstr "语言包"
+
+msgid "The language pack (mu300-extra-lang.tar.gz, about 2 MB) adds LuCI in about 40 more languages and this panel in 29 of them. Download it from the release of this system, or upload the file from the release page when the device has no internet."
+msgstr "语言包（mu300-extra-lang.tar.gz，约 2 MB）可为 LuCI 增加约 40 种语言，并为本面板增加其中 29 种。可从本系统的发布版本下载；设备无法联网时，也可从发布页面下载文件后上传。"
+
+msgid "Download from the release"
+msgstr "从发布版本下载"
+
+msgid "Upload the file…"
+msgstr "上传文件…"
+
+msgid "Release"
+msgstr "发布版本"
+
+msgid "Enable all"
+msgstr "全部启用"
+
+msgid "Disable all"
+msgstr "全部禁用"
+
+msgid "Remove the language pack"
+msgstr "移除语言包"
+
+msgid "Remove the language pack?"
+msgstr "移除语言包？"
+
+msgid "Its languages disappear from the list; a page in one of them switches to English."
+msgstr "其中的语言将从列表中消失；正在使用这些语言的页面会切换为英语。"
+
+msgid "Remove"
+msgstr "移除"
+
+msgid "Disable"
+msgstr "禁用"
+
+msgid "Enable"
+msgstr "启用"
+
+msgid "LuCI and this panel"
+msgstr "LuCI 和本面板"
+
+msgid "LuCI only"
+msgstr "仅 LuCI"
+
+msgid "Enabled"
+msgstr "已启用"
+
+msgid "Disabled"
+msgstr "已禁用"
+
+msgid "Language"
+msgstr "语言"
+
+msgid "Code"
+msgstr "代码"
+
+msgid "Translated"
+msgstr "翻译范围"
+
+msgid "State"
+msgstr "状态"
+
+msgid "LuCI's own translations come from OpenWrt. This panel's translations other than Turkish and Chinese are machine (AI) translations; corrections are welcome."
+msgstr "LuCI 自身的翻译来自 OpenWrt。本面板除土耳其语和中文以外的翻译均为机器（AI）翻译，欢迎指正。"
+
+msgid "Automatic"
+msgstr "自动"
+
+msgid "4G only"
+msgstr "仅 4G"
+
+msgid "Serving network"
+msgstr "当前驻网"
+
+msgid "Network mode · EN-DC"
+msgstr "网络模式 · EN-DC"
+
+msgid "Refresh lock status"
+msgstr "刷新锁定状态"
+
+msgid "Apply at startup"
+msgstr "开机自动应用"
+
+msgid "Turning this off only stops replay at the next boot; saved network mode, EN-DC, band and cell settings remain."
+msgstr "关闭后只停止下次开机回放，已保存的网络模式、EN-DC、频段和小区配置不会被删除。"
+
+msgid "Band locking"
+msgstr "频段锁定"
+
+msgid "NR bands"
+msgstr "NR 频段"
+
+msgid "LTE bands"
+msgstr "LTE 频段"
+
+msgid "Apply NR bands"
+msgstr "应用 NR 频段"
+
+msgid "Apply LTE bands"
+msgstr "应用 LTE 频段"
+
+msgid "Neighbor cells and cell locking"
+msgstr "邻区与小区锁定"
+
+msgid "Lock current serving cell"
+msgstr "锁定当前服务小区"
+
+msgid "Unlock cell"
+msgstr "解除小区锁定"
+
+msgid "Applying restarts the radio stack (SFUN) and briefly interrupts cellular service. Settings are saved and replayed by the plugin after AT is ready when Apply at startup is enabled. A platform pre-radio hook can replay without a restart. Apply with no bands selected to restore automatic mode."
+msgstr "应用后协议栈重启（SFUN），蜂窝会短暂断开；设置会持久保存，并在启用“开机自动应用”时由插件于 AT 就绪后回放。接入平台的射频前钩子时可无重启回放。频段全不选再点应用 = 恢复自动。"
+
+msgid "Apply “%s”?"
+msgstr "应用「%s」？"
+
+msgid "Applying %s in the background…"
+msgstr "正在后台应用 %s …"
+
+msgid "Applying %s in the background… (SFUN restart and re-registration, about 30 seconds)"
+msgstr "正在后台应用 %s …（SFUN 重启 + 重新驻网，约半分钟）"
+
+msgid "Queued: another lock is being applied during SFUN restart; this will take effect afterward"
+msgstr "已排队：另一项锁定正在应用（SFUN 重启中），随后自动生效"
+
+msgid "Confirming the EN-DC status…"
+msgstr "正在确认 EN-DC 状态…"
+
+msgid "Confirming apply at startup…"
+msgstr "正在确认开机自动应用…"
+
+msgid "Started in background: %s (SFUN restart, about 30 seconds); reading the status back…"
+msgstr "已后台执行：%s（SFUN 重启约半分钟），自动回读状态…"
+
+msgid "Network mode: %s"
+msgstr "网络模式：%s"
+
+msgid "Disable EN-DC (NSA anchor)"
+msgstr "关闭 EN-DC（NSA 锚点）"
+
+msgid "Enable EN-DC (NSA anchor)"
+msgstr "开启 EN-DC（NSA 锚点）"
+
+msgid "Disable apply at startup"
+msgstr "关闭开机自动应用"
+
+msgid "Enable apply at startup"
+msgstr "开启开机自动应用"
+
+msgid "Reading the modem directly (a few seconds at most)…"
+msgstr "正在直读调制解调器（最多几秒）…"
+
+msgid "Refreshed"
+msgstr "已刷新"
+
+msgid "Refresh failed"
+msgstr "刷新失败"
+
+msgid "NR bands: back to automatic"
+msgstr "NR 频段：恢复自动"
+
+msgid "NR band lock: %s"
+msgstr "NR 频段锁定：%s"
+
+msgid "LTE bands: back to automatic"
+msgstr "LTE 频段：恢复自动"
+
+msgid "LTE band lock: %s"
+msgstr "LTE 频段锁定：%s"
+
+msgid "Remove the %s cell lock"
+msgstr "解除 %s 的小区锁定"
+
+msgid "The radio stack will restart (SFUN), taking about 30 seconds."
+msgstr "协议栈会重启（SFUN），约半分钟。"
+
+msgid "Removing the %s cell lock…"
+msgstr "正在解除 %s 小区锁定…"
+
+msgid "Unlock failed: %s"
+msgstr "解锁失败：%s"
+
+msgid "Unlock started in background (SFUN restart, about 30 seconds); reading the status back…"
+msgstr "已后台解除，SFUN 重启约半分钟，自动回读状态…"
+
+msgid "Locking %s in the background…"
+msgstr "正在后台锁定 %s …"
+
+msgid "Locked %s in the background (SFUN restart, about 30 seconds); reading the status back…"
+msgstr "已后台锁定 %s（SFUN 重启约半分钟），自动回读状态…"
+
+msgid "No serving-network data"
+msgstr "暂无驻网数据"
+
+msgid "NR serving cell"
+msgstr "NR 服务小区"
+
+msgid "Status confirmed"
+msgstr "状态已回读"
+
+msgid "Readback timed out; select “Refresh lock status”"
+msgstr "回读超时，请点「刷新锁定状态」"
+
+msgid "Applied (EN-DC does not require a radio-stack restart)"
+msgstr "已生效（EN-DC 不需要重启协议栈）"
+
+msgid "Apply at startup is on"
+msgstr "开机自动应用已开启"
+
+msgid "Apply at startup is off"
+msgstr "开机自动应用已关闭"
+
+msgid "EN-DC status readback timed out; use “Refresh lock status” to confirm"
+msgstr "EN-DC 状态回读超时，点「刷新锁定状态」确认"
+
+msgid "Apply-at-startup status readback timed out; use “Refresh lock status” to confirm"
+msgstr "开机自动应用状态回读超时，点「刷新锁定状态」确认"
+
+msgid "Locked cells"
+msgstr "已锁定小区"
+
+msgid "Unlock %s"
+msgstr "解锁 %s"
+
+msgid "Automatic (%d supported)"
+msgstr "自动（支持 %d 个）"
+
+msgid "%d locked: %s"
+msgstr "已锁 %d 个：%s"
+
+msgid "Configure how this plugin connects to the current Unisoc OpenWrt platform. Changes do not require editing the dashboard, AT, locks or SMS pages."
+msgstr "这里定义插件与当前紫光 OpenWrt 的边界。修改后无需改动看板、AT、锁定或短信页面。"
+
+msgid "Platform adapter"
+msgstr "平台适配"
+
+msgid "AT backend"
+msgstr "AT 后端"
+
+msgid "Auto-detect"
+msgstr "自动检测"
+
+msgid "atinout + serial port"
+msgstr "atinout + 串口"
+
+msgid "Custom adapter"
+msgstr "自定义适配器"
+
+msgid "AT serial port"
+msgstr "AT 串口"
+
+msgid "Custom AT adapter"
+msgstr "自定义 AT 适配器"
+
+msgid "The executable receives a timeout in seconds and the complete AT command, in that order. It must share the serial lock with the platform dialer."
+msgstr "可执行文件依次接收超时秒数和完整 AT 命令。它必须与平台拨号程序共享串口锁。"
+
+msgid "SMS adapter"
+msgstr "短信适配器"
+
+msgid "Implement the list, show, send, delete and sync subcommands; leave blank to find mu300-sms automatically."
+msgstr "实现 list、show、send、delete、sync 子命令；留空时自动查找 mu300-sms。"
+
+msgid "SMS pool directory"
+msgstr "短信池目录"
+
+msgid "Cellular logical interface"
+msgstr "蜂窝逻辑接口"
+
+msgid "Cellular IPv6 interface"
+msgstr "蜂窝 IPv6 接口"
+
+msgid "Cellular network device"
+msgstr "蜂窝网卡"
+
+msgid "Leave blank to detect from netifd"
+msgstr "留空则从 netifd 自动获取"
+
+msgid "LAN bridge"
+msgstr "LAN 网桥"
+
+msgid "Wi-Fi device"
+msgstr "Wi-Fi 网卡"
+
+msgid "USB device"
+msgstr "USB 网卡"
+
+msgid "Maximum wait for AT readiness (seconds)"
+msgstr "等待 AT 就绪上限（秒）"
+
+msgid "Home dashboard refresh interval (seconds)"
+msgstr "主页刷新间隔（秒）"
+
+msgid "Controls only the home dashboard refresh rate; 0.5–60 seconds. Reopen Home after saving to apply."
+msgstr "仅控制主页状态看板的刷新频率；允许 0.5–60 秒，保存后重新进入主页生效。"
+
+msgid "Persistent state directory"
+msgstr "持久化状态目录"
+
+msgid "Recipient: number, e.g. 10086 or +86..."
+msgstr "收件人：号码，如 10086 或 +86..."
+
+msgid "Sync from SIM"
+msgstr "从 SIM 同步"
+
+msgid "Clear local pool"
+msgstr "清空本地池"
+
+msgid "Loading…"
+msgstr "加载中…"
+
+msgid "Select a conversation on the left, or enter a number below to send."
+msgstr "选择左侧会话，或直接在下方输入号码发送。"
+
+msgid "Message (Enter to send, Shift+Enter for newline)"
+msgstr "短信内容（Enter 发送，Shift+Enter 换行）"
+
+msgid "Sending uses AT+CMGS (PDU mode); retry if the channel is busy. To delete one message, use the bin icon on its bubble."
+msgstr "发送走 AT+CMGS（PDU 模式）；通道忙会提示重试。删除单条：点气泡右上角的垃圾桶图标。"
+
+msgid "Syncing from the SIM in the background (AT+CMGL)…"
+msgstr "正在后台从 SIM 同步（AT+CMGL）…"
+
+msgid "SIM sync started; the list refreshes in a few seconds."
+msgstr "SIM 同步已开始，几秒后自动刷新。"
+
+msgid "Clear local SMS pool"
+msgstr "清空本地短信池"
+
+msgid "Only local files will be deleted; messages on the SIM remain."
+msgstr "只删本地文件，SIM 上的不动。"
+
+msgid "Clear"
+msgstr "清空"
+
+msgid "Delete this SMS"
+msgstr "删除这条短信"
+
+msgid "Deletion cannot be undone."
+msgstr "删除后不可恢复。"
+
+msgid "Local only"
+msgstr "仅删本地"
+
+msgid "Local + SIM"
+msgstr "本地 + SIM"
+
+msgid "Delete failed"
+msgstr "删除失败"
+
+msgid "Deleted (local + SIM)"
+msgstr "已删除（本地 + SIM）"
+
+msgid "Deleted (local only)"
+msgstr "已删除（仅本地）"
+
+msgid "Enter both a number and a message."
+msgstr "号码和内容都要填。"
+
+msgid "Sending…"
+msgstr "发送中…"
+
+msgid "Sent; the list refreshes shortly."
+msgstr "已发送，稍后自动刷新。"
+
+msgid "Sending failed"
+msgstr "发送失败"
+
+msgid "· %d messages, %d unread · %d conversations"
+msgstr "· %d 条，%d 条未读 · %d 个会话"
+
+msgid "· %d messages · %d conversations"
+msgstr "· %d 条 · %d 个会话"
+
+msgid "The pool is empty. Incoming and sent messages appear here, or select “Sync from SIM”."
+msgstr "池子是空的：收到/发出的短信会出现在这里，或点「从 SIM 同步」。"
+
+msgid "Me: %s"
+msgstr "我: %s"
+
+msgid "Delete"
+msgstr "删除"
+
+msgid "Current setting"
+msgstr "当前设置"
+
+msgid "Fixed at %d"
+msgstr "固定为 %d"
+
+msgid "Not changed (default)"
+msgstr "未更改（默认）"
+
+msgid "Rule in force"
+msgstr "生效的规则"
+
+msgid "Flow offloading"
+msgstr "流量分载（flow offloading）"
+
+msgid "TTL of mobile data"
+msgstr "移动数据的 TTL"
+
+msgid "Every packet that leaves through mobile data gets this TTL (IPv6: hop limit). A phone or laptop behind the hotspot sends 64 (Windows: 128) and the device forwards it with one less, which is how an operator can tell tethered traffic apart."
+msgstr "经移动数据发出的每个数据包都会使用此 TTL（IPv6：跳数限制）。热点后面的手机或笔记本电脑发送 64（Windows：128），设备转发时会减一，运营商可以借此识别共享流量。"
+
+msgid "On this kernel the firewall fast-path is off while a TTL is set"
+msgstr "在此内核上，设置 TTL 期间防火墙快速路径处于关闭状态"
+
+msgid "Set %d"
+msgstr "设为 %d"
+
+msgid "Set"
+msgstr "设置"
+
+msgid "Enter a number from 1 to 255"
+msgstr "请输入 1 到 255 之间的数字"
+
+msgid "Turn off"
+msgstr "关闭"
+
+msgid "64 makes every packet leave like the device's own traffic"
+msgstr "64 使每个数据包都像设备自身的流量一样发出"
+
+msgid "Dashboard info failed"
+msgstr "获取仪表盘信息失败"
+
+msgid "Applying network locks: no live signal right now"
+msgstr "正在应用网络锁定，暂无实时信号"
+
+msgid "Live signal read failed"
+msgstr "读取实时信号失败"
+
+msgid "Unknown op"
+msgstr "未知操作"
+
+msgid "Invalid argument for this op"
+msgstr "此操作的参数无效"
+
+msgid "The radio is busy: the dial or the watchdog is switching it, try again shortly"
+msgstr "射频正忙：拨号或看门狗正在切换它，请稍后再试"
+
+msgid "The action gave no valid reply"
+msgstr "操作没有返回有效结果"
+
+msgid "An AT command is one line of printable ASCII, at most 512 characters"
+msgstr "AT 命令须为一行可打印 ASCII 字符，最多 512 个字符"
+
+msgid "Must be an AT command"
+msgstr "必须是 AT 命令"
+
+msgid "No \";\" command chaining"
+msgstr "不允许用 \";\" 串联命令"
+
+msgid "Denied: this command wedges the AT port until a reboot"
+msgstr "已拒绝：此命令会让 AT 端口卡死，直到重启"
+
+msgid "Applying network locks: the modem is restarting (about half a minute), try again shortly"
+msgstr "正在应用网络锁定，调制解调器重启中（约半分钟），请稍后再试"
+
+msgid "The AT channel is busy; the command was not sent, try again"
+msgstr "AT 通道正忙，命令未发出，请重试"
+
+msgid "The modem did not answer in time; the command may still run, check before sending it again"
+msgstr "调制解调器未及时应答；命令可能仍在执行，再次发送前请先检查"
+
+msgid "The fresh parameter must be 0 or 1"
+msgstr "fresh 参数必须是 0 或 1"
+
+msgid "Lock read failed"
+msgstr "读取锁定状态失败"
+
+msgid "Unknown lock kind"
+msgstr "未知的锁定类型"
+
+msgid "Invalid value for this lock kind"
+msgstr "此锁定类型的值无效"
+
+msgid "Invalid page"
+msgstr "页码无效"
+
+msgid "mu300-sms is not available (the SMS service is not installed or not running)"
+msgstr "mu300-sms 不可用（短信服务没装或没起来）"
+
+msgid "No output"
+msgstr "无输出"
+
+msgid "Bad ID"
+msgstr "ID 无效"
+
+msgid "Read failed"
+msgstr "读取失败"
+
+msgid "The number may only contain digits (and a leading +)"
+msgstr "号码只能是数字（可带 +）"
+
+msgid "The message is empty"
+msgstr "内容为空"
+
+msgid "The message is too long (over 480 characters)"
+msgstr "内容太长（超过 480 个字符）"
+
+msgid "The message contains a control character"
+msgstr "内容包含控制字符"
+
+msgid "The sim parameter must be 0 or 1"
+msgstr "sim 参数必须是 0 或 1"
+
+msgid "The USB adapter (device-usb) gave no valid reply"
+msgstr "USB 适配程序（device-usb）没有返回有效结果"
+
+msgid "The auto parameter must be 0 or 1"
+msgstr "auto 参数必须是 0 或 1"
+
+msgid "Invalid USB role"
+msgstr "USB 角色无效"
+
+msgid "A USB role takes no scope"
+msgstr "USB 角色不带生效范围"
+
+msgid "Invalid USB network mode"
+msgstr "USB 网络模式无效"
+
+msgid "Invalid USB network scope"
+msgstr "USB 网络生效范围无效"
+
+msgid "Unknown USB setting"
+msgstr "未知的 USB 设置"
+
+msgid "Invalid interface name"
+msgstr "接口名称无效"
+
+msgid "The languages adapter gave no valid reply"
+msgstr "语言适配程序没有返回有效结果"
+
+msgid "Unknown language operation"
+msgstr "未知的语言操作"
+
+msgid "Invalid language code"
+msgstr "语言代码无效"
+
+msgid "Invalid language request"
+msgstr "语言请求无效"
+
+msgid "Unknown source"
+msgstr "未知的来源"
+
+msgid "The TTL adapter gave no valid reply"
+msgstr "TTL 适配器未返回有效回复"
+
+msgid "Invalid TTL"
+msgstr "无效的 TTL"
+
+msgid "Request too large"
+msgstr "请求过大"
+
+msgid "The runtime directory is not safe; nothing was run"
+msgstr "运行目录不安全；未执行任何操作"
+
+msgid "No such method"
+msgstr "没有此方法"
+
+msgid "Radio did not come up"
+msgstr "射频未能开启"
+
+msgid "Expected on or off"
+msgstr "应为 on 或 off"
+
+msgid "VPN integration is not provided by this platform"
+msgstr "此平台不提供 VPN 集成"
+
+msgid "Dual-boot integration is not provided by this platform"
+msgstr "此平台不提供双系统启动集成"
+
+msgid "mu300-next-boot failed"
+msgstr "mu300-next-boot 执行失败"
+
+msgid "AT backend did not answer (radio off, modem restarting, or adapter unavailable)"
+msgstr "AT 后端无应答（射频关闭、调制解调器重启中或适配器不可用）"
+
+msgid "USB role adapter is not executable"
+msgstr "USB 角色适配程序不可执行"
+
+msgid "USB role adapter failed"
+msgstr "USB 角色适配程序执行失败"
+
+msgid "USB role switch is unavailable"
+msgstr "USB 角色切换不可用"
+
+msgid "USB role switch failed"
+msgstr "USB 角色切换失败"
+
+msgid "USB role switch was refused by platform safety checks"
+msgstr "USB 角色切换被平台安全检查拒绝"
+
+msgid "Cannot create USB boot settings directory"
+msgstr "无法创建 USB 启动设置目录"
+
+msgid "Cannot write USB boot settings"
+msgstr "无法写入 USB 启动设置"
+
+msgid "Cannot save USB boot settings"
+msgstr "无法保存 USB 启动设置"
+
+msgid "Invalid boot-auto value"
+msgstr "开机自动应用的值无效"
+
+msgid "Device is the boot default; host auto-apply is the only persistent role"
+msgstr "设备模式是开机默认；只有主机模式的开机自动应用会保留"
+
+msgid "Cannot save USB role policy"
+msgstr "无法保存 USB 角色策略"
+
+msgid "Cannot disable USB network boot policy"
+msgstr "无法关闭 USB 网络开机策略"
+
+msgid "Cannot commit USB role policy"
+msgstr "无法提交 USB 角色策略"
+
+msgid "USB network mode is unavailable in host role"
+msgstr "主机模式下不能使用 USB 网络模式"
+
+msgid "Disable host boot-auto before configuring USB network"
+msgstr "配置 USB 网络前请先关闭主机模式的开机自动应用"
+
+msgid "Cannot save USB network policy"
+msgstr "无法保存 USB 网络策略"
+
+msgid "Cannot commit USB network policy"
+msgstr "无法提交 USB 网络策略"
+
+msgid "USB host mode is required"
+msgstr "需要 USB 主机模式"
+
+msgid "Not a USB network interface"
+msgstr "不是 USB 网络接口"
+
+msgid "LAN bridge device section was not found"
+msgstr "未找到 LAN 网桥设备配置节"
+
+msgid "Cannot bring USB network interface up"
+msgstr "无法启用 USB 网络接口"
+
+msgid "Cannot add interface to LAN bridge"
+msgstr "无法把接口加入 LAN 网桥"
+
+msgid "Cannot save LAN bridge"
+msgstr "无法保存 LAN 网桥"
+
+msgid "Network reload failed"
+msgstr "网络重新加载失败"
+
+msgid "Cannot attach USB interface to LAN bridge"
+msgstr "无法把 USB 接口接入 LAN 网桥"
+
+msgid "The language pack is not installed"
+msgstr "语言包未安装"
+
+msgid "No language given"
+msgstr "未指定语言"
+
+msgid "The language could not be changed"
+msgstr "无法更改语言"
+
+msgid "LuCI does not offer this language"
+msgstr "LuCI 不提供此语言"
+
+msgid "No uploaded language pack"
+msgstr "没有已上传的语言包"
+
+msgid "An installation is already running"
+msgstr "已有安装任务正在进行"
+
+msgid "The language pack could not be removed"
+msgstr "无法移除语言包"
+
+msgid "Lock cache unavailable"
+msgstr "锁定缓存不可用"
+
+msgid "No serving cell to lock to"
+msgstr "没有可锁定的服务小区"
+
+msgid "The TTL setting could not be read"
+msgstr "无法读取 TTL 设置"
+
+msgid "The TTL could not be set"
+msgstr "无法设置 TTL"
+
+msgid "Unknown TTL operation"
+msgstr "未知的 TTL 操作"

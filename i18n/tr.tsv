@@ -1,0 +1,316 @@
+# Türkçe - MU300 Linux installer. One line per message: English<TAB>translation; {1}.. are the arguments.
+# Check with: tools/check-i18n.py
+parallel download failed, retrying as a single stream	paralel indirme başarısız oldu, tek bağlantıyla yeniden deneniyor
+could not read {1} from the device	{1} cihazdan okunamadı
+Checking host tools and device	Bilgisayardaki araçlar ve cihaz kontrol ediliyor
+{1} not found	{1} bulunamadı
+kernel outputs missing in {1} (run kernel/build-all.sh)	{1} içinde çekirdek çıktıları yok (kernel/build-all.sh çalıştırın)
+su does not work on the device	cihazda su çalışmıyor
+device: {1}	cihaz: {1}
+This does not look like a ZTE F50/MU300 or U30 Air. Continue anyway? (yes/no)	Bu bir ZTE F50/MU300 ya da U30 Air gibi görünmüyor. Yine de devam edilsin mi? (evet/hayır)
+Android must be running from slot a	Android'in a yuvasından (slot a) çalışıyor olması gerekir
+Not enough free space - this looks like the 32 GB variant	Yeterli boş alan yok - bu 32 GB'lık model gibi görünüyor
+could not read the partition table	bölüm tablosu okunamadı
+could not read the userdata entry from the partition table	bölüm tablosundan userdata kaydı okunamadı
+there is not enough room to split: {1} in total,	bölmek için yeterli yer yok: toplam {1},
+and Android needs at least {1} of it. Nothing is changed.	ve Android'in en az {1} alana ihtiyacı var. Hiçbir şey değiştirilmedi.
+userdata now:         {1} (sectors {2}..{3})	şu anki userdata:     {1} (sektör {2}..{3})
+free behind it:       {1}	arkasındaki boş alan: {1}
+to share:             {1}	paylaşılacak alan:    {1}
+Linux needs at least  {1} (OpenWrt) / 1.6 GiB (Ubuntu) / 2.4 GiB (both)	Linux'un en az ihtiyacı: {1} (OpenWrt) / 1.6 GiB (Ubuntu) / 2.4 GiB (ikisi)
+Android keeps at least {1}	Android'e en az {1} kalır
+THIS IS EXPERIMENTAL. It rewrites the partition table and ERASES everything in Android -	BU DENEYSELDİR. Bölüm tablosunu yeniden yazar ve Android'deki HER ŞEYİ SİLER -
+apps, photos, accounts, settings. Take a full backup first:  sh tools/backup-device.sh	uygulamalar, fotoğraflar, hesaplar, ayarlar. Önce tam yedek alın:  sh tools/backup-device.sh
+Only userdata changes size; it is the last partition, so nothing else moves.	Yalnızca userdata'nın boyutu değişir; son bölüm olduğu için başka hiçbir şey kaymaz.
+--check writes nothing. Run the installer without it to make room.	--check hiçbir şey yazmaz. Yer açmak için yükleyiciyi onsuz çalıştırın.
+Make room by shrinking userdata? (yes/no)	userdata küçültülerek yer açılsın mı? (evet/hayır)
+nothing was changed.	hiçbir şey değiştirilmedi.
+How many GiB for Linux? (the rest stays with Android)	Linux için kaç GiB? (geri kalanı Android'de kalır)
+give a number, like 4 or 2.5	bir sayı girin, örneğin 4 ya da 2.5
+too small: Linux needs at least {1}	çok küçük: Linux'un en az {1} alana ihtiyacı var
+too large: Android would be left with less than {1}	çok büyük: Android'e {1} alandan az kalır
+userdata (Android):   {1}	userdata (Android):   {1}
+Linux region:         {1}	Linux alanı:          {1}
+Rewriting the partition table	Bölüm tablosu yeniden yazılıyor
+the resize was refused; nothing is changed	yeniden boyutlandırma reddedildi; hiçbir şey değiştirilmedi
+Verifying	Doğrulanıyor
+the table on the device does not read back as valid GPT.	cihazdaki tablo geçerli bir GPT olarak geri okunamıyor.
+the table did not take (userdata still ends at {1}). Nothing else was changed.	tablo uygulanmadı (userdata hâlâ {1} sektöründe bitiyor). Başka hiçbir şey değiştirilmedi.
+userdata now ends at sector {1}	userdata artık {1} sektöründe bitiyor
+Done - the device has to reboot before the new layout is visible	Tamamlandı - yeni düzenin görünmesi için cihazın yeniden başlaması gerekiyor
+Android will set up its data partition again on this boot, which takes a few minutes.	Android bu açılışta veri bölümünü yeniden kuracak; bu birkaç dakika sürer.
+When it is back, run this installer again and it will find the free space.	Açıldığında yükleyiciyi tekrar çalıştırın; boş alanı bulacaktır.
+Reboot now? (yes/no)	Şimdi yeniden başlatılsın mı? (evet/hayır)
+Locating free eMMC space after the last partition	Son bölümden sonraki boş eMMC alanı aranıyor
+could not read the partition table from the device (is su granted? try again)	bölüm tablosu cihazdan okunamadı (su izni verildi mi? tekrar deneyin)
+eMMC: {1} ({2} sectors), partitions end at {3} (sector {4}), free after them: {5}	eMMC: {1} ({2} sektör), bölümler {3} konumunda bitiyor (sektör {4}), sonrasında boş: {5}
+Linux region: offset {1}, {2}, existing mu300root filesystem: {3}	Linux alanı: konum {1}, {2}, mevcut mu300root dosya sistemi: {3}
+data check: {1} of 16 samples contain data	veri kontrolü: 16 örnekten {1} tanesinde veri var
+OK: a MU300 Linux installation is already present (it can be kept or replaced)	TAMAM: zaten bir MU300 Linux kurulumu var (korunabilir ya da değiştirilebilir)
+WARNING: the unpartitioned space is not empty; it may be used by this firmware. Installing overwrites it	UYARI: bölümlenmemiş alan boş değil; bu yazılım tarafından kullanılıyor olabilir. Kurulum üzerine yazar
+OK: free and empty, same layout as the tested device (~32 GiB after userdata on the 64 GB eMMC)	TAMAM: boş ve kullanılmıyor, test edilen cihazla aynı düzen (64 GB eMMC'de userdata'dan sonra ~32 GiB)
+OK: free and empty, smaller than on the tested device but enough for both systems	TAMAM: boş ve kullanılmıyor, test edilen cihazdakinden küçük ama iki sistem için yeterli
+OK: free and empty, but room for one system only (Ubuntu or OpenWrt, not both)	TAMAM: boş ve kullanılmıyor, ama yalnızca bir sisteme yer var (Ubuntu ya da OpenWrt, ikisi birden değil)
+OK: free and empty, but small: OpenWrt fits, Ubuntu does not	TAMAM: boş ve kullanılmıyor, ama küçük: OpenWrt sığar, Ubuntu sığmaz
+result: {1}	sonuç: {1}
+Nothing was written. Android version: {1}	Hiçbir şey yazılmadı. Android sürümü: {1}
+Type overwrite to use this region anyway	Bu alanı yine de kullanmak için overwrite yazın
+cancelled	iptal edildi
+What should be installed?	Ne kurulsun?
+1) Ubuntu LTS: 24.04 or 26.04, asked next (full distribution, apt, ~500 MiB RAM in use)	1) Ubuntu LTS: 24.04 ya da 26.04, sonra sorulacak (tam dağıtım, apt, ~500 MiB RAM kullanımı)
+2) OpenWrt {1} (router, LuCI web UI, ~140 MiB RAM in use)	2) OpenWrt {1} (yönlendirici, LuCI web arayüzü, ~140 MiB RAM kullanımı)
+3) both (switch later with: mu300-os ubuntu|openwrt)	3) ikisi de (sonradan geçiş: mu300-os ubuntu|openwrt)
+(this device has {1}: {2})	(bu cihazda {1} var: {2})
+one system fits, not both	tek sistem sığar, ikisi birden sığmaz
+only OpenWrt fits	yalnızca OpenWrt sığar
+Choice	Seçim
+invalid choice	geçersiz seçim
+Which OpenWrt?	Hangi OpenWrt?
+1) OpenWrt {1}: the standard LuCI web interface	1) OpenWrt {1}: standart LuCI web arayüzü
+2) OpenWrt {1} with the MU300 control panel: dashboard, cellular locks, SMS, AT terminal, USB modes (by kanoqwq)	2) OpenWrt {1} ve MU300 kontrol paneli: pano, hücresel kilitler, SMS, AT terminali, USB kipleri (kanoqwq yapımı)
+MU300_OPENWRT must be plain or luci	MU300_OPENWRT plain ya da luci olmalı
+that choice needs about {1} MiB and this device has {2} MiB of free space	bu seçim yaklaşık {1} MiB gerektiriyor, bu cihazda ise {2} MiB boş alan var
+Which one should boot ({1})	Hangisi açılsın ({1})
+invalid system	geçersiz sistem
+Boot Linux by default instead of Android (falls back to Android if Linux fails)? (yes/no)	Varsayılan olarak Android yerine Linux açılsın mı (Linux açılamazsa Android'e döner)? (evet/hayır)
+How many failed Linux boots in a row before the device goes back to Android by itself?	Cihaz kendiliğinden Android'e dönmeden önce Linux arka arkaya kaç kez açılamayabilir?
+A boot counts as failed when it never finishes starting up - the power goes, the battery runs out, or	Bir açılış, hiç tamamlanmazsa başarısız sayılır - elektrik gider, pil biter ya da
+Linux hangs - before about a minute after power-on. One boot that does finish resets the count.	Linux, açıldıktan sonraki yaklaşık bir dakika içinde takılırsa. Tamamlanan bir açılış sayacı sıfırlar.
+* Higher is more forgiving: a flaky cable or a couple of power cuts while it is starting will not throw you	* Yüksek değer daha hoşgörülüdür: açılırken gevşek bir kablo ya da birkaç elektrik kesintisi sizi
+  back into Android.	  Android'e geri atmaz.
+* Lower gets you to Android sooner if Linux is really broken.	* Düşük değer, Linux gerçekten bozuksa sizi Android'e daha çabuk döndürür.
+* It is also your way back to Android with no computer at hand: cut the power while it is starting this	* Yanınızda bilgisayar yokken Android'e dönmenin yolu da budur: açılırken gücü bu sayı kadar
+  many times in a row.	  arka arkaya kesin.
+1 is how this project used to behave (a single interrupted boot returns to Android). 1-6; the device's	1, projenin eski davranışıdır (tek bir yarım kalan açılış Android'e döndürür). 1-6; cihazın
+boot counter has no room for more. It can be changed later with: mu300-next-boot attempts N	açılış sayacında daha fazlasına yer yok. Sonradan şununla değiştirilebilir: mu300-next-boot attempts N
+Failed boots before Android (1-6)	Android'e dönmeden önceki başarısız açılış sayısı (1-6)
+enter a number from 1 to 6	1 ile 6 arasında bir sayı girin
+Copy Android's hotspot name and password to Linux? (yes/no)	Android'in hotspot adı ve şifresi Linux'a kopyalansın mı? (evet/hayır)
+Include the Mali GPU (OpenCL) userspace (~90 MiB)? (yes/no)	Mali GPU (OpenCL) kullanıcı alanı dahil edilsin mi (~90 MiB)? (evet/hayır)
+Which kernel?	Hangi çekirdek?
+1) 5.4   Unisoc's vendor kernel (Android 12 base): the longest tested, everything this project supports	1) 5.4   Unisoc'un üretici çekirdeği (Android 12 tabanlı): en uzun süre test edilen, projenin desteklediği her şey çalışır
+2) 6.18  mainline Linux, current long-term (LTS) release: newer drivers and security fixes, the same	2) 6.18  ana hat (mainline) Linux, güncel uzun süreli destek (LTS) sürümü: daha yeni sürücüler ve güvenlik düzeltmeleri,
+         functions (hotspot, mobile data, SMS, Bluetooth, VPN, GPU); no USB-C video output yet	         aynı işlevler (hotspot, mobil veri, SMS, Bluetooth, VPN, GPU); USB-C görüntü çıkışı henüz yok
+3) 7.2   the newest stable mainline Linux (7.2 for now): the newest drivers, the same functions	3) 7.2   en yeni kararlı ana hat (mainline) Linux (şimdilik 7.2): en yeni sürücüler, 6.18 ile aynı
+         as 6.18; tested less than 6.18	         işlevler; 6.18'den daha az test edildi
+This can be changed later on the device: sudo mu300-update kernel 5.4|6.18|7.2	Bu seçim sonradan cihazda değiştirilebilir: sudo mu300-update kernel 5.4|6.18|7.2
+Which Ubuntu?	Hangi Ubuntu?
+1) 24.04 LTS  the longest tested, supported until 2029	1) 24.04 LTS  en uzun süre test edilen, 2029'a kadar destekleniyor
+2) 26.04 LTS  BETA: the newest (systemd 259, newer packages), supported until 2031; tested less	2) 26.04 LTS  BETA: en yenisi (systemd 259, daha yeni paketler), 2031'e kadar destekleniyor; daha az test edildi
+Ubuntu	Ubuntu
+Ubuntu 26.04 needs a mainline kernel (6.18 or 7.2): its programs use system calls that 5.4 does not have (tar, for one, cannot unpack folders there).	Ubuntu 26.04 ana hat (mainline) bir çekirdek gerektirir (6.18 ya da 7.2): programları 5.4'te olmayan sistem çağrılarını kullanıyor (örneğin tar orada klasör içeren arşivleri açamıyor).
+this copy has changes of its own, so {1} files were left as they are	bu kopyanın kendi değişiklikleri var, {1} dosya olduğu gibi bırakıldı
+no answer left for the question: {1}	bu soru için başka cevap kalmadı: {1}
+Device	Cihaz
+Kernel	Çekirdek
+enter 1, 2 or 3	1, 2 ya da 3 girin
+A MU300 Linux installation is already on this device.	Bu cihazda zaten bir MU300 Linux kurulumu var.
+update  reinstall the systems and keep settings and data (/etc/mu300, users and home directories,	update  sistemleri yeniden kurar, ayarları ve verileri korur (/etc/mu300, kullanıcılar ve ev dizinleri,
+        SSH host keys, OpenWrt UCI config; the hotspot settings are kept too)	        SSH anahtarları, OpenWrt UCI ayarları; hotspot ayarları da korunur)
+wipe    erase the Linux filesystem and install from scratch	wipe    Linux dosya sistemini siler ve sıfırdan kurar
+update or wipe	update (güncelle) ya da wipe (sil)
+Password for the "ubuntu" user (Ubuntu) and "root" (OpenWrt)	"ubuntu" kullanıcısı (Ubuntu) ve "root" (OpenWrt) için şifre
+Repeat	Tekrar
+passwords differ or are shorter than 6 characters	şifreler aynı değil ya da 6 karakterden kısa
+Pulling device data into {1} (stays on this computer)	Cihaz verileri {1} içine alınıyor (bu bilgisayarda kalır)
+could not read the misc header from the device	misc başlığı cihazdan okunamadı
+these firmware files could not be read from the device:{1}	şu firmware dosyaları cihazdan okunamadı:{1}
+Wi-Fi and Bluetooth need them; without them the system installs and boots but has no hotspot.	Wi-Fi ve Bluetooth bunlara ihtiyaç duyar; bunlar olmadan sistem kurulur ve açılır ama hotspot olmaz.
+cannot find the newest release of {1} (set MU300_RELEASE=<tag> to pick one)	{1} projesinin en yeni sürümü bulunamadı (seçmek için MU300_RELEASE=<etiket> ayarlayın)
+Downloading release {1}	{1} sürümü indiriliyor
+cannot download {1}	{1} indirilemiyor
+{1} is not part of release {2}	{1}, {2} sürümünde yok
+(choose kernel 5.4, or a newer release)	(5.4 çekirdeğini ya da daha yeni bir sürümü seçin)
+download of {1} failed	{1} indirilemedi
+checksum mismatch for {1}	{1} için sağlama toplamı (checksum) uyuşmuyor
+{1} is incomplete	{1} eksik
+Adding the vendor files from your device to the images	Cihazınızdaki üretici dosyaları imajlara ekleniyor
+Building helper binaries	Yardımcı programlar derleniyor
+Building the Ubuntu root filesystem	Ubuntu kök dosya sistemi oluşturuluyor
+Building the OpenWrt root filesystem	OpenWrt kök dosya sistemi oluşturuluyor
+Building the boot image	Önyükleme (boot) imajı oluşturuluyor
+Ready to install	Kuruluma hazır
+source:         {1}	kaynak:         {1}
+prebuilt release {1} + vendor files from this device	hazır {1} sürümü + bu cihazın üretici dosyaları
+local build	yerel derleme
+systems:        {1} (boots: {2})	sistemler:      {1} (açılan: {2})
+kernel:         {1}	çekirdek:       {1}
+default boot:   {1}	varsayılan:     {1}
+Linux (Android after {1} failed boots in a row)	Linux (arka arkaya {1} başarısız açılıştan sonra Android)
+Android, Linux on demand	Android, istenince Linux
+filesystem:     {1}	dosya sistemi:  {1}
+CREATE new ext4 (erases the Linux region)	YENİ ext4 OLUŞTUR (Linux alanını siler)
+keep existing	mevcut olan korunur
+update:         settings and user data of the chosen systems are kept, everything else is replaced	güncelleme:     seçilen sistemlerin ayarları ve kullanıcı verileri korunur, geri kalan her şey yenilenir
+note:           the chosen systems are installed fresh; their previous files and settings are replaced	not:            seçilen sistemler sıfırdan kurulur; önceki dosyaları ve ayarları değiştirilir
+writes:         Linux region at offset {1}, boot_b, 32 bytes of misc (boot_a, GPT and userdata are not touched)	yazılacaklar:   {1} konumundaki Linux alanı, boot_b, misc'in 32 baytı (boot_a, GPT ve userdata'ya dokunulmaz)
+Type INSTALL to continue	Devam etmek için INSTALL yazın
+Copying to the device	Cihaza kopyalanıyor
+installation on the device failed; boot_b and misc were not changed	cihazdaki kurulum başarısız oldu; boot_b ve misc değiştirilmedi
+Writing boot_b and arming slot b	boot_b yazılıyor ve b yuvası (slot b) hazırlanıyor
+pushed boot image hash mismatch	gönderilen boot imajının özeti (hash) uyuşmuyor
+boot_b verify failed (slot a still active, Android keeps booting)	boot_b doğrulaması başarısız (a yuvası hâlâ etkin, Android açılmaya devam eder)
+Installing the on-device switch (Magisk module)	Cihaz üzerindeki geçiş aracı kuruluyor (Magisk modülü)
+(skipped; the installer keeps working either way)	(atlandı; yükleyici her iki durumda da çalışmaya devam eder)
+Done. Rebooting into {1}	Tamamlandı. {1} ile yeniden başlatılıyor
+USB network: {1}   SSH: {2}	USB ağı: {1}   SSH: {2}
+switch systems: mu300-os {1}   back to Android: mu300-next-boot android	sistem değiştirme: mu300-os {1}   Android'e dönüş: mu300-next-boot android
+back to Linux from Android (with Magisk): su -c mu300-linux	Android'den Linux'a dönüş (Magisk ile): su -c mu300-linux
+Type ERASE to rewrite the partition table and wipe Android's data	Bölüm tablosunu yeniden yazmak ve Android verilerini silmek için ERASE yazın
+The backup copy at the end of the disk was written first, so Android's own repair may still fix this. Do not power off.	Diskin sonundaki yedek kopya önce yazıldı, bu yüzden Android'in kendi onarımı bunu hâlâ düzeltebilir. Cihazı kapatmayın.
+Clearing Android's data filesystem so it is recreated on the next boot	Android'in veri dosya sistemi, bir sonraki açılışta yeniden oluşturulması için temizleniyor
+ERROR:	HATA:
+Python 3 not found (install it from python.org or the Microsoft Store)	Python 3 bulunamadı (python.org'dan ya da Microsoft Store'dan kurun)
+Python 3.8 or newer is required	Python 3.8 ya da daha yenisi gerekiyor
+the lz4 Python module is required to build the boot image: pip install lz4	boot imajını oluşturmak için lz4 Python modülü gerekiyor: pip install lz4
+no adb device (boot Android, enable USB debugging)	adb cihazı yok (Android'i açın, USB hata ayıklamayı etkinleştirin)
+The device is running MU300 Linux, not Android	Cihazda Android değil, MU300 Linux çalışıyor
+Installing and uninstalling happen from Android (slot a), so the device has to reboot first.	Kurma ve kaldırma Android'den (a yuvası) yapılır, bu yüzden cihazın önce yeniden başlaması gerekiyor.
+I can ask it over SSH; you will be prompted for its password.	Bunu SSH üzerinden isteyebilirim; cihazın şifresi sorulacak.
+Reboot the device into Android now? (yes/no)	Cihaz şimdi Android'e yeniden başlatılsın mı? (evet/hayır)
+boot Android yourself (on the device: sudo mu300-next-boot android && sudo reboot)	Android'i kendiniz açın (cihazda: sudo mu300-next-boot android && sudo reboot)
+{1} - enter the device password when asked (Ctrl-C to skip)	{1} - sorulduğunda cihaz şifresini girin (atlamak için Ctrl-C)
+rebooting	yeniden başlatılıyor
+waiting for Android	Android bekleniyor
+the device did not come back as Android; boot it yourself (mu300-next-boot android)	cihaz Android olarak geri gelmedi; kendiniz açın (mu300-next-boot android)
+Android is up	Android açıldı
+only {1} MiB of free space after the last partition: this device has a different layout, nothing is changed.	son bölümden sonra yalnızca {1} MiB boş alan var: bu cihazın düzeni farklı, hiçbir şey değiştirilmedi.
+Please report the numbers above (eMMC size and where the partitions end); they identify the variant.	Lütfen yukarıdaki sayıları bildirin (eMMC boyutu ve bölümlerin bittiği yer); modeli bunlar belirler.
+pulling boot_a failed	boot_a alınamadı
+cannot find the newest release of {1} (use -Release <tag> to pick one)	{1} projesinin en yeni sürümü bulunamadı (seçmek için -Release <etiket> kullanın)
+no Magisk (or no root) on this device - skipped	bu cihazda Magisk (ya da root) yok - atlandı
+installed: 'su -c mu300-linux' on the device starts Linux after the next Android boot	kuruldu: bir sonraki Android açılışından sonra cihazda 'su -c mu300-linux' Linux'u başlatır
+could not reboot it over SSH; on the device run: sudo mu300-next-boot android && sudo reboot	SSH üzerinden yeniden başlatılamadı; cihazda şunu çalıştırın: sudo mu300-next-boot android && sudo reboot
+could not check GitHub for a newer installer; continuing with this copy	GitHub'da daha yeni bir yükleyici olup olmadığı kontrol edilemedi; bu kopyayla devam ediliyor
+a newer installer is on GitHub, but this copy has local changes; not updating it	GitHub'da daha yeni bir yükleyici var, ama bu kopyada yerel değişiklikler olduğu için güncellenmiyor
+Updating the installer to the newest version from GitHub	Yükleyici GitHub'daki en yeni sürüme güncelleniyor
+could not update this copy (it has commits of its own?); continuing with it	bu kopya güncellenemedi (kendi commit'leri mi var?); bununla devam ediliyor
+Checking the installer against the newest version on GitHub	Yükleyici GitHub'daki en yeni sürümle karşılaştırılıyor
+could not download it; continuing with this copy	indirilemedi; bu kopyayla devam ediliyor
+{1} files updated	{1} dosya güncellendi
+restarting the updated installer	güncellenen yükleyici yeniden başlatılıyor
+yes	evet
+no	hayır
+update	update (güncelle)
+release {1} does not support this device yet; use a newer one	{1} sürümü bu cihazı henüz desteklemiyor; daha yenisini kullanın
+installing the lz4 Python module (pip install --user lz4)	lz4 Python modülü kuruluyor (pip install --user lz4)
+start of the region: {1}	bölgenin başı: {1}
+Python 3 is not installed; installing it for this user	Python 3 kurulu değil; bu kullanıcı için kuruluyor
+{1} failed	{1} başarısız oldu
+waiting for Android to finish starting	Android'in açılmasını bitirmesi bekleniyor
+which adb device is the F50 or U30 Air?	hangi adb cihazı F50 ya da U30 Air?
+SD card present but smaller than 700 MiB; not used	SD kart takılı ama 700 MiB'tan küçük; kullanılmıyor
+SD card: {1}, {2}, existing mu300sd filesystem: {3}	SD kart: {1}, {2}, mevcut mu300sd dosya sistemi: {3}
+Linux filesystem: SD card {1}, {2}, existing mu300sd filesystem: {3}	Linux dosya sistemi: SD kart {1}, {2}, mevcut mu300sd dosya sistemi: {3}
+OK: the SD card will be formatted; everything on it is erased	TAMAM: SD kart biçimlendirilecek; üzerindeki her şey silinir
+Everything on the SD card ({1}, {2}) will be erased. Type ERASE to continue	SD karttaki ({1}, {2}) her şey silinecek. Devam etmek için ERASE yazın
+CREATE new ext4 (erases the SD card)	YENİ ext4 OLUŞTUR (SD kartı siler)
+writes:         SD card {1}, boot_b, 32 bytes of misc (the eMMC region, boot_a, GPT and userdata are not touched)	yazılacaklar:   SD kart {1}, boot_b, misc'in 32 baytı (eMMC'deki Linux alanına, boot_a, GPT ve userdata'ya dokunulmaz)
+MU300_STORAGE=sd, but there is no usable SD card in the device	MU300_STORAGE=sd, ama cihazda kullanılabilir bir SD kart yok
+MU300_STORAGE must be internal or sd	MU300_STORAGE internal ya da sd olmalı
+Where should the Linux filesystem go: internal storage or the SD card ({1}, {2})? (internal/sd)	Linux dosya sistemi nereye kurulsun: dahili depolama mı, SD kart mı ({1}, {2})? (internal/sd)
+the SD card ({1}) holds another Linux (ext4) filesystem, and the installer never formats one that is not its own (mu300sd).	SD kartta ({1}) başka bir Linux (ext4) dosya sistemi var ve yükleyici kendisine ait olmayan (mu300sd olmayan) bir dosya sistemini asla biçimlendirmez.
+Copy off what you need and format the card elsewhere, use another card, or install to internal storage (MU300_STORAGE=internal).	Gerekenleri yedekleyip kartı başka bir yerde biçimlendirin, başka bir kart kullanın ya da dahili depolamaya kurun (MU300_STORAGE=internal).
+the SD card holds another Linux (ext4) filesystem; the installer will not format it	SD kartta başka bir Linux (ext4) dosya sistemi var; yükleyici onu biçimlendirmez
+too little free eMMC space for Linux; the installer will offer the SD card instead (no repartitioning needed)	eMMC'de Linux için yeterli boş alan yok; yükleyici bunun yerine SD kartı önerecek (yeniden bölümlendirme gerekmez)
+the {1} kernel of release {2} cannot read the SD card: choose kernel 5.4, a newer release, or internal storage (MU300_STORAGE=internal)	{2} sürümünün {1} çekirdeği SD kartı okuyamıyor: 5.4 çekirdeğini, daha yeni bir sürümü ya da dahili depolamayı (MU300_STORAGE=internal) seçin
+The SD card ({1}) holds a Linux installation (mu300sd), and the device always starts that one first: an installation to internal storage does not start while this card is in the slot.	SD kartta ({1}) bir Linux kurulumu (mu300sd) var ve cihaz her zaman önce onu başlatır: kart yuvadayken dahili depolamaya yapılan kurulum başlamaz.
+Take the card out before the device restarts, or erase its installation first with the uninstaller.	Cihaz yeniden başlamadan önce kartı çıkarın ya da önce karttaki kurulumu kaldırma aracıyla (uninstall) silin.
+Type internal to install to internal storage anyway	Yine de dahili depolamaya kurmak için internal yazın
+The VPN (mu300-vpn) needs the vpn extra: Xray and sing-box. It can also be added later on the device:	VPN (mu300-vpn) için vpn eklentisi gerekir: Xray ve sing-box. Sonradan cihazda da eklenebilir:
+Install the VPN extra (about 40 MB more to download, 120 MB on the device)? (yes/no)	VPN eklentisi kurulsun mu (yaklaşık 40 MB ek indirme, cihazda 120 MB)? (evet/hayır)
+release {1} has no vpn extra: its systems still carry the VPN engines	{1} sürümünde vpn eklentisi yok: sistemleri VPN motorlarını hâlâ kendi içinde taşıyor
+extras:         {1}	eklentiler:     {1}
+none	yok
+Android runs from slot {1}; Linux goes to slot {2} (boot_{2})	Android {1} yuvasından çalışıyor; Linux {2} yuvasına kurulacak (boot_{2})
+CREATE new ext4 (erases what is there)	yeni ext4 OLUŞTURULACAK (oradakiler silinir)
+Dry run: nothing was written.	Deneme çalıştırması: hiçbir şey yazılmadı.
+MU300_BOOT_OS={1}, but {1} is not installed	MU300_BOOT_OS={1}, ancak {1} kurulu değil
+Magisk's magiskboot was not found; install this zip with Magisk 26 or newer	Magisk'in magiskboot aracı bulunamadı; bu zip'i Magisk 26 veya daha yenisiyle kurun
+Plan	Plan
+Take the card out and install the zip again, or install to the card (MU300_STORAGE=sd in /sdcard/mu300-install.conf).	Kartı çıkarıp zip'i yeniden kurun ya da karta kurun (/sdcard/mu300-install.conf dosyasında MU300_STORAGE=sd).
+Ubuntu 26.04 is installed, and it needs a mainline kernel (6.18 or 7.2): use a zip with one of those kernels, or MU300_MODE=wipe.	Ubuntu 26.04 kurulu ve ana hat çekirdek (6.18 veya 7.2) gerektiriyor: bu çekirdeklerden birini içeren bir zip kullanın ya da MU300_MODE=wipe.
+Unpacking {1} and {2}	{1} ve {2} açılıyor
+already there:  {1}	zaten kurulu:   {1}
+boot_a and boot_b are the same partition	boot_a ve boot_b aynı bölüm
+boots:          {1} ({2})	açılan:         {1} ({2})
+cannot tell which slot Android runs from	Android'in hangi yuvadan çalıştığı anlaşılamadı
+could not mount the existing Linux filesystem	mevcut Linux dosya sistemi bağlanamadı
+could not unpack the kernel bundle	çekirdek paketi açılamadı
+could not unpack the zip	zip açılamadı
+default	varsayılan
+keep: settings and data of {1} are kept	korunuyor: {1} ayarları ve verileri korunur
+misc holds no valid boot control block; nothing was changed	misc geçerli bir açılış denetim bloğu içermiyor; hiçbir şey değiştirilmedi
+mu300-install.conf: MU300_PASSWORD must have at least 6 characters	mu300-install.conf: MU300_PASSWORD en az 6 karakter olmalı
+mu300-install.conf: {1} is not a setting of this installer; ignored	mu300-install.conf: {1} bu yükleyicinin bir ayarı değil; yok sayıldı
+mu300-install.conf: {1}={2} is not valid	mu300-install.conf: {1}={2} geçerli değil
+not enough free space in {1}: {2} needed, {3} free	{1} içinde yeterli boş alan yok: {2} gerekli, {3} boş
+settings from {1}:{2}	{1} içindeki ayarlar:{2}
+storage:        SD card {1}, {2} ({3})	depolama:       SD kart {1}, {2} ({3})
+storage:        internal, offset {1}, {2} ({3})	depolama:       dahili, konum {1}, {2} ({3})
+system:         {1} (zip {2}, kernel {3})	sistem:         {1} (zip {2}, çekirdek {3})
+the Linux region	Linux alanı
+the zip is damaged (checksum mismatch); download it again	zip bozuk (sağlama toplamı uyuşmuyor); yeniden indirin
+this installer needs root	bu yükleyici root yetkisi gerektirir
+this is not an A/B device with misc, boot_a and boot_b	bu, misc, boot_a ve boot_b bölümleri olan bir A/B cihaz değil
+this kernel cannot read the SD card; use a newer zip	bu çekirdek SD kartı okuyamıyor; daha yeni bir zip kullanın
+this kernel does not support the {1}	bu çekirdek {1} cihazını desteklemiyor
+writes:         {1}, boot_{2}, 32 bytes of misc (boot_{3}, the partition table and userdata are not touched)	yazılacaklar:   {1}, boot_{2}, misc'in 32 baytı (boot_{3}, bölüm tablosu ve userdata'ya dokunulmaz)
+mu300-install.conf: {1} is taken only from {2}, which only root can change; ignored in {3}	mu300-install.conf: {1} yalnızca {2} dosyasından alınır (onu yalnızca root değiştirebilir); {3} içinde yok sayıldı
+To use{1}, make the file one only root can change: {2}	Şunları kullanmak için:{1}, dosyayı yalnızca root'un değiştirebileceği hale getirin: {2}
+{1} is not owned by root, or others can change it: it is read like a file on /sdcard	{1} root'a ait değil ya da başkaları değiştirebiliyor: /sdcard'daki bir dosya gibi okunuyor
+This does not look like a ZTE F50/MU300 or U30 Air. If it is one, put MU300_DEVICE=f50 or u30air into {1}.	Bu bir ZTE F50/MU300 veya U30 Air gibi görünmüyor. Öyleyse {1} dosyasına MU300_DEVICE=f50 veya u30air yazın.
+could not create a work directory in {1}	{1} içinde çalışma dizini oluşturulamadı
+A Linux filesystem is still mounted in {1}; it was left as it is. Restart the device before installing again.	{1} içinde hâlâ bağlı bir Linux dosya sistemi var; olduğu gibi bırakıldı. Yeniden kurmadan önce cihazı yeniden başlatın.
+There is too little free space inside for Linux, and the SD card ({1}) holds another Linux (ext4) filesystem, which the installer never formats. Copy off what you need and format the card elsewhere, or use another card.	Dahili depolamada Linux için yeterli boş alan yok ve SD kartta ({1}) başka bir Linux (ext4) dosya sistemi var; yükleyici onu asla biçimlendirmez. Gerekenleri kopyalayıp kartı başka yerde biçimlendirin ya da başka bir kart kullanın.
+There is too little free space inside for Linux. The SD card ({1}, {2}) can hold it: put MU300_STORAGE=sd and MU300_SD_ERASE=yes into {3}, a file only root can change (everything on the card is erased).	Dahili depolamada Linux için yeterli boş alan yok. SD kart ({1}, {2}) yeterli: yalnızca root'un değiştirebildiği {3} dosyasına MU300_STORAGE=sd ve MU300_SD_ERASE=yes yazın (karttaki her şey silinir).
+There is too little free space inside for Linux, and the SD card is smaller than 700 MiB. Use a bigger card (MU300_STORAGE=sd and MU300_SD_ERASE=yes in {1}), or make room with the installer for computers.	Dahili depolamada Linux için yeterli boş alan yok ve SD kart 700 MiB'den küçük. Daha büyük bir kart kullanın ({1} dosyasında MU300_STORAGE=sd ve MU300_SD_ERASE=yes) ya da bilgisayar yükleyicisiyle yer açın.
+There is too little free space inside for Linux and no SD card. Insert a card (MU300_STORAGE=sd and MU300_SD_ERASE=yes in {1}), or make room with the installer for computers.	Dahili depolamada Linux için yeterli boş alan yok ve SD kart takılı değil. Bir kart takın ({1} dosyasında MU300_STORAGE=sd ve MU300_SD_ERASE=yes) ya da bilgisayar yükleyicisiyle yer açın.
+MU300_MODE=wipe formats the SD card ({1}, {2}): the installation on it and everything else is erased. To allow that, put MU300_SD_ERASE=yes into {3} as well.	MU300_MODE=wipe SD kartı ({1}, {2}) biçimlendirir: üzerindeki kurulum ve diğer her şey silinir. Buna izin vermek için {3} dosyasına MU300_SD_ERASE=yes de yazın.
+could not unmount the Linux filesystem from {1}	Linux dosya sistemi {1} konumundan ayrılamadı
+password:       from {1}, written to {2}	parola:         {1} dosyasından, {2} dosyasına yazılacak
+password:       generated, written to {1}	parola:         üretilecek, {1} dosyasına yazılacak
+the zip is incomplete or damaged (its manifest is not valid)	zip eksik ya da bozuk (manifest dosyası geçerli değil)
+The free space behind the partitions is not empty ({1} of 16 samples hold data); it may be used by this firmware. To use it anyway, put MU300_STORAGE=internal and MU300_REGION_OVERWRITE=yes into {2}, a file only root can change.	Bölümlerin arkasındaki boş alan boş değil (16 örnekten {1} tanesinde veri var); bu yazılım tarafından kullanılıyor olabilir. Yine de kullanmak için yalnızca root'un değiştirebildiği {2} dosyasına MU300_STORAGE=internal ve MU300_REGION_OVERWRITE=yes yazın.
+Installing to the SD card ({1}, {2}) erases everything on it. To allow that, put MU300_STORAGE=sd and MU300_SD_ERASE=yes into {3}, a file only root can change.	SD karta ({1}, {2}) kurulum karttaki her şeyi siler. Buna izin vermek için yalnızca root'un değiştirebildiği {3} dosyasına MU300_STORAGE=sd ve MU300_SD_ERASE=yes yazın.
+could not read the Android files the modem needs from this device	modemin ihtiyaç duyduğu Android dosyaları bu cihazdan okunamadı
+the Mali GPU files are incomplete on this device; installing without them	bu cihazdaki Mali GPU dosyaları eksik; onlarsız kuruluyor
+could not pack the vendor files	üretici dosyaları paketlenemedi
+could not build the boot control blocks	açılış denetim blokları oluşturulamadı
+could not copy the Android files into the boot ramdisk	Android dosyaları açılış ramdisk'ine kopyalanamadı
+Android runs from slot b, and the kernel of this zip cannot boot Linux from slot a yet; use a newer zip	Android b yuvasından çalışıyor ve bu zip'in çekirdeği Linux'u henüz a yuvasından başlatamıyor; daha yeni bir zip kullanın
+could not build the boot ramdisk (magiskboot)	açılış ramdisk'i oluşturulamadı (magiskboot)
+could not build the boot image	boot imajı oluşturulamadı
+boot image for slot {1}: kernel {2}, {3} bytes	{1} yuvası için boot imajı: çekirdek {2}, {3} bayt
+could not generate a password	parola üretilemedi
+could not hash the password	parolanın özeti (hash) hesaplanamadı
+could not copy the installer files	kurulum dosyaları kopyalanamadı
+Installing {1} (this takes a few minutes)	{1} kuruluyor (birkaç dakika sürer)
+installation on the device failed; boot_{1} and misc were not changed	cihazdaki kurulum başarısız oldu; boot_{1} ve misc değiştirilmedi
+could not mount the Linux filesystem for the kernel modules	çekirdek modülleri için Linux dosya sistemi bağlanamadı
+could not install the kernel modules	çekirdek modülleri kurulamadı
+Writing and verifying boot_{1}	boot_{1} yazılıyor ve doğrulanıyor
+boot_{1} did not verify after writing; misc was not changed, so Android keeps booting	boot_{1} yazıldıktan sonra doğrulanamadı; misc değiştirilmedi, Android açılmaya devam eder
+misc changed during the installation; Linux was not armed. Install the zip again.	misc kurulum sırasında değişti; Linux etkinleştirilmedi. Zip'i yeniden kurun.
+could not write {1}	{1} yazılamadı
+Done. Reboot to start {1}.	Tamamlandı. {1} sistemini başlatmak için yeniden başlatın.
+If Linux does not start, the device returns to Android by itself.	Linux açılmazsa cihaz kendiliğinden Android'e döner.
+could not keep a copy of the misc block; nothing was changed	misc bloğunun bir kopyası alınamadı; hiçbir şey değiştirilmedi
+filesystem:     {1} ({2})	dosya sistemi:  {1} ({2})
+default boot:   {1} ({2})	varsayılan:     {1} ({2})
+Linux, Android after failed boots	Linux, başarısız açılışlardan sonra Android
+boot attempts:  {1} failed boots in a row, then Android ({2})	açılış denemesi: arka arkaya {1} başarısız açılış, sonra Android ({2})
+hotspot:        {1} ({2})	hotspot:        {1} ({2})
+name and password copied from Android	adı ve parolası Android'den kopyalanır
+not copied	kopyalanmaz
+GPU files:      {1} ({2})	GPU dosyaları:  {1} ({2})
+included	dahil
+not included	dahil değil
+misc did not verify after writing; the block it held before was written back and verified, so Android boots as before. Linux was not armed.	misc yazıldıktan sonra doğrulanamadı; önceki blok geri yazıldı ve doğrulandı, Android eskisi gibi açılır. Linux etkinleştirilmedi.
+misc did not verify after writing, and the block it held before could not be written back: misc holds unknown bytes, and the device may not start Android. Do not reboot. Write the saved block back as root: {1}	misc yazıldıktan sonra doğrulanamadı ve önceki blok geri yazılamadı: misc bilinmeyen baytlar içeriyor, cihaz Android'i açamayabilir. Yeniden başlatmayın. Saklanan bloğu root olarak geri yazın: {1}
+password for {1}: "{2}"   (also in {3}; delete that file after the first login)	{1} için parola: "{2}"   ({3} dosyasında da var; ilk girişten sonra o dosyayı silin)
+could not write {1}; nothing was installed	{1} yazılamadı; hiçbir şey kurulmadı
+used by this installation and removed from {1}:{2}	bu kurulumda kullanıldı ve {1} dosyasından kaldırıldı:{2}
+could not remove{1} from {2}; remove it by hand	{2} dosyasından kaldırılamadı:{1}; elle kaldırın
+password:       kept: the accounts and passwords of the installed system are not changed ({1} in {2} sets a new one)	parola:         korunuyor: kurulu sistemin hesapları ve parolaları değişmez (yenisi için {2} dosyasına {1})
+password for {1}: unchanged (the one this system had)	{1} için parola: değişmedi (bu sistemin önceki parolası)

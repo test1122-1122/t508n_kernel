@@ -1,0 +1,88 @@
+#!/bin/bash
+# Wi-Fi hotspot on wlan0: hostapd (WPA2) + DHCP/DNS; clients are NATed out through the modem by mobile-data.
+# Settings: /etc/mu300/hotspot.conf (SSID, PSK, CHANNEL, COUNTRY). Imported from Android's SoftAP config by the
+# installer when available; otherwise generated once with a random passphrase.
+set -euo pipefail
+CONF=/etc/mu300/hotspot.conf
+if [ ! -s "$CONF" ]; then
+    mac=$(cat /sys/class/net/wlan0/address 2>/dev/null | tr -d : | tail -c 5)
+    psk=$(tr -dc 'A-HJ-NP-Za-km-z2-9' </dev/urandom | head -c 12)
+    umask 077
+    mkdir -p /etc/mu300
+    printf 'SSID=MU300-%s\nPSK=%s\nBAND=5\nCHANNEL=auto\nCOUNTRY=TR\n' "${mac^^}" "$psk" > "$CONF"
+    echo "generated $CONF"
+fi
+# read values literally (never source the file: the passphrase may contain shell metacharacters)
+conf() { sed -n "s/^$1=//p" "$CONF" | head -1; }
+SSID=$(conf SSID); PSK=$(conf PSK); CHANNEL=$(conf CHANNEL); COUNTRY=$(conf COUNTRY); BAND=$(conf BAND)
+# BAND=5 uses 802.11a/n/ac; this chip supports only one AP at a time, so 2.4 and 5 GHz cannot run together.
+# The firmware offers 5 GHz AP only on the non-DFS channels 36-48 and 149-165.
+[ -e /run/mu300-hotspot-force-2g ] && BAND=2.4
+case "${BAND:-5}" in
+    5)
+        HWMODE=a; case "$CHANNEL" in ""|auto|[0-9]|1[0-4]) CHANNEL=36 ;; esac
+        case "$CHANNEL" in
+            36|44) HT='[HT40+][SHORT-GI-20][SHORT-GI-40]'; SEG0=42 ;;
+            40|48) HT='[HT40-][SHORT-GI-20][SHORT-GI-40]'; SEG0=42 ;;
+            149|157) HT='[HT40+][SHORT-GI-20][SHORT-GI-40]'; SEG0=155 ;;
+            153|161) HT='[HT40-][SHORT-GI-20][SHORT-GI-40]'; SEG0=155 ;;
+            *) HT='[SHORT-GI-20]'; SEG0= ;;
+        esac
+        if [ -n "$SEG0" ]; then
+            EXTRA=$(printf 'ht_capab=%s\nieee80211ac=1\nvht_capab=[SHORT-GI-80]\nvht_oper_chwidth=1\nvht_oper_centr_freq_seg0_idx=%s' "$HT" "$SEG0")
+        else
+            EXTRA=$(printf 'ht_capab=%s\nieee80211ac=1\nvht_oper_chwidth=0' "$HT")
+        fi ;;
+    *) HWMODE=g; case "$CHANNEL" in [1-9]|1[0-3]) ;; *) CHANNEL=6 ;; esac; EXTRA='ht_capab=[SHORT-GI-20]' ;;
+esac
+# cfg80211 tried to load regulatory.db before the rootfs was mounted; reload it, then apply the country
+/opt/mu300/bin/regdb-load >/dev/null 2>&1 || true
+iw reg set "${COUNTRY:-TR}" 2>/dev/null || true
+for n in $(seq 1 15); do iw reg get 2>/dev/null | grep -q "country ${COUNTRY:-TR}:" && break; sleep 1; done
+sleep 1
+# fall back to 2.4 GHz if the requested 5 GHz channel is still not usable for AP (NO-IR/disabled/radar)
+# newer kernels report a frequency offset, so iw prints "5180.0 MHz"
+ch_ok() { iw list 2>/dev/null | grep -E "\* [0-9.]+ MHz \[$CHANNEL\]" | grep -vqE "no IR|disabled|radar"; }
+# the channel flags follow the country change with a delay (seconds on the mainline kernel)
+if [ "$HWMODE" = a ]; then for n in $(seq 1 10); do ch_ok && break; sleep 1; done; fi
+if [ "$HWMODE" = a ] && ! ch_ok; then
+    echo "5 GHz channel $CHANNEL not allowed for AP here, falling back to 2.4 GHz channel 6" >&2
+    HWMODE=g; CHANNEL=6; EXTRA='ht_capab=[SHORT-GI-20]'
+fi
+[ ${#PSK} -ge 8 ] || { echo "PSK must be at least 8 characters" >&2; exit 1; }
+for n in $(seq 1 60); do [ -e /sys/class/net/wlan0 ] && break; sleep 1; done
+umask 077
+cat > /run/mu300-hostapd.conf <<C
+interface=wlan0
+driver=nl80211
+ssid=${SSID}
+country_code=${COUNTRY:-TR}
+bridge=br-lan
+hw_mode=${HWMODE}
+channel=${CHANNEL}
+ieee80211d=1
+${EXTRA}
+ieee80211n=1
+wmm_enabled=1
+auth_algs=1
+wpa=2
+wpa_key_mgmt=WPA-PSK
+rsn_pairwise=CCMP
+wpa_passphrase=${PSK}
+C
+for n in $(seq 1 30); do ip link show br-lan >/dev/null 2>&1 && break; sleep 1; done
+ip addr flush dev wlan0 2>/dev/null || true
+# cfg80211 refuses to bridge a station-mode interface (EOPNOTSUPP); switch to AP first so hostapd can add it
+# the WCN chip can still be busy right after boot (Bluetooth power-cycles the same chip): retry the switch
+for n in 1 2 3 4 5 6; do
+    ip link set wlan0 down
+    iw dev wlan0 set type __ap 2>/dev/null && break
+    sleep 2
+done
+ip link set wlan0 up
+mkdir -p /run/motd.d && chmod 755 /run/motd.d
+printf 'MU300 hotspot: SSID "%s"  password "%s"  (edit /etc/mu300/hotspot.conf)\n' "$SSID" "$PSK" > /run/motd.d/50-mu300-hotspot
+chmod 640 /run/motd.d/50-mu300-hotspot
+# the U30 Air's NFC tag: the name and password again if that is what it holds (a slow I2C write, in the background)
+[ "$(/opt/mu300/bin/mu300-device)" = u30air ] && { /opt/mu300/bin/mu300-nfc sync 2>&1 | logger -t mu300-nfc & }
+exec hostapd /run/mu300-hostapd.conf

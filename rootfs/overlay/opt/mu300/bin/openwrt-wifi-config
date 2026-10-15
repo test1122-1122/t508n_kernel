@@ -1,0 +1,40 @@
+#!/bin/sh
+# OpenWrt only: create /etc/config/wireless once, from /etc/mu300/hotspot.conf (imported from Android by the installer)
+# or with a random passphrase. Afterwards the Wi-Fi is managed normally with uci/LuCI.
+[ -f /etc/openwrt_release ] || exit 0
+# wifi-scripts may already have generated an open "OpenWrt" network; replace it once with our settings
+[ -e /etc/mu300/wifi-configured ] && exit 0
+for n in $(seq 1 30); do [ -e /sys/class/ieee80211/phy0 ] && break; sleep 1; done
+CONF=/etc/mu300/hotspot.conf
+conf() { sed -n "s/^$1=//p" "$CONF" 2>/dev/null | head -1; }
+SSID=$(conf SSID); PSK=$(conf PSK); BAND=$(conf BAND); CHANNEL=$(conf CHANNEL); COUNTRY=$(conf COUNTRY)
+[ -n "$SSID" ] || SSID="MU300-$(tr -d : < /sys/class/net/wlan0/address 2>/dev/null | tail -c 5 | tr a-f A-F)"
+[ ${#PSK} -ge 8 ] || PSK=$(tr -dc 'A-HJ-NP-Za-km-z2-9' </dev/urandom | head -c 12)
+case "${BAND:-5}" in
+	2.4) band=2g; htmode=HT20; [ "$CHANNEL" = auto ] || [ -z "$CHANNEL" ] && CHANNEL=6 ;;
+	*) band=5g; htmode=VHT80; case "$CHANNEL" in ""|auto|[0-9]|1[0-4]) CHANNEL=36 ;; esac ;;
+esac
+wifi config >/dev/null 2>&1
+touch /etc/config/wireless
+radio=$(uci -q show wireless | sed -n "s/^wireless\.\([^.=]*\)=wifi-device$/\1/p" | head -1)
+[ -n "$radio" ] || { radio=radio0; uci set wireless.radio0=wifi-device; uci set wireless.radio0.type=mac80211; uci set wireless.radio0.phy=phy0; }
+uci -q batch <<UCI
+set wireless.$radio.band='$band'
+set wireless.$radio.channel='$CHANNEL'
+set wireless.$radio.htmode='$htmode'
+set wireless.$radio.country='${COUNTRY:-TR}'
+set wireless.$radio.disabled='0'
+delete wireless.default_$radio
+delete wireless.$radio.disabled
+set wireless.ap0=wifi-iface
+set wireless.ap0.device='$radio'
+set wireless.ap0.network='lan'
+set wireless.ap0.mode='ap'
+set wireless.ap0.ifname='wlan0'
+set wireless.ap0.ssid='$SSID'
+set wireless.ap0.encryption='psk2'
+set wireless.ap0.key='$PSK'
+UCI
+uci commit wireless
+touch /etc/mu300/wifi-configured
+echo "wireless configured: $band channel $CHANNEL"

@@ -1,0 +1,102 @@
+#!/bin/sh
+# The USB-C port's role (U30 Air; Ubuntu and OpenWrt, mainline kernels):
+#   mu300-usb             show it
+#   mu300-usb host        host: flash drives, keyboards, modems through an OTG adapter, with 5 V from the charger's
+#                         boost. The USB network to a computer is gone until "device" (it is the same port).
+#   mu300-usb device      back to the USB network / serial console to a computer (the default at every boot)
+#   mu300-usb boot        at boot (mu300-fixups, OpenWrt's mu300-hw): boost off. The charger runs on the battery,
+#                         so its registers outlive a reboot, and a boost left on would meet a computer's 5 V.
+# There is no Type-C driver under mainline to see what is plugged in, so the role is chosen here. The 5 V come from
+# the charger IC (SGM41511, bq2560x-compatible, I2C 0x6b): only its OTG_CONFIG bit is switched here. Without a
+# driver its watchdog puts it back to its defaults (boost off) 40 s after an I2C write unless it is kept alive, so host
+# mode turns the watchdog off and device mode back on. With the kernel's driver (bq256xx, mainline kernels since the
+# charger patch) the address is the driver's: it is reached with -f, and the watchdog stays off, as the driver set
+# it (40 s later the chip would drop the driver's charge settings); the driver reads REG01 before each write.
+# The F50 has no battery: its USB port is its power supply, so it cannot be a host.
+export PATH="$PATH:/opt/mu300/bin:/usr/sbin:/sbin"
+R=${MU300_SYSROOT:-}   # (for tests/: a fake /sys)
+ADDR=0x6b
+REG_CTRL1=0x01      # bit 5 OTG_CONFIG
+REG_TIMER=0x05      # bits 5:4 WATCHDOG (00 off, 01 40 s)
+REG_STATUS=0x08     # bits 7:5 VBUS_STAT (111: OTG), bit 2 PG_STAT (an outside supply on VBUS)
+REG_PART=0x0b
+
+die() { echo "mu300-usb: $*" >&2; exit 1; }
+i2c() {  # i2c get|set ARGS: i2c-tools when there, else busybox's
+    op=$1; shift
+    if command -v "i2c$op" >/dev/null 2>&1 && [ "$(command -v "i2c$op")" != /usr/bin/busybox ]; then "i2c$op" -y $FORCE "$@"
+    elif [ -z "$R" ] && [ -x /opt/mu300/bin/busybox ]; then /opt/mu300/bin/busybox "i2c$op" -y $FORCE "$@"
+    else busybox "i2c$op" -y $FORCE "$@"; fi
+}
+FORCE=
+driver() {  # the kernel drives the charger (bq256xx): sets FORCE for i2c-dev
+    [ -e "$R/sys/bus/i2c/devices/$BUS-006b/driver" ] && FORCE=-f || :
+}
+watchdog_on() {  # back to the chip's defaults 40 s after the last write; never under the driver
+    [ -n "$FORCE" ] || setbits $REG_TIMER 0x30 0x10
+}
+bus() {  # the I2C bus of the charger: the controller at 22a0000 on the UMS9620
+    for a in "$R"/sys/bus/i2c/devices/i2c-*; do
+        case $(readlink -f "$a/of_node" 2>/dev/null) in *i2c@22a0000) echo "${a##*-}"; return 0 ;; esac
+    done
+    return 1
+}
+role_switch() { for r in "$R"/sys/class/usb_role/*; do [ -e "$r/role" ] && { echo "$r/role"; return 0; }; done; return 1; }
+reg() { i2c get "$BUS" $ADDR "$1" 2>/dev/null; }
+setbits() {  # setbits REG MASK VALUE
+    v=$(reg "$1") || die "cannot read the charger (I2C $BUS-$ADDR)"
+    i2c set "$BUS" $ADDR "$1" $(( (v & ~$2) | $3 )) || die "cannot write the charger"
+}
+
+if [ "${1:-}" = boot ]; then
+    # quietly, on whatever kernel: the 5.4 one has its own charger driver and no I2C device node for this
+    [ "$(mu300-device)" = u30air ] && BUS=$(bus) || exit 0
+    driver
+    v=$(reg $REG_CTRL1) || exit 0
+    if [ $(( v & 0x20 )) -ne 0 ]; then
+        i2c set "$BUS" $ADDR $REG_CTRL1 $(( v & ~0x20 )) && watchdog_on
+        echo "mu300-usb: the charger's boost was still on from before the reboot: switched off"
+    fi
+    exit 0
+fi
+[ "$(mu300-device)" = u30air ] || die "only the U30 Air can be a USB host: the F50 is powered through that port"
+ROLE=$(role_switch) || die "no USB role switch (this needs a mainline kernel with dual-role USB, v2026.10.03 or newer)"
+BUS=$(bus) || die "the charger's I2C bus is not there (a kernel without I2C)"
+driver
+
+boost() {
+    [ "$(id -u)" = 0 ] || { echo "(run as root to read the charger)"; return; }
+    v=$(reg $REG_CTRL1) || { echo "(cannot read the charger)"; return; }
+    [ $(( v & 0x20 )) -ne 0 ] && echo on || echo off
+}
+powered() { v=$(reg $REG_STATUS) && [ $(( v & 0x04 )) -ne 0 ] && [ $(( v & 0xe0 )) -ne 224 ]; }
+
+case ${1:-status} in
+    status)
+        echo "role: $(cat "$ROLE" 2>/dev/null)"
+        echo "5 V out (OTG boost): $(boost)"
+        if [ -d "$R"/sys/bus/usb/devices ]; then
+            for d in "$R"/sys/bus/usb/devices/[0-9]*; do
+                [ -e "$d/product" ] || continue
+                case ${d##*/} in *:*) continue ;; esac
+                echo "  device: $(cat "$d/manufacturer" 2>/dev/null) $(cat "$d/product") ($(cat "$d/idVendor"):$(cat "$d/idProduct"))"
+            done
+        fi ;;
+    host)
+        [ "$(id -u)" = 0 ] || die "run as root (sudo mu300-usb host)"
+        # the boost drives VBUS: never against a computer or a charger that drives it already
+        powered && die "something powers the USB port (a computer or a charger): unplug it first, then run this again"
+        setbits $REG_TIMER 0x30 0x00      # watchdog off, or the boost goes off by itself after 40 s
+        setbits $REG_CTRL1 0x20 0x20      # OTG boost on
+        echo host > "$ROLE" || die "could not switch the role"
+        sleep 1
+        echo "USB host: 5 V on, plug in the OTG adapter (the USB network is off until: sudo mu300-usb device)" ;;
+    device)
+        [ "$(id -u)" = 0 ] || die "run as root (sudo mu300-usb device)"
+        echo device > "$ROLE" || die "could not switch the role"
+        setbits $REG_CTRL1 0x20 0x00      # boost off
+        watchdog_on                       # watchdog back (40 s): the chip returns to its own defaults
+        sleep 1   # the role switch works in the background
+        echo "USB device: the USB network and serial console are back" ;;
+    *) sed -n '2,6s/^# \{0,1\}//p' "$0" >&2; exit 2 ;;
+esac
