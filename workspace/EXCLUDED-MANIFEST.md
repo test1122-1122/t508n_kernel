@@ -120,3 +120,21 @@ refs/heads/main
 
 Shallow original repositories were imported as single-commit snapshots.
 Large repositories and files above GitHub limits were excluded.
+
+
+## Cleanup pass (optimization)
+
+The following generated or third-party binary content was removed from the
+mirror to keep it maintainable:
+
+- `workspace/t508/mainline-ref-t508n-mainline/out/` (build outputs)
+- `workspace/tools/winadb/` and `workspace/tools/winfastboot/` (third-party Windows tools)
+- `workspace/t508/T508N/01-TOOLS/**/*.exe` and `*.dll`
+- `workspace/t508/T508N/02-FIRMWARE/boot-mainline/Image`
+- `workspace/t508/T508N/02-FIRMWARE/boot-mainline/mainline-initramfs5.cpio`
+- `workspace/t508/T508N/02-FIRMWARE/stock-critical/Channel9.dll`
+- `workspace/t508/T508N/02-FIRMWARE/stock-critical/spd_dump.exe`
+- `workspace/docs/session/session.jsonl` (session log)
+- `__pycache__`
+
+See `SECURITY.md` and `.gitignore`.

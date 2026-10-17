@@ -1,0 +1,10 @@
+*.img binary
+*.ko binary
+*.apk binary
+*.cpio binary
+*.lk binary
+*.bin binary
+*.exe binary
+*.dll binary
+*.png binary
+*.jpg binary

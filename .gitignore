@@ -1,0 +1,28 @@
+# secrets
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+session.jsonl
+*.jsonl
+
+# build artifacts
+*.o
+*.cmd
+.*.cmd
+*.mod
+*.mod.c
+*.tmp
+*.log
+__pycache__/
+*.pyc
+
+# generated outputs
+**/out/
+workspace/**/*.exe
+workspace/**/*.dll
+
+# large local artifacts (keep curated images)
+*.img
+!mainline/images/boot_mainline_6.18.55_t508n_test40.img
+!mainline/tools/misc/misc_slot_*.img

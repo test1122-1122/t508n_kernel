@@ -30,6 +30,9 @@ Target repository: https://github.com/test1122-1122/t508n_kernel
 
 ## Layout
 
+- Build guide: [BUILD.md](BUILD.md)
+- Docs index: [docs/INDEX.md](docs/INDEX.md)
+
 ```text
 mainline/
   docs/                 reports and bring-up notes

@@ -1,17 +1,17 @@
 # Binary manifest
 
-These are self-built mainline artifacts.  They do not contain vendor WCN firmware;
-firmware is loaded at runtime from the persistent p75 filesystem.
+Self-built mainline artifacts. Vendor WCN firmware is not included;
+firmware is loaded from the persistent p75 filesystem at runtime.
 
 ```text
-234d57947e9a606cc03faa73fc7c3fdd  boot_mainline_6.18.55_t508n_test40.img
-a178351e4be3a986daf9aeb327c01356  Image.lk
+9bfb7a0e92e8cbe65ce4753bf3e800b338ed7f276e338a063a9d78b4c1728bac  boot_mainline_6.18.55_t508n_test40.img
+f1c5bbefd89facfb52ec6b01728ebe73b27c04fe088563d35951bde448aed53d  Image.lk
 ```
 
 boot_mainline_6.18.55_t508n_test40.img:
-- kernel: mainline 6.18.55
-- initramfs: DWC3 ACM first, embedded regulatory.db, wifi-up/bluetooth scripts
-- rootfs: p75 ext4 (modules/firmware/userspace live there)
+- mainline 6.18.55
+- initramfs: DWC3 ACM first, embedded regulatory.db, WiFi/BT helper callouts
+- p75 holds modules/firmware/userspace
 
 Image.lk:
-- mainline arm64 Image wrapped for Unisoc LK (text_offset workaround)
+- arm64 Image wrapped for Unisoc LK

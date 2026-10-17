@@ -31,3 +31,14 @@ See:
 workspace/EXCLUDED-MANIFEST.md
 mainline/README.md
 ```
+
+## Repository quality
+
+- Build guide: `mainline/BUILD.md`
+- Documentation index: `mainline/docs/INDEX.md`
+- Security policy: `SECURITY.md`
+- Excluded files and cleanup: `workspace/EXCLUDED-MANIFEST.md`
+
+Third-party Windows flashing tools and generated build outputs are not
+tracked. Obtain platform-tools/SPD tools separately.
+
