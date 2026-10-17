@@ -1,0 +1,63 @@
+name: repo-check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reject tracked files above 100 MB
+        run: |
+          bad=$(find . -type f -not -path './.git/*' -size +100M -print)
+          if [ -n "$bad" ]; then
+            echo "Files above GitHub hard limit:"
+            echo "$bad"
+            exit 1
+          fi
+
+      - name: Secret scan
+        run: |
+          # Split patterns to avoid the workflow file matching itself.
+          pat1="github""_pat_"
+          pat2="BEGIN ""PRIVATE KEY"
+          if git grep -I -n -E "$pat1|$pat2" -- . ':(exclude).github' ; then
+            echo "Potential secret found"
+            exit 1
+          fi
+
+      - name: Reject tracked private key files
+        run: |
+          bad=$(git ls-files | grep -E '(^|/)(id_rsa|id_ed25519|.*\.pem|.*\.key)$' || true)
+          if [ -n "$bad" ]; then
+            echo "Private key files tracked:"
+            echo "$bad"
+            exit 1
+          fi
+
+      - name: Python syntax
+        run: |
+          python3 -m py_compile $(git ls-files '*.py')
+
+      - name: Shell syntax
+        run: |
+          for f in $(git ls-files '*.sh'); do bash -n "$f"; done
+
+      - name: Verify image manifest hashes
+        run: |
+          cd mainline/images
+          grep -E '^[0-9a-f]{64}  ' MANIFEST.md | sha256sum -c -
+
+      - name: Module vermagic
+        run: |
+          for f in $(git ls-files 'mainline/modules/**/*.ko'); do
+            vermagic=$(modinfo -F vermagic "$f")
+            echo "$f: $vermagic"
+            case "$vermagic" in
+              6.18.55*) ;;
+              *) echo "unexpected vermagic: $f"; exit 1 ;;
+            esac
+          done
