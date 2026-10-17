@@ -31,3 +31,18 @@ Branch contents:
 - Full-history imports were pushed for small repositories whose object graph was complete.
 - Shallow-cloned repositories were imported as single-commit snapshots.
 - Large repositories (linux-6.12.103, linux-5.4-custom, vendor-kernel-ums9620, v50/src/mu300-linux, kernel-ums9620-tuned) were excluded due GitHub size limits; see EXCLUDED-MANIFEST.md.
+
+## Removed placeholder imports (cleanup)
+
+The following Motorola Mobility repositories contain only a README placeholder;
+their branches were removed to keep the import namespace clean.  The upstream
+URLs remain as references in the main workspace notes.
+
+```text
+import/research-sprd-kernel-modules-audio              3df74a1b2d613b1ea33d6fd31d584964821d1a27
+import/research-sprd-kernel-modules-common-camera      cb0fbb1e14efcba9d5594d0e82f59b8b8bf6e159
+import/research-sprd-kernel-modules-display            67bb150a70b5877223c460b091f7e16d1fd3ba78
+import/research-sprd-kernel-modules-video              bb51830f9fd6720c55929efd8c3711f0e0a123d7
+import/research-sprd-kernel-modules-touchscreen-novatek-nt36xxx 31d07f689c66d55f2d97e786a9ce19dac278fc22
+import/research-sprd-kernel-modules-touchscreen-synaptics-td4320-spi adff6c63b29bcc97001d75435af8edc2bf31a28c
+```

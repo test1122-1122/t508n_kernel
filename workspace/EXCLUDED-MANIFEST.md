@@ -138,3 +138,10 @@ mirror to keep it maintainable:
 - `__pycache__`
 
 See `SECURITY.md` and `.gitignore`.
+
+
+## Branch cleanup
+
+Six README-only placeholder import branches from Motorola Mobility were
+removed from the remote branch list.  Their commit IDs are recorded in
+`IMPORT-BRANCHES.txt`; the upstream repositories remain available.
