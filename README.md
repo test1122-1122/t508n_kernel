@@ -42,3 +42,7 @@ mainline/README.md
 Third-party Windows flashing tools and generated build outputs are not
 tracked. Obtain platform-tools/SPD tools separately.
 
+
+## Topics
+
+`t508n` · `ums9620` · `qogirn6pro` · `mainline` · `linux` · `openwrt` · `unisoc`
